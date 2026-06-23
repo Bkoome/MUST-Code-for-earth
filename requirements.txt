@@ -1,7 +1,0 @@
-# Parquet-backed CRMA dashboard API (app.py)
-# Serves EM-DAT historical data + local MDX so the frontend needs no
-# geoserve / Cloud Run backend. Install: pip install -r requirements.txt
-fastapi
-uvicorn[standard]
-pandas
-pyarrow

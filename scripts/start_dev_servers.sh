@@ -1,13 +1,15 @@
 #!/bin/bash
-# CRMA Dashboard — Start both dev servers
-# Usage: ./start_dev_servers.sh
+# MUST Dashboard — Start both dev servers
+# Usage: ./scripts/start_dev_servers.sh  (runs from anywhere; cds to repo root)
 
 set -e
 
-DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$DIR"
+# Resolve the repo root (this script lives in scripts/) and run from there so the
+# backend.app module and public/ assets resolve regardless of where it's invoked.
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
 
-echo "=== CRMA Dashboard — Starting dev servers ==="
+echo "=== MUST Dashboard — Starting dev servers ==="
 echo ""
 
 # Kill any existing processes on these ports
@@ -17,7 +19,7 @@ sleep 1
 
 # Start FastAPI backend
 echo "[1/2] Starting FastAPI backend on port 8000..."
-uvicorn app:app --host 0.0.0.0 --port 8000 --reload &
+uvicorn backend.app:app --host 0.0.0.0 --port 8000 --reload &
 FASTAPI_PID=$!
 
 # Wait for FastAPI to be ready

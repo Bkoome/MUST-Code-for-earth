@@ -2,7 +2,7 @@
 # Mock-first: `make install && make mock && make dev` runs the whole UI locally.
 
 .DEFAULT_GOAL := help
-.PHONY: help install mock dev build start test lint typecheck check format clean
+.PHONY: help install mock dev build start test smoke lint typecheck check format clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -10,13 +10,13 @@ help: ## Show this help
 
 install: ## Install JS + Python dependencies
 	yarn install
-	pip install -r requirements.txt
+	pip install -r backend/requirements.txt
 
 mock: ## (Re)generate the sample exceedance calendar
-	python generate_exceedance_mock.py
+	python backend/generate_exceedance_mock.py
 
 dev: ## Run FastAPI mock (:8000) + Next.js (:3000)
-	./start_dev_servers.sh
+	./scripts/start_dev_servers.sh
 
 build: ## Production build
 	yarn build
@@ -26,6 +26,9 @@ start: ## Serve the production build
 
 test: ## Run unit tests
 	npx vitest run
+
+smoke: ## Smoke-test the running APIs (needs `make dev` up)
+	./scripts/test_api.sh
 
 typecheck: ## Type-check without emitting
 	yarn ts-check
@@ -39,4 +42,4 @@ format: ## Auto-format
 check: typecheck lint test ## Typecheck + lint + tests
 
 clean: ## Remove build artifacts and caches
-	rm -rf .next out coverage tsconfig.tsbuildinfo __pycache__
+	rm -rf .next out coverage tsconfig.tsbuildinfo backend/__pycache__

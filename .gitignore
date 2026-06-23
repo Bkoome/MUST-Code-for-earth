@@ -55,5 +55,5 @@ __pycache__/
 # generated content (rebuilt via scripts/generate_*.py)
 /app/content/events/
 
-# generated mock data (rebuilt via scripts/generate_exceedance_mock.py)
-/data/exceedance_calendar.parquet
+# generated mock data (rebuilt via backend/generate_exceedance_mock.py)
+/backend/data/*.parquet

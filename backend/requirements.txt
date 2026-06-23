@@ -1,0 +1,7 @@
+# Parquet-backed MUST dashboard API (backend/app.py)
+# Serves the local exceedance calendar + admin-1 breakdown so the frontend needs
+# no cloud backend. Install: pip install -r backend/requirements.txt
+fastapi
+uvicorn[standard]
+pandas
+pyarrow

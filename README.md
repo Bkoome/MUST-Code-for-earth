@@ -44,18 +44,19 @@ small, stable API contract:
 - EM-DAT impact records used to flag days that line up with recorded events.
 
 Because MUST only ever talks to that contract, it runs the same way whether the
-data is mocked or live. Out of the box a tiny FastAPI service (`app.py`) serves a
-real-shaped sample dataset, so you can run the whole UI locally with nothing else
-installed; pointing a couple of environment variables at the live grib-icechunks
-endpoints fills the same calendar, choropleth and storymap with production data.
+data is mocked or live. Out of the box a tiny FastAPI service (`backend/app.py`)
+serves a real-shaped sample dataset, so you can run the whole UI locally with
+nothing else installed; pointing a couple of environment variables at the live
+grib-icechunks endpoints fills the same calendar, choropleth and storymap with
+production data.
 
 Quick start
 
 ```bash
-pip install -r requirements.txt        # fastapi, uvicorn, pandas, pyarrow
+pip install -r backend/requirements.txt        # fastapi, uvicorn, pandas, pyarrow
 yarn install
-python generate_exceedance_mock.py     # one-time: build the sample calendar
-./start_dev_servers.sh                 # FastAPI :8000 + Next.js :3000
+python backend/generate_exceedance_mock.py     # one-time: build the sample calendar
+./scripts/start_dev_servers.sh                 # FastAPI :8000 + Next.js :3000
 ```
 
 Then open <http://localhost:3000>.
@@ -87,8 +88,13 @@ app/                 Next.js 14 application (App Router)
 ├─ lib/              data-contract client, colour ramp, fetch helper
 └─ styles/           design tokens + component styles
 
-app.py               FastAPI mock backend (serves the data contract locally)
-generate_exceedance_mock.py   regenerates the sample calendar
+backend/             FastAPI mock service (serves the data contract locally)
+├─ app.py            the API
+├─ generate_exceedance_mock.py   regenerates the sample calendar
+├─ requirements.txt  Python dependencies
+└─ data/             generated parquet (gitignored — rebuilt via `make mock`)
+
+scripts/             dev helpers (start both servers, smoke-test the APIs)
 public/              map geometry, story assets, mock tiles, brand banner
 ```
 

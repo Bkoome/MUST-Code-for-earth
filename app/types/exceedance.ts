@@ -1,4 +1,4 @@
-// Shapes for the mock FastAPI feed (app.py), which uses a continuous probability
+// Shapes for the mock FastAPI feed (backend/app.py), which uses a continuous probability
 // `p`. The live data contract is in ./contract.ts; consumers move there when
 // NEXT_PUBLIC_DATA_BASE is wired.
 import type { AccumWindow, ReturnPeriod, DisasterType } from './pipeline';

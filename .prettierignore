@@ -9,7 +9,7 @@ coverage
 yarn.lock
 
 # data & geometry (not source — don't reformat)
-data
+backend/data
 public/geo
 public/icpac_adm1v3.json
 public/mock-tiles

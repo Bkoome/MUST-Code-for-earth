@@ -1,5 +1,5 @@
 // Data contract MUST consumes from the grib-icechunks pipeline. The mock backend
-// (app.py) emits these same shapes, so the UI is identical in mock and live modes.
+// (backend/app.py) emits these same shapes, so the UI is identical in mock and live modes.
 // Live mode reads static JSON from NEXT_PUBLIC_DATA_BASE:
 //   index.json                → CalendarIndex
 //   {date}/region_risks.json  → Record<pcode, UnitRisk>

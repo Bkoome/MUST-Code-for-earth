@@ -1,7 +1,8 @@
 """Generate a synthetic, real-shaped daily exceedance calendar for the mock backend.
 
-Output: data/exceedance_calendar.parquet (columns: date, window, rp, p, members,
-emdat_match). Same shape as the real product, so swapping is a drop-in replacement.
+Output: backend/data/exceedance_calendar.parquet (columns: date, window, rp, p,
+members, emdat_match). Same shape as the real product, so swapping is a drop-in
+replacement.
 """
 
 import math
@@ -53,6 +54,7 @@ def main() -> None:
 
     df = pd.DataFrame(rows)
     out = os.path.join(os.path.dirname(__file__), "data", "exceedance_calendar.parquet")
+    os.makedirs(os.path.dirname(out), exist_ok=True)
     df.to_parquet(out, index=False)
     print(f"wrote {out}  ({len(df):,} rows, {df['date'].nunique()} days)")
 

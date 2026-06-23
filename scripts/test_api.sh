@@ -1,6 +1,6 @@
 #!/bin/bash
 # Quick smoke test for MUST dashboard APIs
-# Usage: ./test_api.sh
+# Usage: ./scripts/test_api.sh
 # Requires: FastAPI on :8000, Next.js on :3000
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; NC='\033[0m'
