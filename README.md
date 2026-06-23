@@ -16,24 +16,24 @@ across East Africa, driven by the ECMWF IFS ensemble.
 ---
 
 MUST is an interactive flood-risk dashboard for East Africa. It lets analysts
-replay how flood risk built up over time — day by day, region by region — and
+replay how flood risk built up over time  day by day, region by region and
 check those forecast signals against what actually happened on the ground.
 
 It's built as two connected views:
 
-- Calendar-map index — a GitHub-style calendar where every cell is one forecast
-  day, shaded on a traffic-light probability ramp. Pick an accumulation window
+- Calendar-map index - a GitHub-style calendar where every cell is one forecast
+  day, shaded on a traffic light probability ramp. Pick an accumulation window
   (3h…7d) and a return period (2…100yr), scrub or play through the year, and watch
   an admin-1 choropleth recolour alongside a detail card for the day you land on.
-- Per-day storymap — a scrollytelling view where a pinned map reacts as you read
+- Per-day storymap - a scrollytelling view where a pinned map reacts as you read
   through an event, from the first forecast signal to the eventual impact and the
   decision it should have informed.
 
-The app is flood-focused.
+The app is flood focused.
 
 How it gets its data
 
-MUST is a standalone application. It doesn't compute risk itself — it depends on
+MUST is a standalone application. It doesn't compute risk itself, it depends on
 the `grib-icechunks` pipeline for that, consuming its published products through a
 small, stable API contract:
 
