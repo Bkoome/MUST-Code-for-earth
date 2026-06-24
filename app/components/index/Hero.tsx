@@ -9,7 +9,7 @@ const TICKER_ITEMS = [
   ['7', 'accumulation windows · 3 h → 7 days'],
   ['6', 'return periods · 2 → 100 yr'],
   ['38', 'EM-DAT flood matches'],
-  ['2023–2026', 'archive'],
+  ['2023-2026', 'archive'],
 ];
 
 export function Hero() {
@@ -36,7 +36,7 @@ export function Hero() {
 
   return (
     <div className='hero'>
-      <div className='eyebrow'>East Africa · ECMWF IFS ensemble · 2023–2026</div>
+      <div className='eyebrow'>East Africa · ECMWF IFS ensemble · 2023-2026</div>
       <div className='hero-title'>
         <h1>MUST Floodrisk Toolkit</h1>
         <button
@@ -52,7 +52,7 @@ export function Hero() {
           i
         </button>
         <div ref={popRef} className={`info-pop${info ? ' on' : ''}`}>
-          Every cell is one forecast day. Colour encodes the empirical exceedance probability — the
+          Every cell is one forecast day. Colour encodes the empirical exceedance probability, the
           fraction of the 51-member ensemble signalling a flood-relevant extreme. Click any day to
           open its storymap.
         </div>

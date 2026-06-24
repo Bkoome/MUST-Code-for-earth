@@ -20,8 +20,8 @@ interface Tip {
 }
 
 interface Props {
-  // Supplied by playback when the day is already buffered — used directly so the
-  // map repaints instantly during a time-lapse instead of refetching per tick.
+  // Supplied by playback when the day is already buffered, so the map repaints
+  // instantly during a time-lapse instead of refetching per tick.
   cachedRegions?: Record<string, UnitRisk> | null;
 }
 
@@ -84,7 +84,7 @@ export function Choropleth({ cachedRegions }: Props) {
   return (
     <section className='widget'>
       <div className='wtitle'>
-        Admin-1 affected regions <b>{selectedDate ? `· ${selectedDate}` : '— select a day'}</b>
+        Admin-1 affected regions <b>{selectedDate ? `· ${selectedDate}` : '(select a day)'}</b>
       </div>
       <div className='choro'>
         <svg viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='xMidYMid meet'>

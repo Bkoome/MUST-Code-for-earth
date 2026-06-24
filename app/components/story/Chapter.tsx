@@ -20,14 +20,14 @@ export const Chapter = forwardRef<HTMLDivElement, Props>(function Chapter(
         <div className='banner' style={{ ['--img' as any]: `url(${config.banner})` }}>
           <span className='tag'>{config.tag}</span>
         </div>
-        <div className='k'>{config.k}</div>
+        <div className='k'>{config.kicker}</div>
         <h3>{config.title}</h3>
         <p>{config.body}</p>
         <div className='statline'>
-          {config.stats.map((s) => (
-            <div key={s.s}>
-              <b>{s.b}</b>
-              <span>{s.s}</span>
+          {config.stats.map((stat) => (
+            <div key={stat.label}>
+              <b>{stat.value}</b>
+              <span>{stat.label}</span>
             </div>
           ))}
         </div>

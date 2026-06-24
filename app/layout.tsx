@@ -30,11 +30,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'MUST — Monitoring & Understanding SpatioTemporal Flood Risk',
+    default: 'MUST: Monitoring & Understanding SpatioTemporal Flood Risk',
     template: '%s | MUST',
   },
   description:
-    'MUST turns ECMWF IFS ensemble forecasts into daily flood-relevant exceedance probabilities across East Africa, paired with recorded impacts — a calendar-map index and per-day storymaps.',
+    'MUST turns ECMWF IFS ensemble forecasts into daily flood-relevant exceedance probabilities across East Africa, paired with recorded impacts: a calendar-map index and per-day storymaps.',
   openGraph: {
     title: 'MUST Floodrisk Toolkit',
     description:

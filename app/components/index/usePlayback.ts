@@ -70,7 +70,7 @@ export function usePlayback({ year, query, selectedDate, setSelectedDate }: Args
   const seqRef = useRef(sequence);
   seqRef.current = sequence;
 
-  // Region risk depends on window/rp/hazard — drop the cache when the query changes.
+  // Region risk depends on window/rp/hazard, so drop the cache when the query changes.
   useEffect(() => {
     const empty = new Map();
     cacheRef.current = empty;

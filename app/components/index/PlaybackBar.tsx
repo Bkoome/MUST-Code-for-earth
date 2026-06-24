@@ -20,7 +20,7 @@ export function PlaybackBar({ playback }: { playback: Playback }) {
     buffered,
   } = playback;
   const total = sequence.length;
-  const current = cursorIndex >= 0 ? sequence[cursorIndex] : '—';
+  const current = cursorIndex >= 0 ? sequence[cursorIndex] : '-';
   const [open, setOpen] = useState(false);
 
   if (!open) {

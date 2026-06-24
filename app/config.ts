@@ -2,7 +2,7 @@
 // (avoids CORS; works for both the local proxy and Cloud Run).
 export const API_BASE_URL = '';
 
-// Live-tile backend — the single mock-vs-live switch. Empty → <LiveMap> uses the
+// Live-tile backend: the single mock-vs-live switch. Empty → <LiveMap> uses the
 // pre-rendered tiles under /public/mock-tiles; set in .env.local to read live tiles.
 export const TITILER_URL = process.env.NEXT_PUBLIC_TITILER_URL ?? '';
 export const TIPG_URL = process.env.NEXT_PUBLIC_TIPG_URL ?? '';

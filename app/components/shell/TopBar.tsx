@@ -47,11 +47,11 @@ export function TopBar() {
 
   return (
     <div className='topbar'>
-      <button className='brand' onClick={goIndex} aria-label='MUST — go to home'>
+      <button className='brand' onClick={goIndex} aria-label='MUST home'>
         <Image
           className='brand-logo'
           src='/must-banner.jpg'
-          alt='MUST — Monitoring & Understanding SpatioTemporal Flood Risk Toolkit'
+          alt='MUST: Monitoring & Understanding SpatioTemporal Flood Risk Toolkit'
           width={53}
           height={48}
           priority
@@ -110,22 +110,22 @@ export function TopBar() {
               <li>
                 <span className='dd-dot' />
                 <span>
-                  <b>Ensemble exceedance</b> — 51-member IFS, 7 accumulation windows, 6 return
+                  <b>Ensemble exceedance</b>: 51-member IFS, 7 accumulation windows, 6 return
                   periods.
                 </span>
               </li>
               <li>
                 <span className='dd-dot' />
                 <span>
-                  <b>Impact verification</b> — forecast signals cross-referenced against EM-DAT
-                  flood records.
+                  <b>Impact verification</b>: forecast signals cross-referenced against EM-DAT flood
+                  records.
                 </span>
               </li>
               <li>
                 <span className='dd-dot' />
                 <span>
-                  <b>Per-day storymaps</b> — bespoke scrollytelling that walks each event from
-                  signal to impact.
+                  <b>Per-day storymaps</b>: bespoke scrollytelling that walks each event from signal
+                  to impact.
                 </span>
               </li>
             </ul>
@@ -163,8 +163,8 @@ export function TopBar() {
             <span className='soon'>Coming soon</span>
             <h4>Partners &amp; collaborators</h4>
             <p>
-              This space will list the organisations and institutions collaborating on MUST —
-              partner logos, roles and links will be populated here.
+              This space will list the organisations and institutions collaborating on MUST: partner
+              logos, roles and links will be populated here.
             </p>
             <p>
               Interested in contributing data, compute or expertise? Partner details are on the way.

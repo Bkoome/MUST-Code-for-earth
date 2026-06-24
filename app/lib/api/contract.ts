@@ -16,7 +16,7 @@ async function getJson<T>(url: string): Promise<T> {
 
 export interface CalendarFeed {
   index: CalendarIndex;
-  emdatDates: Set<string>; // mock only — live mode carries EM-DAT in {date}/emdat.geojson
+  emdatDates: Set<string>; // mock only; live mode carries EM-DAT in {date}/emdat.geojson
 }
 
 /** index.json in live mode, or the mock calendar lifted into the same shape. */

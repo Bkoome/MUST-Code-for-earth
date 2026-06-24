@@ -3,8 +3,8 @@
 import type { StyleSpecification } from 'maplibre-gl';
 
 export interface ChapterStat {
-  b: string;
-  s: string;
+  value: string;
+  label: string;
 }
 
 export interface ChapterConfig {
@@ -12,7 +12,7 @@ export interface ChapterConfig {
   bg: string; // pinned backdrop image
   banner: string; // card banner image
   tag: string;
-  k: string; // kicker
+  kicker: string;
   title: string;
   body: string;
   stats: ChapterStat[];
@@ -37,15 +37,15 @@ export function buildStory(date: string): ChapterConfig[] {
       bg: `${A}/bg-signal.jpg`,
       banner: `${A}/signal.jpg`,
       tag: 'Forecast · ECMWF ensemble',
-      k: 'The signal',
+      kicker: 'The signal',
       title: 'Three days out, the ensemble lit up.',
       body:
         'On the run three days prior, 38 of 51 members pushed 24-hour rainfall past the 10-year ' +
         'return-period threshold across the eastern Rift. An unusually tight cluster for a +72 h lead time.',
       stats: [
-        { b: '0.74', s: 'exceedance prob.' },
-        { b: '38/51', s: 'members over threshold' },
-        { b: '+72 h', s: 'lead time' },
+        { value: '0.74', label: 'exceedance prob.' },
+        { value: '38/51', label: 'members over threshold' },
+        { value: '+72 h', label: 'lead time' },
       ],
       layerName: 'ensemble exceedance · 24 h',
       center: [36.6, 5.7],
@@ -59,14 +59,14 @@ export function buildStory(date: string): ChapterConfig[] {
       bg: `${A}/bg-observation.jpg`,
       banner: `${A}/observation.jpg`,
       tag: 'Observed · GPM IMERG',
-      k: 'The observation',
+      kicker: 'The observation',
       title: 'The rain arrived where the members agreed.',
       body:
-        'GPM IMERG for the verifying day confirms the footprint — peak accumulations over the Tana ' +
+        'GPM IMERG for the verifying day confirms the footprint, with peak accumulations over the Tana ' +
         'and Juba basins, closely tracking the high-probability cells from the forecast.',
       stats: [
-        { b: '214 mm', s: 'peak 24 h obs.' },
-        { b: '0.81', s: 'spatial hit rate' },
+        { value: '214 mm', label: 'peak 24 h obs.' },
+        { value: '0.81', label: 'spatial hit rate' },
       ],
       layerName: 'observed rainfall · GPM IMERG',
       center: [39.6, -0.6],
@@ -79,15 +79,15 @@ export function buildStory(date: string): ChapterConfig[] {
       bg: `${A}/bg-impact.jpg`,
       banner: `${A}/impact.jpg`,
       tag: 'Recorded · EM-DAT',
-      k: 'The impact',
+      kicker: 'The impact',
       title: 'EM-DAT records a flood, two days later.',
       body:
         'Riverine flooding across Garissa and Tana River counties. The forecast signal preceded the ' +
         'recorded onset by 48 hours.',
       stats: [
-        { b: '46k', s: 'affected' },
-        { b: '2', s: 'admin-1 regions' },
-        { b: '48 h', s: 'signal lead' },
+        { value: '46k', label: 'affected' },
+        { value: '2', label: 'admin-1 regions' },
+        { value: '48 h', label: 'signal lead' },
       ],
       layerName: 'EM-DAT flood match',
       center: [40.0, -1.3],
@@ -100,14 +100,14 @@ export function buildStory(date: string): ChapterConfig[] {
       bg: `${A}/bg-decision.jpg`,
       banner: `${A}/decision.jpg`,
       tag: 'Operations · Bayesian risk',
-      k: 'The decision support',
+      kicker: 'The decision support',
       title: 'Admin-1 risk, ready to act on.',
       body:
         'Folding the ensemble signal and IMERG evidence into the Bayesian network yields a per-region ' +
-        'risk score — the layer a duty officer actually reads. Tana River posts the highest posterior.',
+        'risk score, the layer a duty officer actually reads. Tana River posts the highest posterior.',
       stats: [
-        { b: 'HIGH', s: 'Tana River' },
-        { b: 'MOD', s: 'Garissa' },
+        { value: 'HIGH', label: 'Tana River' },
+        { value: 'MOD', label: 'Garissa' },
       ],
       layerName: 'admin-1 Bayesian risk',
       center: [36.6, 5.7],

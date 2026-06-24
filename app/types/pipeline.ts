@@ -1,4 +1,4 @@
-// Hazard type — flood only.
+// Hazard type: flood only.
 export type DisasterType = 'flood';
 
 // Two-tier app model: a calendar-map index and a per-day scrollytelling storymap.

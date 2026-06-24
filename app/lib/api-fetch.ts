@@ -44,7 +44,7 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
   if (isLocalDev()) return fetch(url, init);
 
   const token = await getIdentityToken();
-  if (!token) return fetch(url, init); // metadata server unavailable — will likely 403
+  if (!token) return fetch(url, init); // metadata server unavailable, will likely 403
 
   return fetch(url, {
     ...init,

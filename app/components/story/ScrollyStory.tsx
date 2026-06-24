@@ -43,7 +43,7 @@ export function ScrollyStory() {
     frontRef.current ^= 1;
   };
 
-  // IntersectionObserver scrollytelling — the active chapter drives map + backdrop.
+  // IntersectionObserver scrollytelling: the active chapter drives map + backdrop.
   useEffect(() => {
     setChapterBg(chapters[0].bg);
     const els = chapterRefs.current.filter(Boolean) as HTMLDivElement[];
@@ -83,7 +83,7 @@ export function ScrollyStory() {
           </div>
           <div className='mdx-note'>
             This pane is the per-day storymap. Authors write prose + <code>&lt;Chapter&gt;</code>{' '}
-            blocks; the pinned map reacts as each chapter scrolls into view (IntersectionObserver —
+            blocks; the pinned map reacts as each chapter scrolls into view (IntersectionObserver,
             no Mapbox lock-in).
           </div>
 
@@ -117,7 +117,7 @@ export function ScrollyStory() {
         />
       </section>
 
-      <footer>MUST — Code for Earth 2026 · per-day storymap · {date}</footer>
+      <footer>MUST · Code for Earth 2026 · per-day storymap · {date}</footer>
     </section>
   );
 }

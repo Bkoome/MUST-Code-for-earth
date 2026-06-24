@@ -1,12 +1,9 @@
 'use client';
 
-// LiveMap — a small MapLibre map for the per-day storymap: one raster layer
-// (exceedance/rainfall grid) plus one admin-1 vector overlay (risk).
-//
-// Mock vs live is decided only by TITILER_URL / TIPG_URL (app/config): empty →
-// pre-rendered files under /public/mock-tiles; set → live TiTiler/TiPg tiles.
-//
-// MDX usage: <LiveMap date="2026-03-04" raster="exceedance" vector="bn-risk" />
+// MapLibre map for the per-day storymap: a raster layer (exceedance/rainfall
+// grid) plus an admin-1 risk vector overlay. TITILER_URL / TIPG_URL pick the
+// source: unset reads /public/mock-tiles, set reads live TiTiler/TiPg tiles.
+// Usage: <LiveMap date="2026-03-04" raster="exceedance" vector="bn-risk" />
 
 import React, { useEffect, useRef, useState } from 'react';
 import type { Map as MlMap, StyleSpecification } from 'maplibre-gl';
@@ -40,7 +37,7 @@ interface LiveMapProps {
   date: string;
   raster?: string; // raster layer id (TiTiler), default 'exceedance'
   vector?: string; // vector collection id (TiPg), default 'bn-risk'
-  center?: string; // "lon,lat" — optional; defaults to fitting EA_BBOX
+  center?: string; // "lon,lat", optional; defaults to fitting EA_BBOX
   zoom?: string;
   height?: string; // CSS height, default 420px
 }
@@ -97,7 +94,7 @@ export function LiveMap({
       map.on('load', async () => {
         if (cancelled) return;
 
-        // ── Raster layer (exceedance / rainfall grid) ──
+        // Raster layer (exceedance / rainfall grid)
         if (live) {
           map.addSource('raster-src', {
             type: 'raster',
@@ -124,7 +121,7 @@ export function LiveMap({
           paint: { 'raster-opacity': 0.75 },
         });
 
-        // ── Vector overlay (admin-1 risk) — identical code path both modes ──
+        // Vector overlay (admin-1 risk); same code path in mock and live
         try {
           const res = await fetch(vectorUrl(date, vector));
           if (res.ok) {

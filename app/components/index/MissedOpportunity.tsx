@@ -16,7 +16,7 @@ export function MissedOpportunity({ year = CAL_YEARS[0] }: Props) {
         Missed opportunity <b>· {year}</b>
       </div>
       <div className='wreserved-body'>
-        Reserved — missed-opportunity index: forecast exceedance signal weighed against recorded
+        Reserved: missed-opportunity index. Forecast exceedance signal weighed against recorded
         EM-DAT flood events, to surface days the ensemble flagged a flood that was missed
         operationally.
       </div>

@@ -1,13 +1,13 @@
 <p align="center">
-  <img src="public/must-banner.jpg" alt="MUST — Monitoring & Understanding SpatioTemporal Flood Risk Toolkit" width="420" />
+  <img src="public/must-banner.jpg" alt="MUST: Monitoring & Understanding SpatioTemporal Flood Risk Toolkit" width="420" />
 </p>
 
-# MUST — Monitoring & Understanding SpatioTemporal Flood Risk
+# MUST: Monitoring & Understanding SpatioTemporal Flood Risk
 
 Interactive toolkit for retrospective flood-risk monitoring and decision support
 across East Africa, driven by the ECMWF IFS ensemble.
 
-> ECMWF Code for Earth 2026 — Africa Stream (ArcX)
+> ECMWF Code for Earth 2026, Africa Stream (ArcX)
 > Challenge 41: Missed Opportunities in Flood Disaster Risk Management
 > Mentors: Nishadh Kalladath · Masilin Gudoshava · Ahmed Amdihun · Anthony Mwanthi · Katherine Egan · Jessica Keune · Hillary Koros
 
@@ -16,7 +16,7 @@ across East Africa, driven by the ECMWF IFS ensemble.
 ---
 
 MUST is an interactive flood-risk dashboard for East Africa. It lets analysts
-replay how flood risk built up over time  day by day, region by region and
+replay how flood risk built up over time, day by day and region by region, and
 check those forecast signals against what actually happened on the ground.
 
 It's built as two connected views:
@@ -92,7 +92,7 @@ backend/             FastAPI mock service (serves the data contract locally)
 ├─ app.py            the API
 ├─ generate_exceedance_mock.py   regenerates the sample calendar
 ├─ requirements.txt  Python dependencies
-└─ data/             generated parquet (gitignored — rebuilt via `make mock`)
+└─ data/             generated parquet (gitignored, rebuilt via `make mock`)
 
 scripts/             dev helpers (start both servers, smoke-test the APIs)
 public/              map geometry, story assets, mock tiles, brand banner
@@ -119,10 +119,10 @@ If you use MUST in your work, please cite it:
   year    = {2026},
   url     = {https://github.com/Bkoome/MUST-Code-for-earth},
   license = {Apache-2.0},
-  note    = {ECMWF Code for Earth 2026 — Challenge 41, Africa Stream (ArcX)}
+  note    = {ECMWF Code for Earth 2026, Challenge 41, Africa Stream (ArcX)}
 }
 ```
 
 License
 
-Licensed under the Apache License 2.0 — see [`LICENSE`](LICENSE).
+Licensed under the Apache License 2.0. See [`LICENSE`](LICENSE).

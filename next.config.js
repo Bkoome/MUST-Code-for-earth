@@ -1,6 +1,6 @@
 module.exports = {
   async headers() {
-    // Mock tiles are immutable historical data — cache them hard. Live TiTiler/TiPg
+    // Mock tiles are immutable historical data, cache them hard. Live TiTiler/TiPg
     // responses should carry the same immutable headers.
     return [
       {
