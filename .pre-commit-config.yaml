@@ -1,0 +1,29 @@
+# Pre-commit hooks for MUST. Install once with `pre-commit install`.
+# Runs lightweight hygiene checks plus the project's own format/lint on commit.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: detect-private-key
+      - id: check-yaml
+      - id: check-json
+
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier (format check)
+        entry: yarn format:check
+        language: system
+        pass_filenames: false
+        files: \.(js|jsx|ts|tsx|json|css|md)$
+      - id: eslint
+        name: eslint
+        entry: yarn lint
+        language: system
+        pass_filenames: false
+        files: \.(js|jsx|ts|tsx)$
