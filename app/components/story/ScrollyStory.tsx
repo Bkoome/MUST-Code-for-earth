@@ -2,12 +2,10 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { usePipelineStore } from 'app/store/providers/pipeline';
-import { LIVE_TILES, EXPERIMENTAL_TILE_DATE } from 'app/config';
 import { buildStory } from './storyConfig';
 import { StoryMap } from './StoryMap';
 import { StoryTop } from './StoryTop';
 import { Chapter } from './Chapter';
-import { LiveMap } from 'app/components/mdx/LiveMap';
 
 // Fallback day used when arriving at the storymap without a selected date.
 const DEFAULT_DATE = '2023-11-22';
@@ -16,11 +14,6 @@ export function ScrollyStory() {
   const { selectedDate } = usePipelineStore();
   const date = selectedDate ?? DEFAULT_DATE;
   const chapters = useMemo(() => buildStory(date), [date]);
-
-  // Live-tile panel: in production (TITILER_URL set) it follows the open day; in
-  // placeholder mode it shows the one experimental tile we ship until the cloud
-  // GRIB2 products are published.
-  const tileDate = LIVE_TILES ? date : EXPERIMENTAL_TILE_DATE;
 
   const [activeIndex, setActiveIndex] = useState(0);
   const chapterRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -97,25 +90,6 @@ export function ScrollyStory() {
           ))}
         </div>
       </div>
-
-      <section className='live-tiles'>
-        <div className='live-tiles-head'>
-          <h3>Live exceedance tiles</h3>
-          <p className='hint'>
-            Raster exceedance (TiTiler) + admin-1 risk vector (TiPg), read straight from the cloud
-            tile backend.{' '}
-            {LIVE_TILES
-              ? `Showing the selected day (${date}).`
-              : `Showing the experimental placeholder (${EXPERIMENTAL_TILE_DATE}) until the processed GRIB2 products are published.`}
-          </p>
-        </div>
-        <LiveMap
-          date={tileDate}
-          raster='exceedance'
-          vector='bn-risk'
-          height='clamp(320px, 56svh, 560px)'
-        />
-      </section>
 
       <footer>MUST · Code for Earth 2026 · per-day storymap · {date}</footer>
     </section>

@@ -1270,28 +1270,6 @@ footer {
   color: var(--ink-300);
 }
 
-/* ============================================================ LIVE-TILE PANEL */
-/* The wired live path (<LiveMap>) sits below the scrolly in the story view. */
-.live-tiles {
-  position: relative;
-  z-index: 1;
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 8px clamp(18px, 4vw, 48px) 8px;
-}
-.live-tiles-head h3 {
-  color: #fff;
-  font-size: clamp(17px, 2.4vw, 20px);
-  margin: 0 0 6px;
-}
-.live-tiles-head .hint {
-  font-size: 13px;
-  line-height: 1.5;
-  color: #9fb3c8;
-  margin: 0 0 14px;
-  max-width: 70ch;
-}
-
 /* ============================================================ ADAPTIVE / DEVICE */
 
 /* Fluid page gutters on small screens. */
