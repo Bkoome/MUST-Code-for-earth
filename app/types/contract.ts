@@ -4,24 +4,24 @@
 //   index.json                → CalendarIndex
 //   {date}/region_risks.json  → Record<pcode, UnitRisk>
 
-// Risk classes: -1 No-data, 0 Green, 1 Yellow, 2 Orange, 3 Red.
+// Severity classes: -1 No-data, 0 Low, 1 Moderate, 2 Severe, 3 Extreme.
 export type RiskState = -1 | 0 | 1 | 2 | 3;
 
 export const RISK_LABEL: Record<RiskState, string> = {
   [-1]: 'No data',
-  0: 'Green',
-  1: 'Yellow',
-  2: 'Orange',
-  3: 'Red',
+  0: 'Low',
+  1: 'Moderate',
+  2: 'Severe',
+  3: 'Extreme',
 };
 
-// 4-class risk colours (match the raster colormap).
+// Class accents on the exceedance ramp, dark enough for chip text.
 export const RISK_COLOR: Record<RiskState, string> = {
   [-1]: '#445577',
-  0: '#10B981',
-  1: '#F59E0B',
-  2: '#FF9800',
-  3: '#FF2626',
+  0: '#64748b',
+  1: '#d97706',
+  2: '#ea580c',
+  3: '#dc2626',
 };
 
 // Risk fields for a single return period.

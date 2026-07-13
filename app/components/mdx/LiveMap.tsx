@@ -1,27 +1,24 @@
 'use client';
 
-// MapLibre map for the per-day storymap: a raster layer (exceedance/rainfall
-// grid) plus an admin-1 risk vector overlay. TITILER_URL / TIPG_URL pick the
-// source: unset reads /public/mock-tiles, set reads live TiTiler/TiPg tiles.
+// MapLibre map for MDX-authored pages: an on-demand raster layer (exceedance or
+// rainfall grid) plus an admin-1 risk vector overlay.
 // Usage: <LiveMap date="2026-03-04" raster="exceedance" vector="bn-risk" />
 
 import React, { useEffect, useRef, useState } from 'react';
 import type { Map as MlMap, StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { TITILER_URL, TIPG_URL, EA_BBOX } from 'app/config';
+import { TIPG_URL, EA_BBOX } from 'app/config';
+import { xrTpTileUrl, xrExceedanceTileUrl } from 'app/lib/tiles/xr-url';
 
-// Risk-level (1..5) → colour ramp.
+// Risk-level (1..5) colour ramp.
 const RISK_COLORS = ['#9ca3af', '#60a5fa', '#34d399', '#f59e0b', '#ef4444'];
 
-// Raster URL: a georeferenced PNG in mock mode, XYZ tiles in live mode.
-function rasterImageUrl(date: string): string {
-  return `/mock-tiles/raster/${date}.png`;
-}
+// Rainfall reads forecast accumulation until GPM IMERG is wired.
 function rasterTileTemplate(date: string, layer: string): string {
-  return `${TITILER_URL}/tiles/WebMercatorQuad/{z}/{x}/{y}.png?date=${date}&layer=${layer}`;
+  return layer === 'rainfall' ? xrTpTileUrl(date, 24) : xrExceedanceTileUrl(date, 24, 10);
 }
 
-// Admin-1 vector (GeoJSON) URL: a static file in mock mode, TiPg Features in live mode.
+// Admin-1 vector (GeoJSON) URL: a static file locally, TiPg Features when configured.
 function vectorUrl(date: string, collection: string): string {
   if (!TIPG_URL) return `/mock-tiles/vector/${date}.geojson`;
   return `${TIPG_URL}/collections/${collection}/items?datetime=${date}&f=geojson&limit=1000`;
@@ -55,7 +52,6 @@ export function LiveMap({
   // Per-page-view tile/data request count (transformRequest sees every URL).
   const [tileCount, setTileCount] = useState(0);
   const [vectorFeatures, setVectorFeatures] = useState<number | null>(null);
-  const live = Boolean(TITILER_URL);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -95,25 +91,12 @@ export function LiveMap({
         if (cancelled) return;
 
         // Raster layer (exceedance / rainfall grid)
-        if (live) {
-          map.addSource('raster-src', {
-            type: 'raster',
-            tiles: [rasterTileTemplate(date, raster)],
-            tileSize: 256,
-            bounds: [w, s, e, n],
-          });
-        } else {
-          map.addSource('raster-src', {
-            type: 'image',
-            url: rasterImageUrl(date),
-            coordinates: [
-              [w, n],
-              [e, n],
-              [e, s],
-              [w, s],
-            ],
-          });
-        }
+        map.addSource('raster-src', {
+          type: 'raster',
+          tiles: [rasterTileTemplate(date, raster)],
+          tileSize: 256,
+          bounds: [w, s, e, n],
+        });
         map.addLayer({
           id: 'raster-lyr',
           type: 'raster',
@@ -179,7 +162,7 @@ export function LiveMap({
       mapRef.current?.remove();
       mapRef.current = null;
     };
-  }, [date, raster, vector, center, zoom, live]);
+  }, [date, raster, vector, center, zoom]);
 
   return (
     <div style={{ margin: '1.25rem 0' }}>
@@ -203,8 +186,7 @@ export function LiveMap({
         }}
       >
         <span>
-          {live ? 'LIVE tiles' : 'MOCK tiles'} · raster:{raster} · vector:{vector} · {date}
-          {!live && ' · placeholder data, not final exceedance'}
+          raster:{raster} · vector:{vector} · {date}
         </span>
         <span title='Tile/data requests this page-view (cost meter)'>
           {tileCount} reqs{vectorFeatures !== null ? ` · ${vectorFeatures} admin-1` : ''}

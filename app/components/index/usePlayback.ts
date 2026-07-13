@@ -1,20 +1,18 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { loadRegionRisks } from 'app/lib/api/contract';
+import { loadRegionRisksBatch } from 'app/lib/api/contract';
 import type { UnitRisk } from 'app/types/contract';
 import type { ExceedanceQuery } from 'app/types/exceedance';
 
 // Time-lapse playback for the index view: auto-advances the selected day through
-// a year (or one month) so the calendar cursor sweeps and the choropleth recolors
-// day-by-day. Region data for the whole range is prefetched + cached so playback
-// is smooth.
+// a year (or one month). Region data for all summarized dates arrives in one
+// batch request, so playback repaints without per-day fetches.
 
 export type PlayScope = 'month' | 'year';
-type RegionCache = Map<string, Record<string, UnitRisk>>;
+type RegionBatch = Record<string, Record<string, UnitRisk>>;
 
-const SPEEDS = [1, 2, 4] as const; // multiplier; days/sec = 2 × multiplier
-const PREFETCH_CONCURRENCY = 6;
+const SPEEDS = [1, 2, 4] as const; // multiplier; days/sec = 2 x multiplier
 
 const isLeap = (y: number) => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
 
@@ -32,6 +30,7 @@ interface Args {
   query: ExceedanceQuery;
   selectedDate: string | null;
   setSelectedDate: (date: string) => void;
+  summarized: number; // builder progress; a growing count refreshes the batch
 }
 
 export interface Playback {
@@ -49,14 +48,18 @@ export interface Playback {
   cachedRegions: Record<string, UnitRisk> | null;
 }
 
-export function usePlayback({ year, query, selectedDate, setSelectedDate }: Args): Playback {
+export function usePlayback({
+  year,
+  query,
+  selectedDate,
+  setSelectedDate,
+  summarized,
+}: Args): Playback {
   const { window: win, returnPeriod, hazard } = query;
   const [scope, setScope] = useState<PlayScope>('year');
   const [speed, setSpeed] = useState<number>(1);
   const [playing, setPlaying] = useState(false);
-  const [cache, setCache] = useState<RegionCache>(new Map());
-  const cacheRef = useRef<RegionCache>(cache);
-  cacheRef.current = cache;
+  const [batch, setBatch] = useState<RegionBatch>({});
 
   const monthMM = selectedDate ? selectedDate.slice(5, 7) : '01';
   const sequence = useMemo(() => {
@@ -70,42 +73,19 @@ export function usePlayback({ year, query, selectedDate, setSelectedDate }: Args
   const seqRef = useRef(sequence);
   seqRef.current = sequence;
 
-  // Region risk depends on window/rp/hazard, so drop the cache when the query changes.
-  useEffect(() => {
-    const empty = new Map();
-    cacheRef.current = empty;
-    setCache(empty);
-  }, [win, returnPeriod, hazard]);
-
-  // Prefetch every in-scope day's regions, throttled to a few requests at a time.
+  // One batch request per query; re-runs as the builder summarizes more dates.
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      const todo = sequence.filter((d) => !cacheRef.current.has(d));
-      for (let i = 0; i < todo.length && !cancelled; i += PREFETCH_CONCURRENCY) {
-        const batch = todo.slice(i, i + PREFETCH_CONCURRENCY);
-        const loaded = await Promise.all(
-          batch.map(async (d) => {
-            try {
-              return [d, await loadRegionRisks(d, { hazard, window: win, returnPeriod })] as const;
-            } catch {
-              return [d, {}] as const;
-            }
-          }),
-        );
-        if (cancelled) return;
-        setCache((prev) => {
-          const next = new Map(prev);
-          for (const [d, r] of loaded) next.set(d, r);
-          cacheRef.current = next;
-          return next;
-        });
-      }
-    })();
+    loadRegionRisksBatch({ hazard, window: win, returnPeriod })
+      .then((data) => !cancelled && setBatch(data))
+      .catch((e) => {
+        console.error('Failed to load regions batch', e);
+        if (!cancelled) setBatch({});
+      });
     return () => {
       cancelled = true;
     };
-  }, [sequence, win, returnPeriod, hazard]);
+  }, [win, returnPeriod, hazard, summarized]);
 
   // Advance the cursor on a timer while playing; loop at the end of the sequence.
   useEffect(() => {
@@ -123,8 +103,8 @@ export function usePlayback({ year, query, selectedDate, setSelectedDate }: Args
   }, [playing, speed, setSelectedDate]);
 
   const buffered = useMemo(
-    () => sequence.reduce((n, d) => (cache.has(d) ? n + 1 : n), 0),
-    [sequence, cache],
+    () => sequence.reduce((n, d) => (batch[d] ? n + 1 : n), 0),
+    [sequence, batch],
   );
 
   return {
@@ -139,6 +119,6 @@ export function usePlayback({ year, query, selectedDate, setSelectedDate }: Args
     cursorIndex,
     seek: (index) => sequence[index] && setSelectedDate(sequence[index]),
     buffered,
-    cachedRegions: selectedDate ? (cache.get(selectedDate) ?? null) : null,
+    cachedRegions: selectedDate ? (batch[selectedDate] ?? null) : null,
   };
 }

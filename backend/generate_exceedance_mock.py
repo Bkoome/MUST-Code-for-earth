@@ -12,11 +12,11 @@ import pandas as pd
 
 YEARS = [2023, 2024, 2025]
 WINDOWS = ["3h", "6h", "12h", "24h", "48h", "72h", "7d"]
-RPS = ["2yr", "5yr", "10yr", "20yr", "40yr", "100yr"]
+RPS = ["2yr", "5yr", "10yr", "20yr", "50yr", "100yr"]
 
 # Longer accumulation windows exceed more readily; rarer return periods less so.
 WIN_FACTOR = {"3h": 0.60, "6h": 0.72, "12h": 0.85, "24h": 1.00, "48h": 1.12, "72h": 1.22, "7d": 1.35}
-RP_FACTOR = {"2yr": 1.35, "5yr": 1.15, "10yr": 1.00, "20yr": 0.82, "40yr": 0.66, "100yr": 0.50}
+RP_FACTOR = {"2yr": 1.35, "5yr": 1.15, "10yr": 1.00, "20yr": 0.82, "50yr": 0.66, "100yr": 0.50}
 
 
 def day_prob(year: int, doy: int) -> float:

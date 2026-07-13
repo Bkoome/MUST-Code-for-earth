@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { usePipelineStore } from 'app/store/providers/pipeline';
 import { loadCalendarIndex } from 'app/lib/api/contract';
 import type { CalendarIndex } from 'app/types/contract';
 import { CAL_YEARS } from 'app/types/pipeline';
+import { fetchXrDates } from 'app/lib/tiles/xr-url';
 import { RAMP } from 'app/lib/exceedance-ramp';
 import { Hero } from './Hero';
 import { Controls } from './Controls';
@@ -14,20 +15,33 @@ import { Choropleth } from './Choropleth';
 import { DayCard } from './DayCard';
 import { PlaybackBar } from './PlaybackBar';
 import { usePlayback } from './usePlayback';
+import { useBuilderProgress } from './useBuilderProgress';
 
 export function IndexView() {
   const { hazard, window: win, returnPeriod, selectedDate, setSelectedDate } = usePipelineStore();
   const [index, setIndex] = useState<CalendarIndex>({});
   const [emdatDates, setEmdatDates] = useState<Set<string>>(new Set());
+  const [archiveDates, setArchiveDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [calendarYear, setCalendarYear] = useState<number>(CAL_YEARS[0]);
+  // The archive starts in 2026; default the calendar there.
+  const [calendarYear, setCalendarYear] = useState<number>(CAL_YEARS[CAL_YEARS.length - 1]);
+
+  const progress = useBuilderProgress();
+  const summarized = progress?.summarized ?? 0;
 
   const playback = usePlayback({
     year: calendarYear,
     query: { hazard, window: win, returnPeriod },
     selectedDate: selectedDate ?? null,
     setSelectedDate,
+    summarized,
   });
+
+  useEffect(() => {
+    fetchXrDates()
+      .then(setArchiveDates)
+      .catch((e) => console.error('Failed to load store dates', e));
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,7 +63,30 @@ export function IndexView() {
     return () => {
       cancelled = true;
     };
-  }, [hazard, win, returnPeriod]);
+  }, [hazard, win, returnPeriod, summarized]);
+
+  // Archive dates the builder has not summarized yet render as pending cells.
+  const pendingDates = useMemo(() => {
+    if (!progress) return new Set<string>();
+    const done = new Set(progress.dates);
+    return new Set(archiveDates.filter((d) => !done.has(d)));
+  }, [archiveDates, progress]);
+
+  // Flash a short "archive ready" chip when the builder finishes during a session.
+  const complete = progress != null && progress.summarized >= progress.total;
+  const wasIncomplete = useRef(false);
+  const [justFinished, setJustFinished] = useState(false);
+  useEffect(() => {
+    if (!complete) {
+      wasIncomplete.current = true;
+      return;
+    }
+    if (wasIncomplete.current) {
+      setJustFinished(true);
+      const id = window.setTimeout(() => setJustFinished(false), 4000);
+      return () => window.clearTimeout(id);
+    }
+  }, [complete]);
 
   const selectedEntry = useMemo(
     () => (selectedDate ? (index[selectedDate] ?? null) : null),
@@ -70,6 +107,12 @@ export function IndexView() {
             </p>
           </div>
           <div className='legend'>
+            {progress && !complete ? (
+              <span className='prog-chip'>
+                <i className='spin' /> Preparing archive {progress.summarized}/{progress.total}
+              </span>
+            ) : null}
+            {justFinished ? <span className='prog-chip done'>Archive ready</span> : null}
             <span>low</span>
             <span className='ramp'>
               {RAMP.map((c) => (
@@ -92,6 +135,7 @@ export function IndexView() {
             <ExceedanceCalendar
               index={index}
               emdatDates={emdatDates}
+              pendingDates={pendingDates}
               loading={loading}
               year={calendarYear}
               playing={playback.playing}

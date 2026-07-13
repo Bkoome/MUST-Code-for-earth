@@ -19,46 +19,49 @@ export function Controls({ year, onYearChange }: Props) {
   return (
     <div className='controls'>
       <div className='ctl'>
-        <label>Accumulation window</label>
-        <div className='seg sm'>
+        <label htmlFor='ctl-window'>Accumulation window</label>
+        <select
+          id='ctl-window'
+          className='ctl-select'
+          value={win}
+          onChange={(e) => setWindow(e.target.value as AccumWindow)}
+        >
           {ACCUM_WINDOWS.map((w) => (
-            <button
-              key={w}
-              className={w === win ? 'on' : undefined}
-              onClick={() => setWindow(w as AccumWindow)}
-            >
+            <option key={w} value={w}>
               {fmtWin(w)}
-            </button>
+            </option>
           ))}
-        </div>
+        </select>
       </div>
       <div className='ctl'>
-        <label>Return period</label>
-        <div className='seg sm'>
+        <label htmlFor='ctl-rp'>Return period</label>
+        <select
+          id='ctl-rp'
+          className='ctl-select'
+          value={returnPeriod}
+          onChange={(e) => setReturnPeriod(e.target.value as ReturnPeriod)}
+        >
           {RETURN_PERIODS.map((rp) => (
-            <button
-              key={rp}
-              className={rp === returnPeriod ? 'on' : undefined}
-              onClick={() => setReturnPeriod(rp as ReturnPeriod)}
-            >
+            <option key={rp} value={rp}>
               {fmtRp(rp)}
-            </button>
+            </option>
           ))}
-        </div>
+        </select>
       </div>
       <div className='ctl'>
-        <label>Jump to year</label>
-        <div className='seg sm'>
+        <label htmlFor='ctl-year'>Jump to year</label>
+        <select
+          id='ctl-year'
+          className='ctl-select'
+          value={year}
+          onChange={(e) => onYearChange(Number(e.target.value))}
+        >
           {CAL_YEARS.map((y) => (
-            <button
-              key={y}
-              className={y === year ? 'on' : undefined}
-              onClick={() => onYearChange(y)}
-            >
+            <option key={y} value={y}>
               {y}
-            </button>
+            </option>
           ))}
-        </div>
+        </select>
       </div>
     </div>
   );

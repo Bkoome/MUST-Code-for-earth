@@ -25,10 +25,13 @@ interface Props {
   cachedRegions?: Record<string, UnitRisk> | null;
 }
 
+const PENDING_RETRY_MS = 5000;
+
 export function Choropleth({ cachedRegions }: Props) {
   const { hazard, window: win, returnPeriod, selectedDate } = usePipelineStore();
   const [topology, setTopology] = useState<any>(null);
   const [fetched, setFetched] = useState<Record<string, UnitRisk>>({});
+  const [state, setState] = useState<'idle' | 'loading' | 'pending'>('idle');
   const [tip, setTip] = useState<Tip | null>(null);
   const regions = cachedRegions ?? fetched;
 
@@ -40,21 +43,46 @@ export function Choropleth({ cachedRegions }: Props) {
       .catch((e) => console.error('Failed to load admin-1 topojson', e));
   }, [topology]);
 
+  // The batch supplies summarized days; only unsummarized days hit the single-day
+  // endpoint, which answers 202 until the builder derives them.
   useEffect(() => {
-    if (cachedRegions) return; // playback cache already supplies this day
+    if (cachedRegions) {
+      setState('idle');
+      return;
+    }
     if (!selectedDate) {
       setFetched({});
+      setState('idle');
       return;
     }
     let cancelled = false;
-    loadRegionRisks(selectedDate, { hazard, window: win, returnPeriod })
-      .then((d) => !cancelled && setFetched(d))
-      .catch((e) => {
-        console.error('Failed to load region risks', e);
-        if (!cancelled) setFetched({});
-      });
+    let timer: number | undefined;
+    const load = () => {
+      setState((s) => (s === 'pending' ? s : 'loading'));
+      loadRegionRisks(selectedDate, { hazard, window: win, returnPeriod })
+        .then((d) => {
+          if (cancelled) return;
+          if (d === 'pending') {
+            setState('pending');
+            setFetched({});
+            timer = window.setTimeout(load, PENDING_RETRY_MS);
+            return;
+          }
+          setFetched(d);
+          setState('idle');
+        })
+        .catch((e) => {
+          console.error('Failed to load region risks', e);
+          if (!cancelled) {
+            setFetched({});
+            setState('idle');
+          }
+        });
+    };
+    load();
     return () => {
       cancelled = true;
+      if (timer) window.clearTimeout(timer);
     };
   }, [cachedRegions, selectedDate, hazard, win, returnPeriod]);
 
@@ -87,6 +115,12 @@ export function Choropleth({ cachedRegions }: Props) {
         Admin-1 affected regions <b>{selectedDate ? `· ${selectedDate}` : '(select a day)'}</b>
       </div>
       <div className='choro'>
+        {state !== 'idle' ? (
+          <div className='choro-status'>
+            <i className='spin' />
+            {state === 'pending' ? 'Preparing this day on the server' : 'Loading regions'}
+          </div>
+        ) : null}
         <svg viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='xMidYMid meet'>
           {paths.map((p: any) => {
             const hit = byKey.get(p.gid);

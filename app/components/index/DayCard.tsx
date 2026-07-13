@@ -43,7 +43,7 @@ export function DayCard({ date, entry }: Props) {
       <div className='dc-stats'>
         <div>
           <b>{entry.risk_label}</b>
-          <span>worst admin-1 risk</span>
+          <span>worst admin-1 severity</span>
         </div>
         <div>
           <b>{entry.n_units}</b>

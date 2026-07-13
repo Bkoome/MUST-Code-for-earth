@@ -1,30 +1,22 @@
-// Data client for the index views. In live mode (NEXT_PUBLIC_DATA_BASE set) it
-// reads the static JSON contract from DATA_BASE; otherwise it adapts the mock
-// FastAPI feed into the same contract shapes. Index components only see contract types.
+// Data client for the index views, backed by titiler-xarray. Index components
+// only see contract types; exceedance rows are lifted into UnitRisk here.
 
-import { DATA_BASE, LIVE_DATA } from 'app/config';
 import type { CalendarIndex, RiskFields, RiskState, UnitRisk } from 'app/types/contract';
 import { RISK_LABEL, RISK_RETURN_PERIODS, severityState } from 'app/types/contract';
-import type { ExceedanceQuery } from 'app/types/exceedance';
-import { fetchExceedanceCalendar, fetchExceedanceRegions } from './exceedance';
-
-async function getJson<T>(url: string): Promise<T> {
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`${url} unavailable (${res.status})`);
-  return res.json() as Promise<T>;
-}
+import type { ExceedanceQuery, RegionExceedance } from 'app/types/exceedance';
+import {
+  fetchExceedanceCalendar,
+  fetchExceedanceRegions,
+  fetchRegionsBatch,
+} from './exceedance';
 
 export interface CalendarFeed {
   index: CalendarIndex;
-  emdatDates: Set<string>; // mock only; live mode carries EM-DAT in {date}/emdat.geojson
+  emdatDates: Set<string>;
 }
 
-/** index.json in live mode, or the mock calendar lifted into the same shape. */
+/** Calendar rows lifted into the CalendarIndex contract shape. */
 export async function loadCalendarIndex(q: ExceedanceQuery): Promise<CalendarFeed> {
-  if (LIVE_DATA) {
-    const index = await getJson<CalendarIndex>(`${DATA_BASE}/index.json`);
-    return { index, emdatDates: new Set() };
-  }
   const days = await fetchExceedanceCalendar(q);
   const index: CalendarIndex = {};
   const emdatDates = new Set<string>();
@@ -36,9 +28,9 @@ export async function loadCalendarIndex(q: ExceedanceQuery): Promise<CalendarFee
   return { index, emdatDates };
 }
 
-// Lift a mock exceedance probability into a UnitRisk (p_red carries the severity
-// so the choropleth ramp matches the original).
-function mockUnit(shapeID: string, shapeName: string, p: number): UnitRisk {
+// Lift an exceedance probability into a UnitRisk (p_red carries the severity
+// so the choropleth ramp reads it directly).
+function unitFromExceedance(shapeID: string, shapeName: string, p: number): UnitRisk {
   const state = severityState(p);
   return {
     pcode: shapeID,
@@ -53,17 +45,29 @@ function mockUnit(shapeID: string, shapeName: string, p: number): UnitRisk {
   };
 }
 
-/** {date}/region_risks.json (real) or the mock per-day regions lifted up. */
+function liftRegions(regions: RegionExceedance[]): Record<string, UnitRisk> {
+  const out: Record<string, UnitRisk> = {};
+  for (const r of regions) out[r.shapeID] = unitFromExceedance(r.shapeID, r.shapeName, r.p);
+  return out;
+}
+
+/** Per-day region risks; 'pending' while the backend derives an unsummarized date. */
 export async function loadRegionRisks(
   date: string,
   q: ExceedanceQuery,
-): Promise<Record<string, UnitRisk>> {
-  if (LIVE_DATA) {
-    return getJson<Record<string, UnitRisk>>(`${DATA_BASE}/${date}/region_risks.json`);
-  }
-  const { regions } = await fetchExceedanceRegions(date, q);
-  const out: Record<string, UnitRisk> = {};
-  for (const r of regions) out[r.shapeID] = mockUnit(r.shapeID, r.shapeName, r.p);
+): Promise<Record<string, UnitRisk> | 'pending'> {
+  const result = await fetchExceedanceRegions(date, q);
+  if (result === 'pending') return 'pending';
+  return liftRegions(result.regions);
+}
+
+/** Region risks for every summarized date, from one batch request. */
+export async function loadRegionRisksBatch(
+  q: ExceedanceQuery,
+): Promise<Record<string, Record<string, UnitRisk>>> {
+  const batch = await fetchRegionsBatch(q);
+  const out: Record<string, Record<string, UnitRisk>> = {};
+  for (const [date, regions] of Object.entries(batch)) out[date] = liftRegions(regions);
   return out;
 }
 
