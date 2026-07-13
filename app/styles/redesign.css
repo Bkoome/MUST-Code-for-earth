@@ -1,6 +1,4 @@
-/* ============================================================
-   MUST design tokens and component styles.
-   ============================================================ */
+/* MUST design tokens and component styles. */
 :root {
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, 'SF Mono', Menlo, monospace;
@@ -22,7 +20,7 @@
   --amber-deep: #b45309;
 
   /* Exceedance-probability ramp (0 -> 1), warm sequential (ColorBrewer YlOrRd),
-     no green: green at the low end reads as "safe to stand down" and green→red is
+     no green: green at the low end reads as "safe to stand down" and green-to-red is
      the hardest combo for colourblind users. Colourblind- and print-safe. */
   --p0: #ffffb2; /* very low probability (pale yellow) */
   --p1: #fed976;
@@ -68,7 +66,7 @@ a {
   font-family: var(--font-mono);
 }
 
-/* ============================================================ TOP BAR */
+/* Top bar */
 .topbar {
   position: sticky;
   top: 0;
@@ -354,7 +352,7 @@ a {
   }
 }
 
-/* ============================================================ INDEX VIEW */
+/* Index view */
 .wrap {
   max-width: 1180px;
   margin: 0 auto;
@@ -622,6 +620,33 @@ a {
   color: var(--ink-300);
   margin-bottom: 7px;
 }
+/* Pill dropdowns for the calendar controls (window / return period / year). */
+.ctl-select {
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  min-width: 128px;
+  padding: 9px 42px 9px 18px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-900);
+  background:
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%231f78ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    no-repeat right 16px center/12px 8px var(--paper);
+  border: 1px solid var(--ink-100);
+  border-radius: 999px;
+  box-shadow: var(--shadow-1);
+  cursor: pointer;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+.ctl-select:hover {
+  border-color: var(--ink-300);
+}
+.ctl-select:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
 .seg.sm button {
   padding: 5px 11px;
   font-size: 12px;
@@ -692,7 +717,9 @@ a {
 
 .cal-scroll {
   overflow-x: auto;
-  padding-bottom: 4px;
+  /* Keep the overlay scrollbar clear of the bottom calendar row. */
+  padding-bottom: 18px;
+  scrollbar-gutter: stable;
 }
 .year-band {
   margin-bottom: 14px;
@@ -741,6 +768,21 @@ a {
   stroke: var(--ink-900);
   stroke-width: 2;
   animation: cursor-pulse 0.9s ease-in-out infinite;
+}
+.cal-svg rect.pending {
+  stroke: #94a3b8;
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+  animation: pending-pulse 1.6s ease-in-out infinite;
+}
+@keyframes pending-pulse {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 @keyframes cursor-pulse {
   0%,
@@ -856,6 +898,64 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+.choro-status {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-500, #64748b);
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: 12px;
+}
+
+/* Shared inline spinner. */
+.spin {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  border-top-color: var(--flood, #2563eb);
+  animation: spin-rotate 0.8s linear infinite;
+  display: inline-block;
+}
+.spin.inline {
+  width: 10px;
+  height: 10px;
+  margin-left: 8px;
+  vertical-align: -1px;
+}
+@keyframes spin-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Archive build progress chip in the panel header. */
+.prog-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 1px solid #dbeafe;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.prog-chip.done {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
 }
 .choro svg {
   height: 100%;
@@ -967,7 +1067,7 @@ a {
   background: var(--flood-deep);
 }
 
-/* ============================================================ STORY VIEW */
+/* Story view */
 .story {
   background: var(--ink-900);
   color: #e2e8f0;
@@ -1054,6 +1154,37 @@ a {
   color: #fff;
 }
 
+/* Reapplies the active chapter camera after the user pans away. */
+.map-recenter {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 4;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: rgba(255, 255, 255, 0.93);
+  color: var(--ink-700, #334155);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(11, 18, 32, 0.14);
+}
+.map-recenter:hover {
+  background: #fff;
+}
+
+/* Full-height wait state while the story data loads or derives. */
+.story-wait {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink-500, #64748b);
+}
+
 .map-legend {
   position: absolute;
   right: 10px;
@@ -1069,6 +1200,45 @@ a {
 }
 .map-legend[hidden] {
   display: none;
+}
+.map-legend .ml-classes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.map-legend .ml-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10.5px;
+  color: var(--ink-700, #334155);
+}
+.map-legend .ml-row i {
+  width: 14px;
+  height: 11px;
+  border-radius: 3px;
+  flex: none;
+}
+
+/* Raster fetch indicator; cold dates derive server-side and take a moment. */
+.map-loading {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: rgba(255, 255, 255, 0.93);
+  color: var(--ink-700, #334155);
+  font-size: 11.5px;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(11, 18, 32, 0.14);
+  pointer-events: none;
 }
 .map-legend .ml-title {
   font-size: 10px;
@@ -1270,7 +1440,7 @@ footer {
   color: var(--ink-300);
 }
 
-/* ============================================================ ADAPTIVE / DEVICE */
+/* Adaptive / device */
 
 /* Fluid page gutters on small screens. */
 @media (max-width: 640px) {
@@ -1298,26 +1468,17 @@ footer {
   }
 }
 
-/* Controls: let the segmented pickers scroll horizontally instead of overflowing. */
+/* Controls: stack the pill dropdowns comfortably on narrow screens. */
 @media (max-width: 760px) {
   .controls {
-    gap: 16px 20px;
+    gap: 14px 18px;
   }
   .ctl {
     min-width: 0;
+    flex: 1 1 40%;
   }
-  .controls .seg.sm {
-    max-width: 100%;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .controls .seg.sm::-webkit-scrollbar {
-    display: none;
-  }
-  .controls .seg.sm button {
-    flex: 0 0 auto;
+  .ctl-select {
+    width: 100%;
   }
 }
 

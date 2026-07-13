@@ -1,6 +1,4 @@
-// Shapes for the mock FastAPI feed (backend/app.py), which uses a continuous probability
-// `p`. The live data contract is in ./contract.ts; consumers move there when
-// NEXT_PUBLIC_DATA_BASE is wired.
+// Shapes for the titiler-xarray feed; the choropleth contract types are in ./contract.ts.
 import type { AccumWindow, ReturnPeriod, DisasterType } from './pipeline';
 
 // One forecast day in the calendar feed, per window + return period.
@@ -8,7 +6,18 @@ export interface CalendarDay {
   date: string; // YYYY-MM-DD
   p: number; // empirical exceedance probability in [0,1]
   members: number; // ensemble members over threshold (0..51)
+  tp_max_mm?: number; // domain peak of the ensemble-mean accumulation
   emdat_match: boolean; // a verified EM-DAT flood was recorded near this day
+}
+
+// Summary builder progress from /xr/status.
+export interface BuilderStatus {
+  summarized: number;
+  total: number;
+  active_date: string | null;
+  dates: string[]; // summarized dates
+  queued: string[];
+  failed: string[];
 }
 
 // Per-admin-1 exceedance for a selected day (drives the index choropleth).

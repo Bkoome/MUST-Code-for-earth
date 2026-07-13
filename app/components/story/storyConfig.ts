@@ -1,6 +1,15 @@
-// Storymap configuration. The narrative numbers are illustrative mock content; the
-// map mechanics (layers, fits, risk ramp) are real and swap to live data unchanged.
+// Storymap configuration: chapters are assembled from the forecast data, the map
+// mechanics (layers, camera fits, ramps) are shared constants.
 import type { StyleSpecification } from 'maplibre-gl';
+import { boundsForRegions, type Adm1Collection, type LngLatBounds } from 'app/lib/story/camera';
+import type { StoryData } from 'app/lib/story/data';
+import {
+  footprintChapter,
+  impactChapter,
+  regionsChapter,
+  signalChapter,
+  windowLabel,
+} from 'app/lib/story/narrative';
 
 export interface ChapterStat {
   value: string;
@@ -18,105 +27,77 @@ export interface ChapterConfig {
   stats: ChapterStat[];
   // map reaction
   layerName: string; // overlay label
-  center: [number, number];
-  zoom: number;
   datetime: string;
-  fit?: 'region';
+  bounds?: LngLatBounds; // camera target; falls back to the EA extent
   layers: string[]; // active layer-group keys
+  raster?: 'exceedance' | 'tp';
+  windowH?: number; // accumulation window (hours)
+  rp?: number; // return period (years)
 }
 
 const A = '/story-assets/chapters';
 
-// The default four-act story (signal → observation → impact → decision).
-// Per-day MDX storymaps will supply their own chapters via <Chapter>; this is the
-// built-in demo story used until a day's MDX exists.
-export function buildStory(date: string): ChapterConfig[] {
-  return [
+// Chapters derived from one forecast day; acts without data are omitted.
+export function buildStory(data: StoryData, adm1: Adm1Collection): ChapterConfig[] {
+  const topGids = data.topRegions.map((r) => r.shapeID);
+  const signalBounds = boundsForRegions(adm1, topGids) ?? undefined;
+  const peakBounds = boundsForRegions(adm1, topGids.slice(0, 1)) ?? undefined;
+  const w = windowLabel(data.windowH);
+
+  const chapters: ChapterConfig[] = [
     {
       id: 'signal',
       bg: `${A}/bg-signal.jpg`,
       banner: `${A}/signal.jpg`,
       tag: 'Forecast · ECMWF ensemble',
-      kicker: 'The signal',
-      title: 'Three days out, the ensemble lit up.',
-      body:
-        'On the run three days prior, 38 of 51 members pushed 24-hour rainfall past the 10-year ' +
-        'return-period threshold across the eastern Rift. An unusually tight cluster for a +72 h lead time.',
-      stats: [
-        { value: '0.74', label: 'exceedance prob.' },
-        { value: '38/51', label: 'members over threshold' },
-        { value: '+72 h', label: 'lead time' },
-      ],
-      layerName: 'ensemble exceedance · 24 h',
-      center: [36.6, 5.7],
-      zoom: 4.0,
-      datetime: date,
-      fit: 'region',
+      ...signalChapter(data),
+      layerName: `ensemble exceedance · ${w}`,
+      datetime: data.date,
+      bounds: signalBounds,
       layers: ['exceedance'],
+      raster: 'exceedance',
+      windowH: data.windowH,
+      rp: data.rp,
     },
     {
-      id: 'observation',
+      id: 'footprint',
       bg: `${A}/bg-observation.jpg`,
       banner: `${A}/observation.jpg`,
-      tag: 'Observed · GPM IMERG',
-      kicker: 'The observation',
-      title: 'The rain arrived where the members agreed.',
-      body:
-        'GPM IMERG for the verifying day confirms the footprint, with peak accumulations over the Tana ' +
-        'and Juba basins, closely tracking the high-probability cells from the forecast.',
-      stats: [
-        { value: '214 mm', label: 'peak 24 h obs.' },
-        { value: '0.81', label: 'spatial hit rate' },
-      ],
-      layerName: 'observed rainfall · GPM IMERG',
-      center: [39.6, -0.6],
-      zoom: 5.4,
-      datetime: date,
+      tag: 'Forecast accumulation · ensemble mean',
+      ...footprintChapter(data),
+      layerName: `forecast accumulation · ${w}`,
+      datetime: data.date,
+      bounds: peakBounds,
       layers: ['rainfall'],
+      raster: 'tp',
+      windowH: data.windowH,
     },
     {
+      id: 'regions',
+      bg: `${A}/bg-decision.jpg`,
+      banner: `${A}/decision.jpg`,
+      tag: 'Decision support · regional exceedance',
+      ...regionsChapter(data),
+      layerName: 'exceedance by admin-1 region',
+      datetime: data.date,
+      layers: ['risk'],
+    },
+  ];
+
+  if (data.emdat) {
+    chapters.push({
       id: 'impact',
       bg: `${A}/bg-impact.jpg`,
       banner: `${A}/impact.jpg`,
       tag: 'Recorded · EM-DAT',
-      kicker: 'The impact',
-      title: 'EM-DAT records a flood, two days later.',
-      body:
-        'Riverine flooding across Garissa and Tana River counties. The forecast signal preceded the ' +
-        'recorded onset by 48 hours.',
-      stats: [
-        { value: '46k', label: 'affected' },
-        { value: '2', label: 'admin-1 regions' },
-        { value: '48 h', label: 'signal lead' },
-      ],
+      ...impactChapter(data),
       layerName: 'EM-DAT flood match',
-      center: [40.0, -1.3],
-      zoom: 6.3,
-      datetime: date,
+      datetime: data.date,
+      bounds: signalBounds,
       layers: ['emdat'],
-    },
-    {
-      id: 'decision',
-      bg: `${A}/bg-decision.jpg`,
-      banner: `${A}/decision.jpg`,
-      tag: 'Operations · Bayesian risk',
-      kicker: 'The decision support',
-      title: 'Admin-1 risk, ready to act on.',
-      body:
-        'Folding the ensemble signal and IMERG evidence into the Bayesian network yields a per-region ' +
-        'risk score, the layer a duty officer actually reads. Tana River posts the highest posterior.',
-      stats: [
-        { value: 'HIGH', label: 'Tana River' },
-        { value: 'MOD', label: 'Garissa' },
-      ],
-      layerName: 'admin-1 Bayesian risk',
-      center: [36.6, 5.7],
-      zoom: 4.0,
-      datetime: date,
-      fit: 'region',
-      layers: ['risk'],
-    },
-  ];
+    });
+  }
+  return chapters;
 }
 
 // Map constants.
@@ -137,7 +118,7 @@ export const STORY_STYLE: StyleSpecification = {
   layers: [{ id: 'carto-light', type: 'raster', source: 'carto-light' }],
 };
 
-// Traffic-light risk ramp for the admin-1 Bayesian fill.
+// Traffic-light ramp for the admin-1 exceedance fill (feature property `risk` in [0,1]).
 export const RISK_STOPS: any = [
   'interpolate',
   ['linear'],
@@ -156,7 +137,7 @@ export const RISK_STOPS: any = [
   '#d62828',
 ];
 
-// layer-group → MapLibre layer ids a chapter can switch on.
+// layer-group -> MapLibre layer ids a chapter can switch on.
 export const LAYER_GROUPS: Record<string, string[]> = {
   exceedance: ['exceedance-raster'],
   rainfall: ['rainfall-raster'],
@@ -164,44 +145,14 @@ export const LAYER_GROUPS: Record<string, string[]> = {
   risk: ['adm1-risk-fill'],
 };
 
-export const EVENT_REGIONS = ['Garissa', 'Tana River'];
-
-// Mock per-region BN risk: the event counties run hot, the rest are hashed.
-function hashStr(s: string): number {
-  let a = 0;
-  for (const c of s) a = (a * 31 + c.charCodeAt(0)) >>> 0;
-  return a;
-}
-export function regionRisk(name: string): number {
-  if (name === 'Tana River') return 0.88;
-  if (name === 'Garissa') return 0.58;
-  return ((hashStr(name) % 100) / 100) * 0.55;
-}
-
 // Default extent locked to the ICPAC / East Africa region.
-export const EA_BOUNDS_LL: [[number, number], [number, number]] = [
+export const EA_BOUNDS_LL: LngLatBounds = [
   [21.84, -11.75],
   [51.42, 23.15],
 ];
-export function paddedBounds(
-  b: [[number, number], [number, number]],
-  pad: number,
-): [[number, number], [number, number]] {
+export function paddedBounds(b: LngLatBounds, pad: number): LngLatBounds {
   return [
     [b[0][0] - pad, b[0][1] - pad],
     [b[1][0] + pad, b[1][1] + pad],
-  ];
-}
-
-// Faked exceedance/rainfall raster footprint over the Tana / Juba basins.
-export const RASTER_BBOX: [number, number, number, number] = [36.5, -3.5, 43.5, 2.5]; // W,S,E,N
-type Quad = [[number, number], [number, number], [number, number], [number, number]];
-export function rasterCoords(): Quad {
-  const [w, s, e, n] = RASTER_BBOX;
-  return [
-    [w, n],
-    [e, n],
-    [e, s],
-    [w, s],
   ];
 }

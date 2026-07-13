@@ -40,6 +40,7 @@ interface Cell {
   sev: number; // ramp position 0..1, derived from the day's worst risk_state
   label: string; // risk_label for the tooltip
   ev: boolean; // EM-DAT match
+  pending: boolean; // in the archive but not summarized yet
 }
 
 interface Band {
@@ -52,7 +53,12 @@ interface Band {
   riskDays: number;
 }
 
-function buildBand(year: number, index: CalendarIndex, emdatDates: Set<string>): Band {
+function buildBand(
+  year: number,
+  index: CalendarIndex,
+  emdatDates: Set<string>,
+  pendingDates: Set<string>,
+): Band {
   const jan1 = new Date(year, 0, 1);
   const offset = wdMon(jan1);
   const days = isLeap(year) ? 366 : 365;
@@ -77,13 +83,15 @@ function buildBand(year: number, index: CalendarIndex, emdatDates: Set<string>):
     const entry: CalendarIndexEntry | undefined = index[key];
     const state = entry?.worst_risk ?? -1;
     if (state >= 2) riskDays++; // orange + red = elevated-risk day
+    const pending = !entry && pendingDates.has(key);
     cells.push({
       iso: key,
       x: LEFT + Math.floor((i + offset) / 7) * STEP,
       y: TOP + wdMon(d) * STEP,
       sev: severityOfState(state),
-      label: entry?.risk_label ?? 'No data',
+      label: pending ? 'Summary in progress' : (entry?.risk_label ?? 'No data'),
       ev: emdatDates.has(key),
+      pending,
     });
   }
   return { year, w, h, monthLabels, weekdayLabels, cells, riskDays };
@@ -92,21 +100,32 @@ function buildBand(year: number, index: CalendarIndex, emdatDates: Set<string>):
 interface Props {
   index: CalendarIndex;
   emdatDates: Set<string>;
+  pendingDates: Set<string>;
   loading: boolean;
   year: number;
   playing: boolean;
 }
 
-export function ExceedanceCalendar({ index, emdatDates, loading, year, playing }: Props) {
+export function ExceedanceCalendar({
+  index,
+  emdatDates,
+  pendingDates,
+  loading,
+  year,
+  playing,
+}: Props) {
   const { selectedDate, setSelectedDate } = usePipelineStore();
 
-  const band = useMemo(() => buildBand(year, index, emdatDates), [year, index, emdatDates]);
+  const band = useMemo(
+    () => buildBand(year, index, emdatDates, pendingDates),
+    [year, index, emdatDates, pendingDates],
+  );
 
   return (
     <section className='widget'>
       <div className='wtitle'>
         Daily exceedance calendar <b>· {year}</b>
-        {loading ? <b> · loading…</b> : null}
+        {loading ? <i className='spin inline' /> : null}
       </div>
       <div className='cal-scroll'>
         <div id='cal'>
@@ -136,6 +155,7 @@ export function ExceedanceCalendar({ index, emdatDates, loading, year, playing }
                 const cls = [
                   'cell',
                   c.ev ? 'ev' : '',
+                  c.pending ? 'pending' : '',
                   sel ? 'sel' : '',
                   sel && playing ? 'cursor' : '',
                 ]
