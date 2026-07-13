@@ -1,8 +1,4 @@
-// Data contract MUST consumes from the grib-icechunks pipeline. The mock backend
-// (backend/app.py) emits these same shapes, so the UI is identical in mock and live modes.
-// Live mode reads static JSON from NEXT_PUBLIC_DATA_BASE:
-//   index.json                → CalendarIndex
-//   {date}/region_risks.json  → Record<pcode, UnitRisk>
+// Risk shapes the index views consume; the data client lifts backend rows into these.
 
 // Severity classes: -1 No-data, 0 Low, 1 Moderate, 2 Severe, 3 Extreme.
 export type RiskState = -1 | 0 | 1 | 2 | 3;

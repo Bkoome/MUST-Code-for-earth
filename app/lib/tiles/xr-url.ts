@@ -2,7 +2,10 @@
 // The server owns colormap/rescale; URLs carry only date, window, member and rp.
 
 import { TILER_XR_BASE } from 'app/config';
-import { EXCEEDANCE_WINDOWS_H, EXCEEDANCE_RETURN_PERIODS } from 'app/lib/tiles/cog-url';
+
+// Exceedance dimensions the backend serves (windows in hours, return periods in years).
+const EXCEEDANCE_WINDOWS_H = [3, 6, 12, 24, 48, 72, 168] as const;
+const EXCEEDANCE_RETURN_PERIODS = [2, 5, 10, 20, 50, 100] as const;
 
 const TILE_PATH = '/xr/tiles/WebMercatorQuad/{z}/{x}/{y}.png';
 
