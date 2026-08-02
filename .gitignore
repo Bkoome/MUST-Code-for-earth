@@ -1,0 +1,43 @@
+# Node / Next.js
+node_modules/
+.next/
+out/
+build/
+coverage/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Env files and credentials (commit *.example only)
+.env
+.env.local
+.env*.local
+*.env
+!*.env.example
+*.pem
+.netrc
+
+# OS / editor / local agent state
+.DS_Store
+.vscode/
+.idea/
+.claude/
+
+# Local datasets: large or licensed, kept on disk and out of git.
+# See the "Local dataset" section of the README for how to obtain each one.
+
+# materialized EA tp Icechunk store (~1.2 GB)
+backend/store-local/
+# derived-field cache + calendar summaries, rebuilt at runtime
+backend/cache/
+# CMORPH thresholds (~330 MB) and GPM IMERG daily (~10 MB)
+backend/data/*.nc
+# raw EM-DAT export (redistribution restricted; the parsed subset is committed)
+backend/tools/emdat/*.xlsx

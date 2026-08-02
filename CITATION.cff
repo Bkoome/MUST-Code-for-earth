@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+title: "MUST — Monitoring & Understanding SpatioTemporal Flood Risk Toolkit"
+message: "If you use this software, please cite it as below."
+type: software
+abstract: >-
+  An interactive flood-risk dashboard for East Africa. MUST replays daily
+  exceedance-probability fields derived from the ECMWF IFS ensemble against
+  recorded impacts, so analysts can see flood risk evolve day by day through a
+  calendar-map index and per-day storymaps. Fields are derived on demand from an
+  Icechunk store by a companion titiler-xarray service.
+keywords:
+  - flood-risk
+  - East Africa
+  - exceedance-probability
+  - ECMWF
+  - early-warning
+  - geospatial
+  - data-visualization
+license: Apache-2.0
+repository-code: "https://github.com/Bkoome/MUST-Code-for-earth"
+authors:
+  - given-names: Brian
+    family-names: Koome
+  - given-names: Mark
+    family-names: Ochieng
+  - given-names: Lester
+    family-names: Kiluma
+  - given-names: Mikael
+    family-names: Ashorn

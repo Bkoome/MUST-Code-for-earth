@@ -1,0 +1,13 @@
+# dependencies / build output
+node_modules
+.next
+out
+build
+coverage
+
+# lockfile
+yarn.lock
+
+# map geometry (data, not source — don't reformat)
+public/geo
+public/icpac_adm1v3.json

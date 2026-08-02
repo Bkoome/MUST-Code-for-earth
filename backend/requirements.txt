@@ -1,0 +1,20 @@
+# Pinned to match the store writer (ecmwf_ea_tp_icechunk.py) - the local
+# materialized store is Icechunk v2 format, unreadable by icechunk 1.x.
+icechunk==2.1.1
+xarray==2026.7.0
+zarr==3.2.1
+dask[array]==2026.7.1
+distributed==2026.7.1
+numpy==2.5.1
+pandas==3.0.3
+
+# Tile service
+fastapi>=0.115
+uvicorn[standard]>=0.30
+rio-tiler>=7.0
+rioxarray>=0.17
+rasterio>=1.3  # admin-1 mask rasterization (app/regions.py)
+psutil>=6.0
+h5netcdf>=1.3  # CMORPH thresholds NetCDF
+h5py>=3.11
+scipy>=1.13    # xarray .interp (thresholds -> store grid)

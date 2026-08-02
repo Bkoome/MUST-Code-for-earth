@@ -1,0 +1,11 @@
+# Image needs only app/ and requirements.txt; data is bind-mounted at runtime.
+store-local/
+cache/
+data/
+tools/
+__pycache__/
+*.py[cod]
+verify_store.py
+README.md
+.gitignore
+.dockerignore
