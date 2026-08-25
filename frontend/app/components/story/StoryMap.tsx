@@ -23,6 +23,9 @@ interface Props {
   rp: number;
   regionP: Record<string, number>; // gid -> exceedance p, drives the admin-1 fill
   highlightGids: string[]; // regions outlined in the EM-DAT act
+  // Whether the store still holds this date's raw member fields. When it does not,
+  // the raster layers cannot be rendered and the admin-1 fill carries the story.
+  fieldsAvailable: boolean;
 }
 
 interface LegendSpec {
@@ -39,6 +42,9 @@ const EXCEED_CLASSES = [
   { color: '#f03b20', label: '30-50%' },
   { color: '#bd0026', label: '>50%' },
 ];
+
+// Chapter layer groups backed by server-rendered rasters rather than geometry.
+const RASTER_GROUPS = ['exceedance', 'rainfall', 'observed'];
 
 function legendFor(ch: ChapterConfig | null): LegendSpec | null {
   if (!ch) return null;
@@ -84,7 +90,15 @@ function legendFor(ch: ChapterConfig | null): LegendSpec | null {
   return null;
 }
 
-export function StoryMap({ active, date, windowH, rp, regionP, highlightGids }: Props) {
+export function StoryMap({
+  active,
+  date,
+  windowH,
+  rp,
+  regionP,
+  highlightGids,
+  fieldsAvailable,
+}: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const readyRef = useRef(false);
@@ -121,6 +135,12 @@ export function StoryMap({ active, date, windowH, rp, regionP, highlightGids }: 
     applyCamera(el, reduce ? 0 : 1400);
     setUserMoved(false);
     const activeGroups = new Set(el.layers);
+    // A raster act falls back to the admin-1 fill when the store no longer holds
+    // this date's fields: the day still has a summarized per-region signal, so
+    // the map keeps carrying the story instead of going blank.
+    if (!fieldsAvailable && el.layers.some((l) => RASTER_GROUPS.includes(l))) {
+      activeGroups.add('risk');
+    }
     Object.entries(LAYER_GROUPS).forEach(([key, ids]) => {
       const vis = activeGroups.has(key) ? 'visible' : 'none';
       ids.forEach((id) => {
@@ -188,49 +208,51 @@ export function StoryMap({ active, date, windowH, rp, regionP, highlightGids }: 
         }
 
         const [w, s, e, n] = EA_BBOX;
-        map.addSource('exceedance', {
-          type: 'raster',
-          tiles: [xrExceedanceTileUrl(date, windowH, rp)],
-          tileSize: 256,
-          bounds: [w, s, e, n],
-        });
-        map.addSource('rainfall', {
-          type: 'raster',
-          tiles: [xrTpTileUrl(date, windowH)],
-          tileSize: 256,
-          bounds: [w, s, e, n],
-        });
-        // GPM IMERG daily observation; only whole-day windows are served.
-        if (windowH % 24 === 0) {
-          map.addSource('observed', {
+        if (fieldsAvailable) {
+          map.addSource('exceedance', {
             type: 'raster',
-            tiles: [xrObsTileUrl(date, windowH)],
+            tiles: [xrExceedanceTileUrl(date, windowH, rp)],
             tileSize: 256,
             bounds: [w, s, e, n],
           });
-        }
-        map.addLayer({
-          id: 'exceedance-raster',
-          type: 'raster',
-          source: 'exceedance',
-          paint: { 'raster-opacity': 0.85 },
-          layout: { visibility: 'none' },
-        });
-        map.addLayer({
-          id: 'rainfall-raster',
-          type: 'raster',
-          source: 'rainfall',
-          paint: { 'raster-opacity': 0.85 },
-          layout: { visibility: 'none' },
-        });
-        if (map.getSource('observed')) {
-          map.addLayer({
-            id: 'observed-raster',
+          map.addSource('rainfall', {
             type: 'raster',
-            source: 'observed',
+            tiles: [xrTpTileUrl(date, windowH)],
+            tileSize: 256,
+            bounds: [w, s, e, n],
+          });
+          // GPM IMERG daily observation; only whole-day windows are served.
+          if (windowH % 24 === 0) {
+            map.addSource('observed', {
+              type: 'raster',
+              tiles: [xrObsTileUrl(date, windowH)],
+              tileSize: 256,
+              bounds: [w, s, e, n],
+            });
+          }
+          map.addLayer({
+            id: 'exceedance-raster',
+            type: 'raster',
+            source: 'exceedance',
             paint: { 'raster-opacity': 0.85 },
             layout: { visibility: 'none' },
           });
+          map.addLayer({
+            id: 'rainfall-raster',
+            type: 'raster',
+            source: 'rainfall',
+            paint: { 'raster-opacity': 0.85 },
+            layout: { visibility: 'none' },
+          });
+          if (map.getSource('observed')) {
+            map.addLayer({
+              id: 'observed-raster',
+              type: 'raster',
+              source: 'observed',
+              paint: { 'raster-opacity': 0.85 },
+              layout: { visibility: 'none' },
+            });
+          }
         }
 
         if (fc) {
@@ -312,7 +334,10 @@ export function StoryMap({ active, date, windowH, rp, regionP, highlightGids }: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 
-  const legend = legendFor(active);
+  const layerName = active?.layerName ?? 'ensemble exceedance';
+  const rasterMissing =
+    !fieldsAvailable && !!active && active.layers.some((l) => RASTER_GROUPS.includes(l));
+  const legend = legendFor(rasterMissing ? { ...active!, layers: ['risk'] } : active);
 
   return (
     <div className='map' ref={containerRef}>
@@ -353,7 +378,13 @@ export function StoryMap({ active, date, windowH, rp, regionP, highlightGids }: 
         </button>
       ) : null}
       <div className='overlay'>
-        Layer: <b>{active?.layerName ?? 'ensemble exceedance'}</b>
+        Layer: <b>{rasterMissing ? 'exceedance by admin-1 region' : layerName}</b>
+        {rasterMissing ? (
+          <>
+            <br />
+            <span>Gridded fields for {date} are not in the store; showing regions.</span>
+          </>
+        ) : null}
         <br />
         <span className='mono'>{stateText}</span>
       </div>

@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { usePipelineStore } from 'app/store/providers/pipeline';
 import { fetchXrDates } from 'app/lib/tiles/xr-url';
 import { fetchStoryData, windowHours, rpYears, type StoryData } from 'app/lib/story/data';
-import { fetchEnsemble } from 'app/lib/api/exceedance';
+import { fetchEnsemble, fetchExceedanceCalendar } from 'app/lib/api/exceedance';
 import { loadAdm1, type Adm1Collection } from 'app/lib/story/camera';
 import { severityLabel } from 'app/lib/story/narrative';
 import type { EnsembleTrajectory } from 'app/types/exceedance';
@@ -13,22 +13,59 @@ import { StoryMap } from './StoryMap';
 import { StoryTop } from './StoryTop';
 import { Chapter } from './Chapter';
 
-// Fallback day used when arriving at the storymap without a selected date.
-const DEFAULT_DATE = '2026-03-04';
 const PENDING_RETRY_MS = 5000;
+
+// Which day to tell. The archive has gaps, so a requested day that it does not
+// hold snaps to the nearest day it does rather than to an arbitrary edge; with
+// no day requested at all, open on the strongest day on record.
+function resolveDate(want: string | null, days: { date: string; p: number }[]): string | null {
+  if (days.length === 0) return want;
+  if (!want) return days.reduce((a, b) => (b.p > a.p ? b : a)).date;
+  const target = Date.parse(want);
+  let best = days[0].date;
+  let bestGap = Infinity;
+  for (const d of days) {
+    if (d.date === want) return want;
+    const gap = Math.abs(Date.parse(d.date) - target);
+    if (gap < bestGap) {
+      bestGap = gap;
+      best = d.date;
+    }
+  }
+  return best;
+}
 
 export function ScrollyStory() {
   const { selectedDate, window: win, returnPeriod, hazard } = usePipelineStore();
-  // Clamp to store init dates so the storymap never requests a day the store lacks.
+
+  // Snap to the summarized archive — every day the calendar offers — not to the
+  // store's init dates. The store only holds the raw fields of a short recent
+  // window, while summaries cover the whole archive, so clamping to the store
+  // used to collapse every storyline onto the same trailing day.
+  const [archive, setArchive] = useState<{ date: string; p: number }[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    fetchExceedanceCalendar({ hazard, window: win, returnPeriod })
+      .then((days) => {
+        if (!cancelled) setArchive(days.map((d) => ({ date: d.date, p: d.p })));
+      })
+      .catch((err) => console.warn('[storymap] calendar failed:', err));
+    return () => {
+      cancelled = true;
+    };
+  }, [hazard, win, returnPeriod]);
+
+  // The raw member fields the raster layers need live only for the store's own
+  // dates; the rest of the story is served from summaries either way.
   const [xrDates, setXrDates] = useState<string[] | null>(null);
   useEffect(() => {
     fetchXrDates()
       .then(setXrDates)
       .catch((err) => console.warn('[storymap] /xr/dates failed:', err));
   }, []);
-  const requested = selectedDate ?? DEFAULT_DATE;
-  const date =
-    xrDates?.length && !xrDates.includes(requested) ? xrDates[xrDates.length - 1] : requested;
+
+  const date = resolveDate(selectedDate ?? null, archive);
+  const fieldsAvailable = !date || !xrDates ? true : xrDates.includes(date);
 
   // The story follows the forecast: data + admin-1 geometry drive the chapters.
   const [data, setData] = useState<StoryData | null>(null);
@@ -39,6 +76,7 @@ export function ScrollyStory() {
     let cancelled = false;
     let timer: number | undefined;
     setData(null);
+    if (!date) return; // still resolving which day to tell
     const load = () => {
       Promise.all([fetchStoryData(date, { hazard, window: win, returnPeriod }), loadAdm1()])
         .then(([result, fc]) => {
@@ -66,6 +104,7 @@ export function ScrollyStory() {
   useEffect(() => {
     let cancelled = false;
     setEnsemble(null);
+    if (!date || !fieldsAvailable) return; // the plume is derived from the raw fields
     fetchEnsemble(date, { hazard, window: win, returnPeriod })
       .then((e) => {
         if (!cancelled) setEnsemble(e);
@@ -74,7 +113,7 @@ export function ScrollyStory() {
     return () => {
       cancelled = true;
     };
-  }, [date, win, returnPeriod, hazard]);
+  }, [date, fieldsAvailable, win, returnPeriod, hazard]);
 
   // Merge the async plume into the story data the chapters read; buildStory stays pure.
   const storyData = useMemo(() => (data ? { ...data, ensemble } : null), [data, ensemble]);
@@ -140,10 +179,10 @@ export function ScrollyStory() {
 
   const severity = data ? `${severityLabel(data.p)} · ${Math.round(data.p * 100)}% exceedance` : '';
 
-  if (!data) {
+  if (!data || !date) {
     return (
       <section className='story'>
-        <StoryTop date={date} severity={severity} />
+        <StoryTop date={date ?? '—'} severity={severity} />
         <div className='story-wait'>
           <i className='spin' />
           {pending
@@ -169,6 +208,7 @@ export function ScrollyStory() {
             rp={rpYears(returnPeriod)}
             regionP={regionP}
             highlightGids={highlightGids}
+            fieldsAvailable={fieldsAvailable}
           />
         </div>
 
