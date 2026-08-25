@@ -25,6 +25,59 @@ _client = None
 _lead_hours: np.ndarray | None = None
 
 
+def _cgroup_limit_paths() -> list[tuple[str, str]]:
+    """Candidate (file, description) pairs holding this process's memory ceiling."""
+    paths = [
+        # Own cgroup namespace (Docker's default): the mount root is our own cgroup.
+        ("/sys/fs/cgroup/memory.max", "cgroup v2"),
+        ("/sys/fs/cgroup/memory/memory.limit_in_bytes", "cgroup v1"),
+    ]
+    # With --cgroupns=host the mount root is the host's, so resolve our own path.
+    try:
+        with open("/proc/self/cgroup") as f:
+            for line in f:
+                # hierarchy-ID:controller-list:cgroup-path
+                parts = line.strip().split(":", 2)
+                if len(parts) != 3:
+                    continue
+                _, controllers, rel = parts
+                if not rel.startswith("/"):
+                    continue
+                if controllers == "":
+                    paths.append((f"/sys/fs/cgroup{rel}/memory.max", "cgroup v2"))
+                elif "memory" in controllers.split(","):
+                    paths.append(
+                        (f"/sys/fs/cgroup/memory{rel}/memory.limit_in_bytes", "cgroup v1")
+                    )
+    except OSError:
+        pass
+    return paths
+
+
+def _memory_budget() -> tuple[int, str]:
+    """Memory this process may actually use, and where the number came from.
+
+    psutil reports the *host's* RAM even inside a container, so a container with
+    `mem_limit: 1500m` would otherwise hand Dask a limit of half the host, never
+    spill, and get OOM-killed. Prefer the cgroup ceiling when one applies.
+    """
+    host = psutil.virtual_memory().total
+    for path, source in _cgroup_limit_paths():
+        try:
+            with open(path) as f:
+                raw = f.read().strip()
+        except OSError:
+            continue
+        # "max" (v2) and a near-2**63 sentinel (v1) both mean unlimited; a limit
+        # at or above host RAM is not a real constraint either.
+        if raw == "max" or not raw.isdigit():
+            continue
+        limit = int(raw)
+        if 0 < limit < host:
+            return limit, source
+    return host, "host RAM"
+
+
 def start_dask() -> str:
     """Start the local Dask scheduler; returns a description for logs."""
     global _client
@@ -32,7 +85,8 @@ def start_dask() -> str:
         try:
             from dask.distributed import Client, LocalCluster
 
-            mem_limit = int(psutil.virtual_memory().total * config.DASK_MEM_FRACTION)
+            budget, mem_source = _memory_budget()
+            mem_limit = int(budget * config.DASK_MEM_FRACTION)
             cluster = LocalCluster(
                 processes=False,
                 n_workers=1,
@@ -44,7 +98,7 @@ def start_dask() -> str:
             desc = (
                 f"distributed LocalCluster in-process: {config.DASK_THREADS} threads, "
                 f"memory_limit={mem_limit / 1e9:.1f} GB "
-                f"({config.DASK_MEM_FRACTION:.0%} of RAM)"
+                f"({config.DASK_MEM_FRACTION:.0%} of {budget / 1e9:.1f} GB, {mem_source})"
             )
             log.info("dask: %s", desc)
             return desc

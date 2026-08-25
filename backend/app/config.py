@@ -17,7 +17,8 @@ LOCAL_STORE_PATH = os.getenv("XR_LOCAL_STORE_PATH", "")
 
 # Chunk fetch is network-bound, so Dask threads default above core count.
 DASK_THREADS = int(os.getenv("XR_DASK_THREADS", "12"))
-# Fraction of total RAM the in-process Dask worker may use before spilling.
+# Fraction of the memory budget the in-process Dask worker may use before
+# spilling — the cgroup limit when containerized, host RAM otherwise.
 DASK_MEM_FRACTION = float(os.getenv("XR_DASK_MEM_FRACTION", "0.5"))
 # "distributed" (LocalCluster, hard memory limit) or "threads".
 DASK_SCHEDULER = os.getenv("XR_DASK_SCHEDULER", "distributed")
