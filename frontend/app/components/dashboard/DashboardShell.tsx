@@ -14,9 +14,10 @@ function Shell() {
     <>
       <TopBar />
       {story ? <ScrollyStory /> : <IndexView />}
-      {/* The storymap runs its own full-bleed scrolly to the bottom of the
-          page; the footer would cut that ending short. */}
-      {story ? null : <SiteFooter />}
+      {/* Both views end in the footer. On the storymap it lands after the last
+          chapter rather than inside the scrolly, so it closes the narrative
+          instead of interrupting it. */}
+      <SiteFooter inStory={story} />
     </>
   );
 }

@@ -128,7 +128,13 @@ export function ScrollyStory() {
   }, [data]);
   // EM-DAT layer highlights every recorded event's regions; top forecast regions as fallback.
   const highlightGids = useMemo(() => {
-    const recorded = data?.emdat?.all_gids?.length ? data.emdat.all_gids : data?.emdat?.gids;
+    // Catalogue footprint first: it spans every source, so it shades days the
+    // EM-DAT-only feed left blank.
+    const recorded = data?.catalogue?.gids?.length
+      ? data.catalogue.gids
+      : data?.emdat?.all_gids?.length
+        ? data.emdat.all_gids
+        : data?.emdat?.gids;
     return recorded?.length ? recorded : (data?.topRegions ?? []).map((r) => r.shapeID);
   }, [data]);
 

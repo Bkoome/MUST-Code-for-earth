@@ -2330,3 +2330,12 @@ footer {
   color: var(--slate);
   margin: 8px 0 0;
 }
+
+/* Footer closing the storymap: the scrolly already ends on dark ground, so the
+   usual gap is replaced by a hairline that reads as the end of the narrative. */
+.foot--story {
+  margin-top: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  position: relative;
+  z-index: 20;
+}

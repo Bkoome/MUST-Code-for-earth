@@ -1,6 +1,7 @@
 // Deterministic chapter copy templated from the forecast numbers.
 
 import { ENSEMBLE_SIZE, type StoryData } from './data';
+import { SOURCE_LABEL } from 'app/types/catalogue';
 
 export interface ChapterCopy {
   kicker: string;
@@ -129,13 +130,83 @@ function footprintSpotlight(
   return best;
 }
 
-// Every region across every overlapping event; falls back to the deadliest event on payloads predating all_gids.
+// Every admin-1 unit any recorded event touched. The catalogue pre-flattens this
+// across all its sources, so it wins; the EM-DAT-only feed is the fallback for a
+// deployment with no catalogue mounted.
 export function footprintGids(d: StoryData): string[] {
+  const fromCatalogue = d.catalogue?.gids ?? [];
+  if (fromCatalogue.length) return fromCatalogue;
   const all = d.emdat?.all_gids ?? [];
   return all.length ? all : (d.emdat?.gids ?? []);
 }
 
+// Impact summed over the day's events. Events are counted once each: the same
+// flood reaching six regions killed its total, not six times that.
+function catalogueTotals(d: StoryData) {
+  const events = d.catalogue?.data ?? [];
+  const deaths = events.reduce((t, e) => t + (e.deaths ?? 0), 0);
+  const affected = events.reduce((t, e) => t + (e.affected ?? 0), 0);
+  const sources = Array.from(new Set(events.map((e) => SOURCE_LABEL[e.source] ?? e.source)));
+  // A macro link means the source named a unit larger than admin-1, so the region
+  // is inside the affected area rather than confirmed. Counted, never hidden.
+  const approx = events.reduce(
+    (t, e) => t + e.regions.filter((r) => r.method === 'macro').length,
+    0,
+  );
+  return { events, deaths, affected, sources, approx };
+}
+
+// Impact act driven by the catalogue: what was recorded, where it landed on the
+// admin-1 layer, and what it cost.
+function catalogueImpactChapter(d: StoryData): ChapterCopy {
+  const { events, deaths, affected, sources, approx } = catalogueTotals(d);
+  const gids = footprintGids(d);
+  const spot = footprintSpotlight(d);
+  const where = spot ? (spot.country ? `${spot.name}, ${spot.country}` : spot.name) : null;
+  const w = windowLabel(d.windowH);
+  const worst = events[0];
+
+  const stats: ChapterCopy['stats'] = [];
+  if (deaths) stats.push({ value: deaths.toLocaleString(), label: 'recorded dead' });
+  if (affected) stats.push({ value: affected.toLocaleString(), label: 'affected' });
+  stats.push({ value: `${gids.length}`, label: 'admin-1 regions' });
+  stats.push({ value: `${events.length}`, label: events.length === 1 ? 'event' : 'events' });
+
+  const title = deaths
+    ? `${deaths.toLocaleString()} recorded dead across ${gids.length} admin-1 regions.`
+    : gids.length
+      ? `Recorded in ${gids.length} admin-1 ${gids.length === 1 ? 'region' : 'regions'}.`
+      : 'Recorded, but not placed on a region.';
+
+  let body =
+    `${events.length === 1 ? 'One event' : `${events.length} events`} covering this day ` +
+    `${events.length === 1 ? 'is' : 'are'} on record in ${sources.join(' and ')}, ` +
+    `attributed to ${gids.length} admin-1 ${gids.length === 1 ? 'unit' : 'units'}.`;
+  if (worst?.place) body += ` The largest names ${worst.place}.`;
+  if (spot) {
+    body +=
+      ` Across the shaded regions, ${where} saw the highest observed rainfall over the ` +
+      `selected ${w} window at ${Math.round(spot.mm)} mm.`;
+  }
+  body +=
+    ' The shading marks where flooding was recorded, not where the most rain fell.';
+  if (approx) {
+    body +=
+      ` ${approx} of these links come from a source naming a unit larger than admin-1, ` +
+      'so those regions sit inside the affected area rather than being confirmed individually.';
+  }
+
+  return {
+    kicker: 'The impact',
+    title,
+    body,
+    stats,
+    scope: `ranked by observed rainfall · across all ${gids.length} recorded flood regions`,
+  };
+}
+
 export function impactChapter(d: StoryData): ChapterCopy {
+  if (d.catalogue?.count) return catalogueImpactChapter(d);
   const e = d.emdat;
   const events = e?.events ?? [];
   const primary = events[0];

@@ -13,9 +13,15 @@ const LINKS: { label: string; href: string; external?: boolean }[] = [
   { label: 'GitHub', href: REPO_URL, external: true },
 ];
 
-export function SiteFooter() {
+interface Props {
+  // The storymap supplies its own dark ground and ends flush with the last
+  // chapter, so the footer drops its usual spacing there.
+  inStory?: boolean;
+}
+
+export function SiteFooter({ inStory = false }: Props) {
   return (
-    <footer className='foot' id='method'>
+    <footer className={inStory ? 'foot foot--story' : 'foot'} id='method'>
       <div className='shell foot__in'>
         <nav className='foot__links' aria-label='Footer'>
           {LINKS.map((l) => (

@@ -3,6 +3,7 @@
 import type { StyleSpecification } from 'maplibre-gl';
 import { boundsForRegions, type Adm1Collection, type LngLatBounds } from 'app/lib/story/camera';
 import type { StoryData } from 'app/lib/story/data';
+import { SOURCE_LABEL } from 'app/types/catalogue';
 import type { EnsembleTrajectory } from 'app/types/exceedance';
 import {
   footprintGids,
@@ -80,20 +81,25 @@ export function buildStory(data: StoryData, adm1: Adm1Collection): ChapterConfig
   ];
 
   // Impact follows the observation so the recorded flood answers what fell.
-  if (data.emdat) {
+  if (data.catalogue?.count || data.emdat) {
     const impactGids = footprintGids(data); // same footprint the impact copy ranks over
-    const emdatBounds = impactGids.length
+    const impactBounds = impactGids.length
       ? (boundsForRegions(adm1, impactGids) ?? signalBounds)
       : signalBounds;
+    // Name the sources actually behind this day rather than a fixed 'EM-DAT'.
+    const sources = Array.from(
+      new Set((data.catalogue?.data ?? []).map((e) => SOURCE_LABEL[e.source] ?? e.source)),
+    );
+    const label = sources.length ? sources.join(' + ') : 'EM-DAT';
     chapters.push({
       id: 'impact',
       bg: `${A}/bg-impact.jpg`,
       banner: `${A}/impact.jpg`,
-      tag: 'Recorded · EM-DAT',
+      tag: `Recorded · ${label}`,
       ...impactChapter(data),
-      layerName: 'EM-DAT flood match',
+      layerName: `recorded flood footprint · ${label}`,
       datetime: data.date,
-      bounds: emdatBounds,
+      bounds: impactBounds,
       layers: ['emdat'],
     });
   }

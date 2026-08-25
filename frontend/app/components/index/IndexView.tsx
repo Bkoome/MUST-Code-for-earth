@@ -28,7 +28,9 @@ export function IndexView() {
   const [archiveDates, setArchiveDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   // Calendar year; snapped below to the latest year holding data.
-  const [calendarYear, setCalendarYear] = useState<number>(CAL_YEARS[CAL_YEARS.length - 1]);
+  const [calendarYear, setCalendarYear] = useState<number>(() =>
+    selectedDate ? Number(selectedDate.slice(0, 4)) : CAL_YEARS[CAL_YEARS.length - 1],
+  );
   // EM-DAT rings on the calendar; on by default, off when they crowd the ramp.
   const [showEmdat, setShowEmdat] = useState(true);
   // Once the reader picks a year, stop auto-snapping it out from under them.
@@ -68,11 +70,20 @@ export function IndexView() {
 
   // Open on the latest year that actually holds data: the span runs to the
   // current year, which is usually still empty. A reader's own choice wins.
+  //
+  // A selected day outranks both. This view unmounts while the storymap is open,
+  // so without it every return trip would re-snap to the latest year and strand
+  // the reader away from the day they were just reading about.
   useEffect(() => {
-    if (yearPicked.current || !yearsWithData.size) return;
+    if (yearPicked.current) return;
+    if (selectedDate) {
+      setCalendarYear(Number(selectedDate.slice(0, 4)));
+      return;
+    }
+    if (!yearsWithData.size) return;
     const latest = Math.max.apply(null, Array.from(yearsWithData));
     setCalendarYear((cur) => (yearsWithData.has(cur) ? cur : latest));
-  }, [yearsWithData]);
+  }, [yearsWithData, selectedDate]);
 
   const chooseYear = (year: number) => {
     yearPicked.current = true;
