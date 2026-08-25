@@ -23,7 +23,7 @@ export function DayCard({ date, entry }: Props) {
     return (
       <div className='day day--empty'>
         <strong>Select a day</strong> in the calendar to see its worst admin-1 risk class, the
-        number of regions assessed and a link into that day&rsquo;s storymap.
+        number of ensemble members over threshold and a link into that day&rsquo;s storymap.
       </div>
     );
   }
@@ -52,7 +52,7 @@ export function DayCard({ date, entry }: Props) {
           </div>
           <div className='stat'>
             <b>{entry.n_units}</b>
-            <span>Regions assessed</span>
+            <span>Ensemble members</span>
           </div>
           <div className='stat'>
             <b>{fmtWin(win)}</b>

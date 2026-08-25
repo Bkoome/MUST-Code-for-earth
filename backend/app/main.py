@@ -18,6 +18,7 @@ GET /xr/tiles/WebMercatorQuad/{z}/{x}/{y}.png  ?date=&layer=tp|exceedance|obs&wi
 import logging
 import time
 from contextlib import asynccontextmanager
+from datetime import date as date_cls
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import JSONResponse
@@ -94,6 +95,14 @@ def _parse_rp(rp: str) -> int:
     if years not in config.RETURN_PERIODS:
         raise HTTPException(422, f"rp must be one of {config.RETURN_PERIODS}")
     return years
+
+
+def _parse_date(date: str) -> None:
+    """Reject a malformed date, so a typo 400s instead of reading as 'no events'."""
+    try:
+        date_cls.fromisoformat(date)
+    except ValueError:
+        raise HTTPException(400, f"date {date!r} is not an ISO date (YYYY-MM-DD)")
 
 
 def _check_date(date: str) -> None:
@@ -190,6 +199,7 @@ def xr_events(date: str):
     """Recorded disaster events covering this day, with their admin-1 regions."""
     if not catalogue.available():
         raise HTTPException(503, "catalogue disabled: catalogue.sqlite not loaded")
+    _parse_date(date)
     events = catalogue.events_on(date)
     return {"date": date, "count": len(events), "gids": catalogue.gids_on(date),
             "data": events}
