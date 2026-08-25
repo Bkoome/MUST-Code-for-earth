@@ -1,20 +1,30 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Manrope, IBM_Plex_Mono, Source_Serif_4 } from 'next/font/google';
 import './styles/redesign.css';
 
-const inter = Inter({
+// Three faces, three jobs. Sans carries the interface — headings, nav, buttons,
+// labels. Manrope is a variable weight-only face (200–800), so headings set
+// their emphasis with font-weight rather than the width axis Archivo offered.
+const manrope = Manrope({
   subsets: ['latin'],
-  weight: ['400', '600', '700'],
-  variable: '--font-inter',
+  variable: '--font-ui',
   display: 'swap',
 });
 
-const jetbrainsMono = JetBrains_Mono({
+// Serif carries the content: body copy, captions, chapter narrative.
+const sourceSerif = Source_Serif_4({
   subsets: ['latin'],
-  weight: ['400', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-jetbrains',
+  variable: '--font-content',
+  display: 'swap',
+});
+
+// Mono carries every number, so dates and counts stop jittering during
+// time-lapse playback.
+const plexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-data',
   display: 'swap',
 });
 
@@ -24,7 +34,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#0b1220',
+  themeColor: '#08202b',
 };
 
 export const metadata: Metadata = {
@@ -59,7 +69,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='en' className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang='en' className={`${manrope.variable} ${sourceSerif.variable} ${plexMono.variable}`}>
       <body>
         <main id='pagebody' tabIndex={-1}>
           {children}
