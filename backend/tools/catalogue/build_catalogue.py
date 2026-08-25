@@ -215,8 +215,16 @@ def read_emdat(path: Path) -> list[dict]:
 # Kenya export (30 types, of which ROAD ACCIDENT and FIRE dominate). Only the
 # water-driven ones enter a flood catalogue; RAINS is included because a heavy
 # rainfall event is exactly what the exceedance index is built to detect.
-DESINVENTAR_WATER = {"FLOOD": HAZARD_FLOOD, "FLASH FLOOD": HAZARD_FLASH,
-                     "RAINS": "heavy_rain"}
+# Each national database keeps its own language, so the vocabulary is matched
+# per term rather than assumed English: Djibouti files floods as INONDATION, and
+# an unmapped term is dropped silently, which cost 94 Djibouti records.
+DESINVENTAR_WATER = {
+    # English (Kenya, Somalia, Tanzania, Uganda)
+    "FLOOD": HAZARD_FLOOD, "FLASH FLOOD": HAZARD_FLASH, "RAINS": "heavy_rain",
+    # French (Djibouti)
+    "INONDATION": HAZARD_FLOOD, "CRUE SOUDAINE": HAZARD_FLASH,
+    "PLUIES EXTREME": "heavy_rain", "PLUIES EXTREMES": "heavy_rain",
+}
 
 
 def _di_records(path: Path):
@@ -295,7 +303,11 @@ def read_desinventar(dirpath: Path) -> list[dict]:
                 except ValueError:
                     return None
 
-            key = row.get("serial") or f"{iso3}-{start.isoformat()}"
+            # DesInventar serials restart per national database, so Kenya and
+            # Somalia both carry serial 1000. Scope the key by country or the
+            # second country loaded collides on (source_id, source_key).
+            serial = row.get("serial")
+            key = f"{iso3}-{serial}" if serial else f"{iso3}-{start.isoformat()}"
             if key in seen_keys:
                 duplicates += 1
                 continue
