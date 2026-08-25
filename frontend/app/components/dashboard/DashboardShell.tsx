@@ -8,7 +8,7 @@ import { IndexView } from 'app/components/index/IndexView';
 import { ScrollyStory } from 'app/components/story/ScrollyStory';
 
 function Shell() {
-  const { view } = usePipelineStore();
+  const { view, selectedDate } = usePipelineStore();
   const story = view === 'story';
   return (
     <>
@@ -17,7 +17,10 @@ function Shell() {
       {/* Both views end in the footer. On the storymap it lands after the last
           chapter rather than inside the scrolly, so it closes the narrative
           instead of interrupting it. */}
-      <SiteFooter inStory={story} />
+      <SiteFooter
+        inStory={story}
+        note={story && selectedDate ? `Per-day storymap · ${selectedDate}` : null}
+      />
     </>
   );
 }

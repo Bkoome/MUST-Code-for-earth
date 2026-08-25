@@ -17,9 +17,13 @@ interface Props {
   // The storymap supplies its own dark ground and ends flush with the last
   // chapter, so the footer drops its usual spacing there.
   inStory?: boolean;
+  // What the reader was looking at, shown only where the page has a subject.
+  // The storymap used to end in a band of its own saying this; it says it here
+  // now, so the page closes once rather than twice.
+  note?: string | null;
 }
 
-export function SiteFooter({ inStory = false }: Props) {
+export function SiteFooter({ inStory = false, note = null }: Props) {
   return (
     <footer className={inStory ? 'foot foot--story' : 'foot'} id='method'>
       <div className='shell foot__in'>
@@ -34,9 +38,12 @@ export function SiteFooter({ inStory = false }: Props) {
             </a>
           ))}
         </nav>
-        <span className='readout'>
-          <span className='pulse' />
-          Code for Earth · <b>2026</b>
+        <span className='foot__end'>
+          {note ? <span className='foot__note'>{note}</span> : null}
+          <span className='readout'>
+            <span className='pulse' />
+            Code for Earth · <b>2026</b>
+          </span>
         </span>
       </div>
     </footer>

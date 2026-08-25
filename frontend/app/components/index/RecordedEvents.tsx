@@ -15,21 +15,35 @@ const prettySpan = (start: string, end: string) => {
   return `${from} – ${to}`;
 };
 
+const REGION_CAP = 8;
+
 // Regions are listed with the weakest attribution flagged rather than hidden: a
 // `macro` link means the source named a larger unit, so the region is a member
 // of the affected area, not a confirmed one.
 function Regions({ event }: { event: CatalogueEvent }) {
+  const [all, setAll] = useState(false);
   if (!event.regions.length) {
     return <p className='ev__none'>No admin-1 unit could be resolved from this record.</p>;
   }
+  // A single EM-DAT record can name 45 counties, which on its own outruns the
+  // rest of the widget, so the tail is folded away until asked for.
+  const shown = all ? event.regions : event.regions.slice(0, REGION_CAP);
+  const hidden = event.regions.length - shown.length;
   return (
     <ul className='ev__regions'>
-      {event.regions.map((r) => (
+      {shown.map((r) => (
         <li key={r.gid} className={r.method === 'macro' ? 'ev__region ev__region--weak' : 'ev__region'}>
           {r.name}
           {r.method === 'macro' ? <i title='Source named a larger unit'>approx.</i> : null}
         </li>
       ))}
+      {hidden > 0 ? (
+        <li>
+          <button type='button' className='ev__more' onClick={() => setAll(true)}>
+            +{hidden} more
+          </button>
+        </li>
+      ) : null}
     </ul>
   );
 }
@@ -62,6 +76,7 @@ export function RecordedEvents({ date }: Props) {
   const [loading, setLoading] = useState(false);
   // Distinguishes "catalogue not mounted" from "mounted, nothing on this day".
   const [disabled, setDisabled] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     if (!date) {
@@ -70,6 +85,7 @@ export function RecordedEvents({ date }: Props) {
     }
     let cancelled = false;
     setLoading(true);
+    setShowAll(false);
     fetchDayEvents(date)
       .then((payload) => {
         if (cancelled) return;
@@ -88,6 +104,11 @@ export function RecordedEvents({ date }: Props) {
 
   if (!date || disabled) return null;
 
+  // Events arrive worst-impact first, so the first five are the ones that matter.
+  const EVENT_CAP = 5;
+  const shownEvents = showAll ? (events?.data ?? []) : (events?.data ?? []).slice(0, EVENT_CAP);
+  const moreEvents = (events?.data.length ?? 0) - shownEvents.length;
+
   return (
     <section className='recorded'>
       <div className='recorded__hd'>
@@ -98,11 +119,18 @@ export function RecordedEvents({ date }: Props) {
       </div>
 
       {events && events.count > 0 ? (
-        <ul className='ev-list'>
-          {events.data.map((e) => (
-            <EventRow key={e.event_id} event={e} />
-          ))}
-        </ul>
+        <>
+          <ul className='ev-list'>
+            {shownEvents.map((e) => (
+              <EventRow key={e.event_id} event={e} />
+            ))}
+          </ul>
+          {moreEvents > 0 ? (
+            <button type='button' className='recorded__more' onClick={() => setShowAll(true)}>
+              Show {moreEvents} more {moreEvents === 1 ? 'event' : 'events'}
+            </button>
+          ) : null}
+        </>
       ) : (
         !loading && (
           <p className='recorded__empty'>

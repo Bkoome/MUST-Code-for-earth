@@ -2008,13 +2008,6 @@ button {
   color: #7cc4ff;
 }
 
-footer {
-  padding: 28px 24px;
-  text-align: center;
-  font-size: 12px;
-  color: var(--ink-300);
-}
-
 /* ═══════════════════ adaptive / device ═══════════════════ */
 
 @media (max-width: 1020px) {
@@ -2331,11 +2324,78 @@ footer {
   margin: 8px 0 0;
 }
 
-/* Footer closing the storymap: the scrolly already ends on dark ground, so the
-   usual gap is replaced by a hairline that reads as the end of the narrative. */
+/* Right-hand end of the footer: the page's subject, then the standing readout.
+   Grouped so they wrap together instead of the note stranding on its own line. */
+.foot__end {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.foot__note {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  color: var(--mist);
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+/* Footer closing the storymap. The scrolly already ends on dark ground, so the
+   usual gap becomes a hairline: one closing band instead of two. */
 .foot--story {
   margin-top: 0;
+  padding: 26px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.09);
   position: relative;
   z-index: 20;
+}
+
+@media (max-width: 720px) {
+  /* Stack rather than spread: at this width the links and the readout would
+     otherwise sit at opposite edges with a gulf between them. */
+  .foot__in {
+    justify-content: flex-start;
+    gap: 18px;
+  }
+  .foot__end {
+    gap: 10px;
+  }
+  .foot__note {
+    white-space: normal;
+  }
+}
+
+/* Recorded-events disclosure: the widget shows the five worst events and folds
+   the rest away, so a day with fifteen does not push the page off screen. */
+.recorded__more {
+  margin-top: 14px;
+  padding: 9px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  font: 500 0.8rem/1 var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--slate);
+  transition:
+    border-color 0.16s ease,
+    color 0.16s ease;
+}
+.recorded__more:hover {
+  border-color: var(--gauge);
+  color: var(--graphite);
+}
+.ev__more {
+  border: 1px dashed var(--rule);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  padding: 5px 8px;
+  font: 400 0.76rem/1 var(--font-mono);
+  color: var(--slate);
+}
+.ev__more:hover {
+  border-color: var(--gauge);
+  color: var(--graphite);
 }

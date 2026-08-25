@@ -235,8 +235,6 @@ export function ScrollyStory() {
           ))}
         </div>
       </div>
-
-      <footer>MUST · Code for Earth 2026 · per-day storymap · {date}</footer>
     </section>
   );
 }
