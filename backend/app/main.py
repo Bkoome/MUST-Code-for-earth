@@ -93,6 +93,7 @@ def _parse_rp(rp: str) -> int:
 
 
 def _check_date(date: str) -> None:
+    """Gate for routes that must read the raw member fields (tiles, ensemble)."""
     if date not in store.init_dates():
         raise HTTPException(400, f"init_date {date!r} not in store (see /xr/dates)")
 
@@ -165,15 +166,20 @@ def xr_calendar(window: str = Query("24h"), rp: str = Query("10yr")):
 
 @app.get("/xr/regions/{date}")
 def xr_regions(request: Request, date: str, window: str = Query("24h"), rp: str = Query("10yr")):
-    _check_date(date)
     _require_thresholds()
     if not regions.available():
         raise HTTPException(503, "regions disabled: adm1 geojson not loaded")
     window_h, rp_y = _parse_window(window), _parse_rp(rp)
 
+    # Summaries outlive the store window: summaries.json holds every date the
+    # builder ever finished, so answer from it before asking what the store has.
     rows = summary.region_rows(date, window_h, rp_y)
-    if rows is None and date in derive.cached_dates():
-        rows = regions.day_regions(date, window_h, rp_y)
+    if rows is None:
+        # Not summarized. Only a date the store still carries can be derived at
+        # all, so that is where the store-membership gate belongs.
+        _check_date(date)
+        if date in derive.cached_dates():
+            rows = regions.day_regions(date, window_h, rp_y)
     if rows is None:
         # Cold date: queue it for the builder instead of blocking on a full derive.
         summary.request_date(date)
