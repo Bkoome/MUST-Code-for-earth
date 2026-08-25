@@ -2217,3 +2217,116 @@ footer {
     scroll-behavior: auto !important;
   }
 }
+
+/* Recorded events -------------------------------------------------------- */
+/* Sits under the day card: forecast signal above, observed outcome below. */
+.recorded {
+  margin-top: 18px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 18px 20px 20px;
+}
+.recorded__hd {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 10px;
+}
+.recorded__ttl {
+  font: 600 1.05rem/1.2 var(--font-display);
+  color: var(--graphite);
+  margin: 0;
+}
+.recorded__meta {
+  font: 400 0.78rem/1 var(--font-mono);
+  color: var(--slate);
+}
+.recorded__empty {
+  font: 400 0.9rem/1.5 var(--font-serif);
+  color: var(--slate);
+  margin: 12px 0 0;
+  max-width: 62ch;
+}
+.ev-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+.ev {
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+.ev:first-child {
+  border-top: 0;
+}
+.ev__hd {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ev__src {
+  font: 500 0.68rem/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--slate);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 4px 8px;
+}
+.ev__haz {
+  font: 600 0.98rem/1.2 var(--font-display);
+  color: var(--graphite);
+}
+.ev__span {
+  font: 400 0.78rem/1 var(--font-mono);
+  color: var(--slate);
+}
+.ev__impact {
+  font: 500 0.88rem/1.4 var(--font-sans);
+  color: var(--graphite);
+  margin: 6px 0 0;
+}
+.ev__place {
+  font: 400 0.86rem/1.45 var(--font-serif);
+  color: var(--slate);
+  margin: 4px 0 0;
+  max-width: 68ch;
+}
+.ev__regions {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 0;
+}
+.ev__region {
+  font: 400 0.76rem/1 var(--font-mono);
+  color: var(--graphite);
+  background: var(--paper-2);
+  border-radius: 6px;
+  padding: 5px 8px;
+}
+/* Half-confidence links stay visible but read as provisional: the source named
+   a unit larger than admin-1, so membership is inferred, not recorded. */
+.ev__region--weak {
+  background: transparent;
+  border: 1px dashed var(--rule);
+  color: var(--slate);
+}
+.ev__region--weak i {
+  font-style: normal;
+  margin-left: 5px;
+  opacity: 0.75;
+}
+.ev__none {
+  font: 400 0.82rem/1.4 var(--font-serif);
+  color: var(--slate);
+  margin: 8px 0 0;
+}

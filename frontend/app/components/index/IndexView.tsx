@@ -15,6 +15,7 @@ import { Choropleth } from './Choropleth';
 import { DayCard } from './DayCard';
 import { PlaybackBar } from './PlaybackBar';
 import { Storylines } from './Storylines';
+import { RecordedEvents } from './RecordedEvents';
 import { usePlayback } from './usePlayback';
 import { useBuilderProgress } from './useBuilderProgress';
 
@@ -197,6 +198,10 @@ export function IndexView() {
           </div>
 
           <DayCard date={selectedDate ?? null} entry={selectedEntry} />
+
+          {/* The forecast signal above, the recorded outcome below: the
+              comparison the whole toolkit exists to make. */}
+          <RecordedEvents date={selectedDate ?? null} />
         </div>
       </section>
 
