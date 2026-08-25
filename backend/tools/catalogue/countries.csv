@@ -1,0 +1,17 @@
+# Support register. `desinventar` records whether a UNDRR national loss database
+# exists for the country; verified 2026-08-24 against the database list at
+# https://www.desinventar.net/DesInventar/index.jsp. `supported=0` means no such
+# database exists, so that country rests on EM-DAT plus hand-maintained rows in
+# manual/events.csv. Nothing in the build infers these values.
+iso3,name,desinventar,desinventar_span,supported,maintainer_note
+BDI,Burundi,no,,0,No DesInventar database; EM-DAT plus manual/events.csv only.
+DJI,Djibouti,yes,1944-2012,1,Ends 2012; recent events need EM-DAT or manual rows.
+ERI,Eritrea,no,,0,No DesInventar database; EM-DAT plus manual/events.csv only.
+ETH,Ethiopia,yes,to 2025,1,adm1 layer is pre-SNNPR-split (11 units); post-2020 regions aliased to SNNPR.
+KEN,Kenya,yes,1997-2026,1,adm1 layer is the 47 post-2013 counties.
+RWA,Rwanda,stale,2016 only,0,Database listed but only a 2016 period is published; treat as manual until an export is checked.
+SDN,Sudan,no,,0,No DesInventar database. Pre-2011 records may name units now in South Sudan.
+SOM,Somalia,yes,1991-2025,1,Federal member states are macro-regions; see crosswalk/emdat.csv.
+SSD,South Sudan,no,,0,No DesInventar database. Independent 2011; earlier events file under SDN.
+TZA,Tanzania,yes,1872-2023,1,Whole United Republic, not Zanzibar only. adm1 layer has 31 regions.
+UGA,Uganda,yes,1933-2020,1,Ends 2020. adm1 layer is the 2001-era 58-district list; macro-regions expand.

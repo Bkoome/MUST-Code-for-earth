@@ -41,6 +41,9 @@ ADM1_GEOJSON = os.getenv("XR_ADM1_GEOJSON", "/data/ea-adm1-geo.json")
 # Parsed EM-DAT flood events for calendar/regions matching; empty file disables it.
 EMDAT_FLOODS = os.getenv("XR_EMDAT_FLOODS", "/data/emdat_ea_floods.json")
 
+# Multi-source disaster catalogue (SQLite, built by tools/catalogue); absent disables it.
+CATALOGUE_DB = os.getenv("XR_CATALOGUE_DB", "/data/catalogue.sqlite")
+
 # Writable dir for persisted per-date summaries (calendar feed).
 CACHE_DIR = os.getenv("XR_CACHE_DIR", "/cache")
 

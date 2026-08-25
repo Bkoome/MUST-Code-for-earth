@@ -1,0 +1,253 @@
+iso3,source_id,source_name,gid,status,note,reviewed_by,reviewed_on
+SOM,emdat,Banadir,SOM.3_1,alias,Spelling variant of Banaadir.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Hiraan,SOM.8_1,alias,English transliteration of Hiiraan.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Hirshabelle,SOM.8_1,macro,Federal member state formed from Hiiraan and Middle Shabelle.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Hirshabelle,SOM.14_1,macro,Federal member state formed from Hiiraan and Middle Shabelle.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Jubaland,SOM.7_1,macro,Federal member state spanning the three Juba-valley admin-1 units.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Jubaland,SOM.9_1,macro,Federal member state spanning the three Juba-valley admin-1 units.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Jubaland,SOM.10_1,macro,Federal member state spanning the three Juba-valley admin-1 units.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Lower Juba,SOM.10_1,alias,English name for Jubbada Hoose.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Lower Shabelle,SOM.15_1,alias,English name for Shabeellaha Hoose.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Middle Juba,SOM.9_1,alias,English name for Jubbada Dhexe.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Middle Shabelle,SOM.14_1,alias,English name for Shabeellaha Dhexe.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Mogadishu,SOM.3_1,alias,Capital city; its admin-1 unit is Banaadir.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Puntland,SOM.4_1,macro,Federal member state spanning three north-eastern admin-1 units.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Puntland,SOM.12_1,macro,Federal member state spanning three north-eastern admin-1 units.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Puntland,SOM.11_1,macro,Federal member state spanning three north-eastern admin-1 units.,ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Somaliland,SOM.1_1,macro,"Self-declared state spanning five northern admin-1 units; EM-DAT names the state, not the region.",ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Somaliland,SOM.18_1,macro,"Self-declared state spanning five northern admin-1 units; EM-DAT names the state, not the region.",ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Somaliland,SOM.17_1,macro,"Self-declared state spanning five northern admin-1 units; EM-DAT names the state, not the region.",ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Somaliland,SOM.13_1,macro,"Self-declared state spanning five northern admin-1 units; EM-DAT names the state, not the region.",ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,Somaliland,SOM.16_1,macro,"Self-declared state spanning five northern admin-1 units; EM-DAT names the state, not the region.",ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,South West State,SOM.2_1,macro,"Federal member state spanning Bakool, Bay and Lower Shabelle.",ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,South West State,SOM.5_1,macro,"Federal member state spanning Bakool, Bay and Lower Shabelle.",ported from app/emdat.py _ALIASES,2026-08-24
+SOM,emdat,South West State,SOM.15_1,macro,"Federal member state spanning Bakool, Bay and Lower Shabelle.",ported from app/emdat.py _ALIASES,2026-08-24
+TZA,emdat,Coast,TZA.20_1,alias,English name for Pwani region.,ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Central Region,UGA.15_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Central Region,UGA.16_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Central Region,UGA.23_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Central Region,UGA.25_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Central Region,UGA.34_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Central Region,UGA.35_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Central Region,UGA.42_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Central Region,UGA.43_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Central Region,UGA.44_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Central Region,UGA.46_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Central Region,UGA.51_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Central Region,UGA.53_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Central Region,UGA.57_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.4_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.7_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.10_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.11_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.14_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.17_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.20_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.22_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.29_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.37_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.38_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.50_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.54_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.55_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Eastern Region,UGA.56_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Northern Region,UGA.1_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Northern Region,UGA.2_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Northern Region,UGA.3_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Northern Region,UGA.8_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Northern Region,UGA.27_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Northern Region,UGA.28_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Northern Region,UGA.33_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Northern Region,UGA.40_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Northern Region,UGA.41_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Northern Region,UGA.45_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Northern Region,UGA.47_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Northern Region,UGA.49_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Northern Region,UGA.58_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.5_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.6_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.9_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.12_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.13_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.18_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.19_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.21_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.24_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.26_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.30_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.36_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.39_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.48_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+UGA,emdat,Western Region,UGA.52_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",ported from app/emdat.py _ALIASES,2026-08-24
+SDN,emdat,Aj Jazirah,SDN.1_1,alias,Transliteration variant of Al Jazirah.,manual review of crosswalk_unmatched,2026-08-24
+SDN,emdat,North Kordofan,SDN.9_1,alias,'Kordofan' vs the layer's 'Kurdufan' romanisation.,manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Jonglei,SSD.3_1,alias,Standard English spelling; the layer writes 'Jungoli'.,manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Western Equatoria,SSD.10_1,alias,Layer drops the '-ern' suffix.,manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Northern Bahr el Ghazal,SSD.5_1,alias,Layer uses the hyphenated Arabic form.,manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Western Bahr el Ghazal,SSD.9_1,alias,Layer uses the hyphenated Arabic form.,manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Warrap,SSD.8_1,alias,Layer spells it with one 'r'.,manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Warrap Abyei,SSD.8_1,alias,"Source concatenates Warrap with the disputed Abyei area, which has no admin-1 unit in this layer; only Warrap is represented.",manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Greater Pibor Administrative Area,SSD.3_1,alias,GPAA was carved out of Jonglei in 2014; this layer predates the split.,manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,GPAA,SSD.3_1,alias,"Acronym for the Greater Pibor Administrative Area, carved from Jonglei.",manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Ayod,SSD.3_1,alias,Ayod is a county of Jonglei state.,manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Bor South,SSD.3_1,alias,Bor South is a county of Jonglei state.,manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Duk,SSD.3_1,alias,Duk is a county of Jonglei state.,manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Old Fangak,SSD.3_1,alias,Old Fangak is a county of Jonglei state.,manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Twic East,SSD.3_1,alias,Twic East is a county of Jonglei state.,manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Pochalla,SSD.3_1,alias,Pochalla is a county of Jonglei state.,manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Panyijiar,SSD.6_1,alias,"Panyijiar is a county of Unity state, not Jonglei.",manual review of crosswalk_unmatched,2026-08-24
+SSD,emdat,Terekeka,SSD.1_1,alias,Terekeka is a county of Central Equatoria.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Galmudug,SOM.11_1,macro,Federal member state spanning Mudug and Galguduud.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Galmudug,SOM.6_1,macro,Federal member state spanning Mudug and Galguduud.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,South West,SOM.2_1,macro,Bare form of South West State; the level word is stripped before matching.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,South West,SOM.5_1,macro,Bare form of South West State; the level word is stripped before matching.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,South West,SOM.15_1,macro,Bare form of South West State; the level word is stripped before matching.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Mogadiscio,SOM.3_1,alias,"Italian name for Mogadishu, whose admin-1 unit is Banaadir.",manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Baardheere,SOM.7_1,alias,Baardheere is a district of Gedo.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Luuq,SOM.7_1,alias,Luuq is a district of Gedo.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Balcad,SOM.14_1,alias,Balcad is a district of Shabeellaha Dhexe.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Jowhar,SOM.14_1,alias,Jowhar is a district of Shabeellaha Dhexe.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Belet Weyne,SOM.8_1,alias,Belet Weyne is a district of Hiiraan.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Baidoa,SOM.5_1,alias,Baidoa is a district of Bay.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Afgooye,SOM.15_1,alias,Afgooye is a district of Shabeellaha Hoose.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Daynile,SOM.3_1,alias,Daynile is a district of Banaadir.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Kahda,SOM.3_1,alias,Kahda is a district of Banaadir.,manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,Gambela,ETH.6_1,alias,Layer names the region 'Gambela Peoples'.,manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,SNNP,ETH.10_1,alias,"Acronym for the Southern Nations, Nationalities and Peoples region.",manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,Sidama,ETH.10_1,alias,"Sidama was carved out of SNNPR between 2020 and 2023; this layer predates the split, so it maps to SNNPR.",manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,Central Ethiopia,ETH.10_1,alias,"Central Ethiopia was carved out of SNNPR between 2020 and 2023; this layer predates the split, so it maps to SNNPR.",manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,South Ethiopia,ETH.10_1,alias,"South Ethiopia was carved out of SNNPR between 2020 and 2023; this layer predates the split, so it maps to SNNPR.",manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,South West Ethiopia People’s,ETH.10_1,alias,"South West Ethiopia People’s was carved out of SNNPR between 2020 and 2023; this layer predates the split, so it maps to SNNPR.",manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,Dire Dawa City Administration,ETH.5_1,alias,Full official name of the Dire Dawa chartered city.,manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,Gamo,ETH.10_1,alias,Gamo Zone lies in the former SNNPR (now South Ethiopia).,manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,Dhawa,ETH.9_1,alias,Dhawa (Daawa) Zone lies in the Somali region.,manual review of crosswalk_unmatched,2026-08-24
+RWA,emdat,Northern,RWA.1_1,alias,English name of the Amajyaruguru province.,manual review of crosswalk_unmatched,2026-08-24
+RWA,emdat,Southern,RWA.2_1,alias,English name of the Amajyepfo province.,manual review of crosswalk_unmatched,2026-08-24
+RWA,emdat,Western,RWA.4_1,alias,English name of the Iburengerazuba province.,manual review of crosswalk_unmatched,2026-08-24
+RWA,emdat,Eastern,RWA.3_1,alias,English name of the Iburasirazuba province.,manual review of crosswalk_unmatched,2026-08-24
+RWA,emdat,Kigali,RWA.5_1,alias,English name of the Umujyi wa Kigali province.,manual review of crosswalk_unmatched,2026-08-24
+RWA,emdat,Burera,RWA.1_1,alias,Burera is a district of the Amajyaruguru province.,manual review of crosswalk_unmatched,2026-08-24
+RWA,emdat,Gakenke,RWA.1_1,alias,Gakenke is a district of the Amajyaruguru province.,manual review of crosswalk_unmatched,2026-08-24
+RWA,emdat,Ngororero,RWA.4_1,alias,Ngororero is a district of the Iburengerazuba province.,manual review of crosswalk_unmatched,2026-08-24
+RWA,emdat,Nyanza,RWA.2_1,alias,Nyanza is a district of the Amajyepfo province.,manual review of crosswalk_unmatched,2026-08-24
+TZA,emdat,Unguja,TZA.28_1,macro,"Unguja is the main Zanzibar island, spanning three admin-1 regions.",manual review of crosswalk_unmatched,2026-08-24
+TZA,emdat,Unguja,TZA.29_1,macro,"Unguja is the main Zanzibar island, spanning three admin-1 regions.",manual review of crosswalk_unmatched,2026-08-24
+TZA,emdat,Unguja,TZA.30_1,macro,"Unguja is the main Zanzibar island, spanning three admin-1 regions.",manual review of crosswalk_unmatched,2026-08-24
+TZA,emdat,Sumbawanga,TZA.21_1,alias,Sumbawanga is the capital district of Rukwa region.,manual review of crosswalk_unmatched,2026-08-24
+TZA,emdat,eastern Rukwa,TZA.21_1,alias,Directional qualifier on Rukwa region.,manual review of crosswalk_unmatched,2026-08-24
+TZA,emdat,Kyela,TZA.13_1,alias,Kyela is a district of Mbeya region.,manual review of crosswalk_unmatched,2026-08-24
+TZA,emdat,Rungwe,TZA.13_1,alias,Rungwe is a district of Mbeya region.,manual review of crosswalk_unmatched,2026-08-24
+TZA,emdat,Ileje,TZA.13_1,alias,Ileje is a district of Mbeya region.,manual review of crosswalk_unmatched,2026-08-24
+TZA,emdat,Tarime,TZA.12_1,alias,Tarime is a district of Mara region.,manual review of crosswalk_unmatched,2026-08-24
+TZA,emdat,Mahurunga,TZA.15_1,alias,Mahurunga is a district of Mtwara region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Central,UGA.15_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Central,UGA.16_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Central,UGA.23_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Central,UGA.25_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Central,UGA.34_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Central,UGA.35_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Central,UGA.42_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Central,UGA.43_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Central,UGA.44_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Central,UGA.46_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Central,UGA.51_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Central,UGA.53_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Central,UGA.57_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Central' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.4_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.7_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.10_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.11_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.14_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.17_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.20_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.22_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.29_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.37_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.38_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.50_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.54_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.55_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern,UGA.56_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Eastern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Northern,UGA.1_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Northern,UGA.2_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Northern,UGA.3_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Northern,UGA.8_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Northern,UGA.27_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Northern,UGA.28_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Northern,UGA.33_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Northern,UGA.40_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Northern,UGA.41_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Northern,UGA.45_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Northern,UGA.47_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Northern,UGA.49_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Northern,UGA.58_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Northern' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.5_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.6_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.9_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.12_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.13_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.18_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.19_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.21_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.24_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.26_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.30_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.36_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.39_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.48_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Western,UGA.52_1,macro,"Uganda macro-region; the adm1 layer is the 2001-era district list, so 'Western' expands to its districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Kigezi,UGA.12_1,macro,"Kigezi is a sub-region, not an admin-1 unit; it covers four south-western districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Kigezi,UGA.26_1,macro,"Kigezi is a sub-region, not an admin-1 unit; it covers four south-western districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Kigezi,UGA.19_1,macro,"Kigezi is a sub-region, not an admin-1 unit; it covers four south-western districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Kigezi,UGA.52_1,macro,"Kigezi is a sub-region, not an admin-1 unit; it covers four south-western districts.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Kigez,UGA.12_1,macro,Truncated spelling of Kigezi in the source text.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Kigez,UGA.26_1,macro,Truncated spelling of Kigezi in the source text.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Kigez,UGA.19_1,macro,Truncated spelling of Kigezi in the source text.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Kigez,UGA.52_1,macro,Truncated spelling of Kigezi in the source text.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Ntoroko,UGA.5_1,alias,Ntoroko district was carved from Bundibugyo in 2010; this layer predates it.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Ntokoro,UGA.5_1,alias,"Misspelling of Ntoroko, which was carved from Bundibugyo.",manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Bulambuli,UGA.54_1,alias,Bulambuli district was carved from Sironko in 2010; this layer predates it.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Mbale city,UGA.38_1,alias,Mbale city sits within Mbale district.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Mount Elgon sub-region,UGA.38_1,macro,Mount Elgon sub-region spans three eastern districts.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Mount Elgon sub-region,UGA.54_1,macro,Mount Elgon sub-region spans three eastern districts.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Mount Elgon sub-region,UGA.20_1,macro,Mount Elgon sub-region spans three eastern districts.,manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Bujumbura,BDI.2_1,alias,"Refers to the capital, whose admin-1 unit is Bujumbura Mairie.",manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Bujumbura Marie,BDI.2_1,alias,"Refers to the capital, whose admin-1 unit is Bujumbura Mairie.",manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Bujumbura town,BDI.2_1,alias,"Refers to the capital, whose admin-1 unit is Bujumbura Mairie.",manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Buterere,BDI.2_1,alias,Buterere is a commune of Bujumbura Mairie.,manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Kanyosha,BDI.2_1,alias,Kanyosha is a commune of Bujumbura Mairie.,manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Kinama,BDI.2_1,alias,Kinama is a commune of Bujumbura Mairie.,manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Musaga,BDI.2_1,alias,Musaga is a commune of Bujumbura Mairie.,manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Murwi,BDI.6_1,alias,Murwi is a commune of Cibitoke province.,manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Rugombo,BDI.6_1,alias,Rugombo is a commune of Cibitoke province.,manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Buganda,BDI.6_1,alias,Buganda is a commune of Cibitoke province.,manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Gihanga,BDI.1_1,alias,Gihanga is a commune of Bubanza province.,manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Mpanda,BDI.1_1,alias,Mpanda is a commune of Bubanza province.,manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Rumonge,BDI.4_1,macro,Rumonge province was created in 2015 from parts of Bururi and Bujumbura Rural; this layer predates it.,manual review of crosswalk_unmatched,2026-08-24
+BDI,emdat,Rumonge,BDI.3_1,macro,Rumonge province was created in 2015 from parts of Bururi and Bujumbura Rural; this layer predates it.,manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,far,ETH.2_1,alias,EM-DAT's location text truncates 'Afar' to 'far' at the start of the string.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Ged,SOM.7_1,alias,EM-DAT's location text truncates 'Gedo' to 'Ged'.,manual review of crosswalk_unmatched,2026-08-24
+SOM,emdat,Gaalkacyo,SOM.11_1,alias,Gaalkacyo is the capital city of Mudug region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.4_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.7_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.10_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.11_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.14_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.17_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.20_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.22_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.29_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.37_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.38_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.50_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.54_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.55_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+UGA,emdat,Eastern Uganda,UGA.56_1,macro,Country-qualified form of Uganda's Eastern macro-region.,manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,Bonke,ETH.10_1,alias,Bonke is a woreda of Gamo Zone in the former SNNPR; this layer predates the 2020-23 split.,manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,Kamba,ETH.10_1,alias,Kamba is a woreda of Gamo Zone in the former SNNPR; this layer predates the 2020-23 split.,manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,Kuyile,ETH.10_1,alias,Kuyile is a woreda of Gamo Zone in the former SNNPR; this layer predates the 2020-23 split.,manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,Laka,ETH.10_1,alias,Laka is a woreda of Gamo Zone in the former SNNPR; this layer predates the 2020-23 split.,manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,Zuria,ETH.10_1,alias,Zuria is a woreda of Gamo Zone in the former SNNPR; this layer predates the 2020-23 split.,manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,West Abaya,ETH.10_1,alias,West Abaya is a woreda of Gamo Zone in the former SNNPR; this layer predates the 2020-23 split.,manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,Gacho Baba,ETH.10_1,alias,Gacho Baba is a woreda of Gamo Zone in the former SNNPR; this layer predates the 2020-23 split.,manual review of crosswalk_unmatched,2026-08-24
+ETH,emdat,Mazo Doisa,ETH.10_1,alias,Mazo Doisa is a woreda of Gamo Zone in the former SNNPR; this layer predates the 2020-23 split.,manual review of crosswalk_unmatched,2026-08-24

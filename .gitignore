@@ -41,3 +41,8 @@ backend/cache/
 backend/data/*.nc
 # raw EM-DAT export (redistribution restricted; the parsed subset is committed)
 backend/tools/emdat/*.xlsx
+# host bind-mount for the containerized backend (/data); large + licensed
+Data/
+# raw DesInventar country exports (national copyright, citation required to
+# reproduce; the parsed subset is committed as data/catalogue.sqlite)
+backend/tools/catalogue/sources/

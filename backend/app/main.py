@@ -8,6 +8,8 @@ GET /xr/status                                 summary builder progress and summ
 GET /xr/calendar?window=24h&rp=10yr            CalendarDay rows per summarized date
 GET /xr/regions/{date}?window=24h&rp=10yr      admin-1 exceedance breakdown (202 while pending)
 GET /xr/regions-batch?window=24h&rp=10yr       admin-1 breakdowns for all summarized dates
+GET /xr/events/{date}                          recorded disaster events covering a day
+GET /xr/catalogue                              catalogue provenance, sources, coverage gaps
 GET /xr/observed/{date}?window=24h             per-admin-1 observed peak rainfall in mm
 GET /xr/ensemble/{date}?window=24h&rp=10yr     per-member cumulative rainfall at the forecast hotspot
 GET /xr/tiles/WebMercatorQuad/{z}/{x}/{y}.png  ?date=&layer=tp|exceedance|obs&window=&member=&rp=
@@ -21,7 +23,8 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import config, derive, emdat, imerg, regions, store, summary, thresholds, tiles
+from . import (catalogue, config, derive, emdat, imerg, regions, store, summary,
+               thresholds, tiles)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 log = logging.getLogger("titiler-xarray")
@@ -52,6 +55,7 @@ async def lifespan(app: FastAPI):
     imerg.load()
     regions.init()
     emdat.init()
+    catalogue.init()
     summary.load_from_disk()
     summary.start_builder()
     yield
@@ -162,6 +166,33 @@ def xr_calendar(window: str = Query("24h"), rp: str = Query("10yr")):
         {"data": summary.calendar_days(_parse_window(window), _parse_rp(rp))},
         headers={"Cache-Control": "public, max-age=60"},
     )
+
+
+@app.get("/xr/catalogue")
+def xr_catalogue():
+    """Provenance and coverage of the disaster catalogue.
+
+    Includes the crosswalk's own failure counts: an event placed on no region is
+    invisible to every map view, so hiding that number would make a data gap
+    look like an absence of disasters.
+    """
+    if not catalogue.available():
+        raise HTTPException(503, "catalogue disabled: catalogue.sqlite not loaded")
+    return {
+        "meta": catalogue.meta(),
+        "sources": catalogue.sources(),
+        "manually_maintained": catalogue.unsupported_countries(),
+    }
+
+
+@app.get("/xr/events/{date}")
+def xr_events(date: str):
+    """Recorded disaster events covering this day, with their admin-1 regions."""
+    if not catalogue.available():
+        raise HTTPException(503, "catalogue disabled: catalogue.sqlite not loaded")
+    events = catalogue.events_on(date)
+    return {"date": date, "count": len(events), "gids": catalogue.gids_on(date),
+            "data": events}
 
 
 @app.get("/xr/regions/{date}")
