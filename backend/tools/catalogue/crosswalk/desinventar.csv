@@ -1,2 +1,84 @@
 iso3,source_id,source_name,gid,status,note,reviewed_by,reviewed_on
 KEN,desinventar,KEIYO-MARAKWET,KEN.5_1,alias,DesInventar uses the older 'Keiyo-Marakwet' spelling; the county is Elgeyo-Marakwet.,checked against the Kenya export's 47 lev0 names,2026-08-24
+ETH,desinventar,SNNPR,ETH.10_1,alias,"Acronym for Southern Nations, Nationalities and Peoples' Region.",reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Addis Ababa,ETH.1_1,alias,Spelling; the layer uses the Amharic transliteration 'Addis Abeba'.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Oromiya,ETH.8_1,alias,Spelling variant of Oromia.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Gambella,ETH.6_1,alias,Spelling; the layer name is 'Gambela Peoples'.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Benishangul Gumuz,ETH.4_1,alias,Spelling; the layer name is 'Benshangul-Gumaz'.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Harari,ETH.7_1,alias,Short form of the layer's 'Harari People'.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Sidama,ETH.10_1,alias,"Sidama left SNNPR in 2020; the layer predates the split, so it rolls up.",reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Central Ethiopia,ETH.10_1,alias,Created from SNNPR in 2023; the layer predates the split.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,South Ethiopia,ETH.10_1,alias,Created from SNNPR in 2023; the layer predates the split.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Gode,ETH.9_1,alias,Zone of the Somali Region; rolled up to the admin-1 unit.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Afder,ETH.9_1,alias,Zone of the Somali Region; rolled up to the admin-1 unit.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Liben,ETH.9_1,alias,Zone of the Somali Region; rolled up to the admin-1 unit.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Jijiga town,ETH.9_1,alias,Zone of the Somali Region; rolled up to the admin-1 unit.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Kebridehar  (Korahe),ETH.9_1,alias,Zone of the Somali Region; rolled up to the admin-1 unit.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Shinile,ETH.9_1,alias,Zone of the Somali Region; rolled up to the admin-1 unit.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Degehabur,ETH.9_1,alias,Zone of the Somali Region; rolled up to the admin-1 unit.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+ETH,desinventar,Warder,ETH.9_1,alias,Zone of the Somali Region; rolled up to the admin-1 unit.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+SOM,desinventar,MIDDLE SHABELLE,SOM.14_1,alias,English name for the Somali-language region in the layer.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+SOM,desinventar,LOWER SHABELLE,SOM.15_1,alias,English name for the Somali-language region in the layer.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+SOM,desinventar,MIDDLE JUBA,SOM.9_1,alias,English name for the Somali-language region in the layer.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+SOM,desinventar,LOWER JUBA,SOM.10_1,alias,English name for the Somali-language region in the layer.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+SOM,desinventar,BANADIR,SOM.3_1,alias,Spelling; the layer name is 'Banaadir'.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+RWA,desinventar,Eastern Province,RWA.3_1,alias,English translation of the Kinyarwanda province name in the layer.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+RWA,desinventar,Northern Province,RWA.1_1,alias,English translation of the Kinyarwanda province name in the layer.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+RWA,desinventar,Southern Province,RWA.2_1,alias,English translation of the Kinyarwanda province name in the layer.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+RWA,desinventar,Western Province,RWA.4_1,alias,English translation of the Kinyarwanda province name in the layer.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+DJI,desinventar,Tadjourah,DJI.5_1,alias,Spelling; the layer name is 'Tadjoura'.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+TZA,desinventar,Busega,TZA.24_1,alias,District of Simiyu Region; rolled up to the admin-1 unit.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+TZA,desinventar,Kalambo,TZA.21_1,alias,District of Rukwa Region; rolled up to the admin-1 unit.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+TZA,desinventar,Ulanga,TZA.14_1,alias,District of Morogoro Region; rolled up to the admin-1 unit.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,ABIM,UGA.28_1,alias,District created after 2001 from Kotido; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,AGAGO,UGA.49_1,alias,District created after 2001 from Pader; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,ALEBTONG,UGA.33_1,alias,District created after 2001 from Lira; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,AMOLATAR,UGA.33_1,alias,District created after 2001 from Lira; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,AMUDAT,UGA.45_1,alias,District created after 2001 from Nakapiripirit; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,AMURIA,UGA.22_1,alias,District created after 2001 from Katakwi; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,AMURU,UGA.8_1,alias,District created after 2001 from Gulu; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,BUDAKA,UGA.50_1,alias,District created after 2001 from Pallisa; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,BUDUDA,UGA.38_1,alias,District created after 2001 from Mbale; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,BUIKWE,UGA.44_1,alias,District created after 2001 from Mukono; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,BUKEDEA,UGA.29_1,alias,District created after 2001 from Kumi; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,BUKOMANSIMBI,UGA.35_1,alias,District created after 2001 from Masaka; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,BUKWO,UGA.20_1,alias,District created after 2001 from Kapchorwa; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,BULAMBULI,UGA.54_1,alias,District created after 2001 from Sironko; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,BULIISA,UGA.36_1,alias,District created after 2001 from Masindi; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,BUTALEJA,UGA.56_1,alias,District created after 2001 from Tororo; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,BUTAMBALA,UGA.42_1,alias,District created after 2001 from Mpigi; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,BUVUMA,UGA.44_1,alias,District created after 2001 from Mukono; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,BUYENDE,UGA.17_1,alias,District created after 2001 from Kamuli; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,DOKOLO,UGA.33_1,alias,District created after 2001 from Lira; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,IBANDA,UGA.39_1,alias,District created after 2001 from Mbarara; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,ISINGIRO,UGA.39_1,alias,District created after 2001 from Mbarara; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KAABONG,UGA.28_1,alias,District created after 2001 from Kotido; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KAGADI,UGA.24_1,alias,District created after 2001 from Kibale; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KALAKI,UGA.14_1,alias,District created after 2001 from Kaberamaido; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KALIRO,UGA.17_1,alias,District created after 2001 from Kamuli; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KALUNGU,UGA.35_1,alias,District created after 2001 from Masaka; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KAPELEBYONG,UGA.22_1,alias,District created after 2001 from Katakwi; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KIBUKU,UGA.50_1,alias,District created after 2001 from Pallisa; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KIRUHURA,UGA.39_1,alias,District created after 2001 from Mbarara; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KOBOKO,UGA.3_1,alias,District created after 2001 from Arua; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KOLE,UGA.2_1,alias,District created after 2001 from Apac; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KWANIA,UGA.2_1,alias,District created after 2001 from Apac; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KWEEN,UGA.20_1,alias,District created after 2001 from Kapchorwa; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KYANKWANZI,UGA.25_1,alias,District created after 2001 from Kiboga; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,LAMWO,UGA.27_1,alias,District created after 2001 from Kitgum; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,LUUKA,UGA.10_1,alias,District created after 2001 from Iganga; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,LWENGO,UGA.35_1,alias,District created after 2001 from Masaka; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,MANAFWA,UGA.38_1,alias,District created after 2001 from Mbale; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,MITYANA,UGA.43_1,alias,District created after 2001 from Mubende; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,NAKASEKE,UGA.34_1,alias,District created after 2001 from Luwero; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,NAMAYINGO,UGA.4_1,alias,District created after 2001 from Bugiri; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,NAMUTUMBA,UGA.10_1,alias,District created after 2001 from Iganga; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,NAPAK,UGA.40_1,alias,District created after 2001 from Moroto; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,NGORA,UGA.29_1,alias,District created after 2001 from Kumi; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,NTOROKO,UGA.5_1,alias,District created after 2001 from Bundibugyo; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,OTUKE,UGA.33_1,alias,District created after 2001 from Lira; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,OYAM,UGA.2_1,alias,District created after 2001 from Apac; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,SERERE,UGA.55_1,alias,District created after 2001 from Soroti; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,ZOMBO,UGA.47_1,alias,District created after 2001 from Nebbi; rolled up to the layer's 2001 district.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,KIBAALE,UGA.24_1,alias,Spelling; the layer name is 'Kibale'.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25
+UGA,desinventar,SSEMBABULE,UGA.53_1,alias,Spelling; the layer name is 'Sembabule'.,reviewed against the app's admin-1 layer and DesInventar level-0 names,2026-08-25

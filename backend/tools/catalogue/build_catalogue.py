@@ -278,6 +278,7 @@ def read_desinventar(dirpath: Path) -> list[dict]:
         # decide silently which copy survives.
         seen_keys: set[str] = set()
         duplicates = 0
+        implausible = 0
         for row in _di_records(src):
             hazard = DESINVENTAR_WATER.get((row.get("evento") or "").upper())
             if hazard is None:
@@ -288,6 +289,12 @@ def read_desinventar(dirpath: Path) -> list[dict]:
             try:
                 start = date(int(y), int(m or 1), int(d or 1))
             except ValueError:
+                continue
+            # Two Ugandan records carry years 0201 and 0204 — transposed typos,
+            # not events. Anything before the first national database begins is
+            # a data-entry error rather than a very old record.
+            if start.year < 1900:
+                implausible += 1
                 continue
             # There is no end-date field; `duracion` is the span in days.
             try:
@@ -312,7 +319,11 @@ def read_desinventar(dirpath: Path) -> list[dict]:
                 duplicates += 1
                 continue
             seen_keys.add(key)
-            places = [p for p in (row.get("name0"), row.get("name1")) if p]
+            # Coarse-to-fine, not a flat list: one DesInventar record names a
+            # single place, and name0/name1 are that same place at two
+            # granularities. name0 is already admin-1 for most national
+            # databases; name1 is the fallback for those where it is not.
+            levels = [[p] for p in (row.get("name0"), row.get("name1")) if p]
             out.append({
                 "source_id": "desinventar",
                 "source_key": key,
@@ -328,10 +339,12 @@ def read_desinventar(dirpath: Path) -> list[dict]:
                 "source_place": row.get("lugar") or row.get("name0") or None,
                 "source_admin": json.dumps({k: row.get(k) for k in
                                             ("level0", "name0", "level1", "name1")}),
-                "places": places,
+                "place_levels": levels,
             })
             n += 1
         note = f", {duplicates} duplicate serial(s) dropped" if duplicates else ""
+        if implausible:
+            note += f", {implausible} record(s) dropped for a pre-1900 date"
         print(f"  desinventar {iso3}: {n} water-driven records from {src.name}{note}")
     return out
 
@@ -391,28 +404,52 @@ def resolve(events: list[dict], regions: list[dict], crosswalk: dict):
             links[gid] = ("manual", 1.0)
 
         names = by_iso.get(e["iso3"], {})
-        for place in e["places"]:
+
+        def place_one(place: str) -> bool:
+            """Link one place name; True if it resolved to at least one gid."""
             key = norm(place)
             if not key:
-                continue
+                return False
             # 1. exact name match inside the event's own country
             gid = names.get(key)
             if gid:
                 links.setdefault(gid, ("exact", 1.0))
-                continue
+                return True
             # 2. reviewed crosswalk row (alias, or macro-region expansion)
             rows = crosswalk.get((e["iso3"], e["source_id"], key))
             if rows:
+                placed = False
                 for row in rows:
                     if row["status"] == "rejected":
                         continue
                     confidence = 0.9 if row["status"] == "alias" else 0.5
                     links.setdefault(row["gid"], (row["status"], confidence))
-                continue
-            # 3. nothing placed it: queue it for review
+                    placed = True
+                return placed
+            return False
+
+        def queue(place: str) -> None:
+            if not norm(place):
+                return
             uk = (e["iso3"], e["source_id"], place.strip())
             entry = unmatched.setdefault(uk, {"occurrences": 0, "example_key": e["source_key"]})
             entry["occurrences"] += 1
+
+        # Prose place lists name distinct regions, so every one of them is
+        # matched and every miss is worth reviewing.
+        for place in e.get("places", []):
+            if not place_one(place):
+                queue(place)
+
+        # Levelled places are one location at several granularities, so the
+        # first level that resolves is the answer and the finer ones would only
+        # re-add the same event's sub-units. Only the coarsest level is queued
+        # when nothing resolves: that is the name a reviewer maps to admin-1.
+        levels = e.get("place_levels") or []
+        if levels and not any(any([place_one(p) for p in lv]) for lv in levels):
+            for place in levels[0]:
+                queue(place)
+
         e["links"] = links
     return unmatched
 
