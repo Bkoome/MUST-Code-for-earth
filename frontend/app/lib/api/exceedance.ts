@@ -113,7 +113,9 @@ export async function fetchEnsemble(
     const response = await fetch(
       `${TILER_XR_BASE}/xr/ensemble/${date}?window=${q.window}&rp=${q.returnPeriod}`,
     );
-    if (!response.ok) return null; // 202 pending, 503 disabled, etc. — omit the chart
+    // 202 carries a {status:'pending'} body, not a trajectory, and `ok` is true
+    // for it — so test the code explicitly or the chart renders from the stub.
+    if (response.status === 202 || !response.ok) return null;
     const payload = (await response.json()) as EnsembleTrajectory;
     cache.set(key, payload);
     return payload;
