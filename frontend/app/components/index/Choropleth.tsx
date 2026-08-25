@@ -95,6 +95,13 @@ export function Choropleth({ cachedRegions }: Props) {
     return m;
   }, [regions]);
 
+  // "Over threshold" uses the same cut as the calendar's elevated-risk days:
+  // risk_state 2 (Severe) and up.
+  const overThreshold = useMemo(
+    () => Object.values(regions).filter((r) => r.risk_state >= 2).length,
+    [regions],
+  );
+
   const paths = useMemo(() => {
     if (!topology) return [];
     const geojson: any = feature(topology, topology.objects.icpac_adm1v3);
@@ -108,44 +115,56 @@ export function Choropleth({ cachedRegions }: Props) {
   }, [topology]);
 
   return (
-    <section className='widget'>
-      <div className='wtitle'>
-        Admin-1 affected regions <b>{selectedDate ? `· ${selectedDate}` : '(select a day)'}</b>
+    <>
+      <div className='pane__hd'>
+        <h3 className='pane__ttl'>Regions over threshold</h3>
+        <span className='pane__meta'>{selectedDate ?? 'select a day'}</span>
       </div>
-      <div className='choro'>
-        {state !== 'idle' ? (
-          <div className='choro-status'>
-            <i className='spin' />
-            {state === 'pending' ? 'Preparing this day on the server' : 'Loading regions'}
-          </div>
-        ) : null}
-        <svg viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='xMidYMid meet'>
-          {paths.map((p: any) => {
-            const hit = byKey.get(p.gid);
-            const sev = hit?.sev ?? 0;
-            return (
-              <path
-                key={p.gid}
-                className='adm'
-                d={p.d}
-                fill={color(sev)}
-                onMouseMove={(e) =>
-                  setTip({
-                    name: p.name,
-                    label: hit?.label ?? 'No data',
-                    sev,
-                    x: e.clientX,
-                    y: e.clientY,
-                  })
-                }
-                onMouseLeave={() => setTip(null)}
-              />
-            );
-          })}
-        </svg>
+      <p className='pane__note'>
+        Admin-1 units, shaded by the exceedance probability for the selected day.
+      </p>
+      <div className='chorobox'>
+        <div className='choro'>
+          {state !== 'idle' ? (
+            <div className='choro-status'>
+              <i className='spin' />
+              {state === 'pending' ? 'Preparing this day on the server' : 'Loading regions'}
+            </div>
+          ) : null}
+          <svg viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='xMidYMid meet'>
+            {paths.map((p: any) => {
+              const hit = byKey.get(p.gid);
+              const sev = hit?.sev ?? 0;
+              return (
+                <path
+                  key={p.gid}
+                  className='adm'
+                  d={p.d}
+                  fill={color(sev)}
+                  onMouseMove={(e) =>
+                    setTip({
+                      name: p.name,
+                      label: hit?.label ?? 'No data',
+                      sev,
+                      x: e.clientX,
+                      y: e.clientY,
+                    })
+                  }
+                  onMouseLeave={() => setTip(null)}
+                />
+              );
+            })}
+          </svg>
+        </div>
+        <div className='choro-key'>
+          <span>
+            <b>{overThreshold}</b> of {paths.length || '—'} regions over threshold
+          </span>
+          <span>Admin-1</span>
+        </div>
       </div>
       {tip ? (
-        <div className='choro-tip' style={{ display: 'block', left: tip.x + 14, top: tip.y + 14 }}>
+        <div className='choro-tip' style={{ left: tip.x + 14, top: tip.y + 14 }}>
           <b>{tip.name}</b>
           <br />
           <span>
@@ -153,6 +172,6 @@ export function Choropleth({ cachedRegions }: Props) {
           </span>
         </div>
       ) : null}
-    </section>
+    </>
   );
 }

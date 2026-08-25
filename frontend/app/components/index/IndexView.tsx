@@ -7,15 +7,18 @@ import type { CalendarIndex } from 'app/types/contract';
 import { CAL_YEARS } from 'app/types/pipeline';
 import { fetchXrDates } from 'app/lib/tiles/xr-url';
 import { RAMP } from 'app/lib/exceedance-ramp';
-import { Hero } from './Hero';
-import { Controls } from './Controls';
+import { HeroBanner } from './HeroBanner';
+import { ParamPill } from './ParamPill';
 import { ExceedanceCalendar } from './ExceedanceCalendar';
 import { MissedOpportunity } from './MissedOpportunity';
 import { Choropleth } from './Choropleth';
 import { DayCard } from './DayCard';
 import { PlaybackBar } from './PlaybackBar';
+import { Storylines } from './Storylines';
 import { usePlayback } from './usePlayback';
 import { useBuilderProgress } from './useBuilderProgress';
+
+const CONSOLE_ID = 'console';
 
 export function IndexView() {
   const { hazard, window: win, returnPeriod, selectedDate, setSelectedDate } = usePipelineStore();
@@ -23,16 +26,27 @@ export function IndexView() {
   const [emdatDates, setEmdatDates] = useState<Set<string>>(new Set());
   const [archiveDates, setArchiveDates] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  // Calendar year defaults to the latest year the store actually holds.
+  // Calendar year; snapped below to the latest year holding data.
   const [calendarYear, setCalendarYear] = useState<number>(CAL_YEARS[CAL_YEARS.length - 1]);
+  // EM-DAT rings on the calendar; on by default, off when they crowd the ramp.
+  const [showEmdat, setShowEmdat] = useState(true);
+  // Once the reader picks a year, stop auto-snapping it out from under them.
+  const yearPicked = useRef(false);
 
-  // Years present in the store, from /xr/dates; falls back to CAL_YEARS until loaded.
+  // Years the store actually holds dates for, from /xr/dates.
+  const yearsWithData = useMemo(
+    () => new Set(archiveDates.map((d) => Number(d.slice(0, 4)))),
+    [archiveDates],
+  );
+
+  // Offer the whole archive span, not only the years already ingested, so the
+  // calendar stays browsable while the store fills in. Anything the store holds
+  // outside that span is folded in too.
   const years = useMemo(() => {
-    const present = Array.from(new Set(archiveDates.map((d) => Number(d.slice(0, 4))))).sort(
-      (a, b) => a - b,
-    );
-    return present.length ? present : [...CAL_YEARS];
-  }, [archiveDates]);
+    const all = new Set<number>(CAL_YEARS);
+    yearsWithData.forEach((y) => all.add(y));
+    return Array.from(all).sort((a, b) => a - b);
+  }, [yearsWithData]);
 
   const progress = useBuilderProgress();
   const summarized = progress?.summarized ?? 0;
@@ -51,10 +65,18 @@ export function IndexView() {
       .catch((e) => console.error('Failed to load store dates', e));
   }, []);
 
-  // Snap to the latest available year once store dates load (or when the year has no data).
+  // Open on the latest year that actually holds data: the span runs to the
+  // current year, which is usually still empty. A reader's own choice wins.
   useEffect(() => {
-    if (years.length && !years.includes(calendarYear)) setCalendarYear(years[years.length - 1]);
-  }, [years]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (yearPicked.current || !yearsWithData.size) return;
+    const latest = Math.max.apply(null, Array.from(yearsWithData));
+    setCalendarYear((cur) => (yearsWithData.has(cur) ? cur : latest));
+  }, [yearsWithData]);
+
+  const chooseYear = (year: number) => {
+    yearPicked.current = true;
+    setCalendarYear(year);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -107,59 +129,78 @@ export function IndexView() {
   );
 
   return (
-    <section className='wrap'>
-      <Hero />
+    <>
+      <HeroBanner />
 
-      <div className='panel calpanel'>
-        <header>
-          <div>
-            <h2>Daily exceedance &amp; affected regions</h2>
-            <p className='hint'>
-              Each calendar cell is one forecast day · the map shows the admin-1 regions affected on
-              the selected day
-            </p>
+      <section className='ground' id={CONSOLE_ID}>
+        <div className='shell'>
+          {/* One console: parameters, calendar, map and playback on a single
+              widget, so a change of query is visibly one act. */}
+          <div className='console'>
+            <div className='cbar'>
+              <ParamPill
+                year={calendarYear}
+                years={years}
+                yearsWithData={yearsWithData}
+                onYearChange={chooseYear}
+              />
+
+              <div className='cbar__end'>
+                {progress && !complete ? (
+                  <span className='prog-chip'>
+                    <i className='spin' /> Preparing archive {progress.summarized}/{progress.total}
+                  </span>
+                ) : null}
+                {justFinished ? <span className='prog-chip done'>Archive ready</span> : null}
+
+                <label className='emtoggle'>
+                  <input
+                    type='checkbox'
+                    checked={showEmdat}
+                    onChange={(e) => setShowEmdat(e.target.checked)}
+                  />
+                  <span>EM-DAT match</span>
+                </label>
+
+                <div className='legend'>
+                  <span>Low</span>
+                  <span className='ramp' aria-hidden='true'>
+                    {RAMP.map((c) => (
+                      <i key={c} style={{ background: c }} />
+                    ))}
+                  </span>
+                  <span>Extreme</span>
+                </div>
+              </div>
+            </div>
+
+            <div className='panes'>
+              <div className='pane'>
+                <ExceedanceCalendar
+                  index={index}
+                  emdatDates={emdatDates}
+                  pendingDates={pendingDates}
+                  loading={loading}
+                  year={calendarYear}
+                  playing={playback.playing}
+                  showEmdat={showEmdat}
+                />
+                <MissedOpportunity year={calendarYear} />
+              </div>
+
+              <div className='pane pane--map'>
+                <Choropleth cachedRegions={playback.cachedRegions} />
+              </div>
+            </div>
+
+            <PlaybackBar playback={playback} />
           </div>
-          <div className='legend'>
-            {progress && !complete ? (
-              <span className='prog-chip'>
-                <i className='spin' /> Preparing archive {progress.summarized}/{progress.total}
-              </span>
-            ) : null}
-            {justFinished ? <span className='prog-chip done'>Archive ready</span> : null}
-            <span>low</span>
-            <span className='ramp'>
-              {RAMP.map((c) => (
-                <i key={c} style={{ background: c }} />
-              ))}
-            </span>
-            <span>extreme</span>
-            <span className='legmatch'>
-              <i /> EM-DAT match
-            </span>
-          </div>
-        </header>
 
-        <Controls year={calendarYear} years={years} onYearChange={setCalendarYear} />
-
-        <PlaybackBar playback={playback} />
-
-        <div className='widgets'>
-          <div className='wcol'>
-            <ExceedanceCalendar
-              index={index}
-              emdatDates={emdatDates}
-              pendingDates={pendingDates}
-              loading={loading}
-              year={calendarYear}
-              playing={playback.playing}
-            />
-            <MissedOpportunity year={calendarYear} />
-          </div>
-          <Choropleth cachedRegions={playback.cachedRegions} />
+          <DayCard date={selectedDate ?? null} entry={selectedEntry} />
         </div>
+      </section>
 
-        <DayCard date={selectedDate ?? null} entry={selectedEntry} />
-      </div>
-    </section>
+      <Storylines index={index} emdatDates={emdatDates} />
+    </>
   );
 }

@@ -8,6 +8,9 @@ import { RISK_COLOR } from 'app/types/contract';
 const fmtWin = (w: string) => w.replace('h', ' h').replace('d', ' d');
 const fmtRp = (rp: string) => rp.replace('yr', ' yr');
 
+const prettyDate = (iso: string) =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
+
 interface Props {
   date: string | null;
   entry: CalendarIndexEntry | null;
@@ -18,11 +21,9 @@ export function DayCard({ date, entry }: Props) {
 
   if (!date || !entry) {
     return (
-      <div className='daycard'>
-        <div className='empty'>
-          <strong>Select a day</strong> in the calendar to see its worst admin-1 risk class, the
-          number of regions affected and a link into the per-day storymap.
-        </div>
+      <div className='day day--empty'>
+        <strong>Select a day</strong> in the calendar to see its worst admin-1 risk class, the
+        number of regions assessed and a link into that day&rsquo;s storymap.
       </div>
     );
   }
@@ -30,39 +31,42 @@ export function DayCard({ date, entry }: Props) {
   const accent = RISK_COLOR[entry.worst_risk];
 
   return (
-    <div className='daycard'>
-      <div className='dc-head'>
-        <span className='dc-date'>{date}</span>
-        <span className='pill' style={{ background: `${accent}22`, color: accent }}>
-          {entry.risk_label}
-        </span>
+    <div className='day'>
+      <div>
+        <p className='day__date'>
+          {date}
+          <span
+            className='day__tag'
+            style={{ background: accent, color: entry.worst_risk >= 2 ? '#fff' : '#0a1e26' }}
+          >
+            {entry.risk_label}
+          </span>
+        </p>
+        <p className='day__sub'>
+          {fmtWin(win)} window · return period ≥ {fmtRp(returnPeriod)} · East Africa
+        </p>
+        <div className='stats'>
+          <div className='stat'>
+            <b>{entry.risk_label}</b>
+            <span>Worst admin-1 severity</span>
+          </div>
+          <div className='stat'>
+            <b>{entry.n_units}</b>
+            <span>Regions assessed</span>
+          </div>
+          <div className='stat'>
+            <b>{fmtWin(win)}</b>
+            <span>Window</span>
+          </div>
+          <div className='stat'>
+            <b>{fmtRp(returnPeriod)}</b>
+            <span>Return period</span>
+          </div>
+        </div>
       </div>
-      <p className='dc-sub'>
-        {fmtWin(win)} window · return period ≥ {fmtRp(returnPeriod)} · East Africa
-      </p>
-      <div className='dc-stats'>
-        <div>
-          <b>{entry.risk_label}</b>
-          <span>worst admin-1 severity</span>
-        </div>
-        <div>
-          <b>{entry.n_units}</b>
-          <span>regions assessed</span>
-        </div>
-        <div>
-          <b>{fmtWin(win)}</b>
-          <span>window</span>
-        </div>
-        <div>
-          <b>{fmtRp(returnPeriod)}</b>
-          <span>return period</span>
-        </div>
-      </div>
-      <div className='dc-actions'>
-        <button className='btn-primary' onClick={() => openStory(date)}>
-          Open {date} storymap →
-        </button>
-      </div>
+      <button className='btn btn--solid' onClick={() => openStory(date)}>
+        Open the {prettyDate(date)} storymap →
+      </button>
     </div>
   );
 }

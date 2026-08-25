@@ -1,25 +1,18 @@
 'use client';
 
 import React from 'react';
-import { CAL_YEARS } from 'app/types/pipeline';
 
-// Placeholder "missed opportunity index" widget below the calendar, pending the
-// forecast-signal-vs-recorded-EM-DAT index.
-interface Props {
-  year?: number;
-}
-
-export function MissedOpportunity({ year = CAL_YEARS[0] }: Props) {
+// Reserved slot below the calendar, pending the forecast-signal-vs-recorded-
+// EM-DAT index. It states what will land here rather than apologising for the
+// gap.
+export function MissedOpportunity({ year }: { year: number }) {
   return (
-    <section className='widget wreserved' aria-label='Missed opportunity index'>
-      <div className='wtitle'>
-        Missed opportunity <b>· {year}</b>
-      </div>
-      <div className='wreserved-body'>
-        Reserved: missed-opportunity index. Forecast exceedance signal weighed against recorded
-        EM-DAT flood events, to surface days the ensemble flagged a flood that was missed
-        operationally.
-      </div>
+    <section className='reserved' aria-label='Missed opportunity index'>
+      <h4>Missed opportunity index · {year} — in development</h4>
+      <p>
+        Will weigh the forecast exceedance signal against recorded EM-DAT flood events, to surface
+        the days the ensemble flagged a flood that was missed operationally.
+      </p>
     </section>
   );
 }

@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { usePipelineStore } from 'app/store/providers/pipeline';
 import type { CalendarIndex, CalendarIndexEntry } from 'app/types/contract';
-import { color, severityOfState } from 'app/lib/exceedance-ramp';
+import { color } from 'app/lib/exceedance-ramp';
 
 // Calendar geometry.
 const CELL = 9;
@@ -37,7 +37,7 @@ interface Cell {
   iso: string;
   x: number;
   y: number;
-  sev: number; // ramp position 0..1, derived from the day's worst risk_state
+  sev: number; // the day's worst admin-1 exceedance probability, 0..1
   label: string; // risk_label for the tooltip
   ev: boolean; // EM-DAT match
   pending: boolean; // in the archive but not summarized yet
@@ -88,7 +88,7 @@ function buildBand(
       iso: key,
       x: LEFT + Math.floor((i + offset) / 7) * STEP,
       y: TOP + wdMon(d) * STEP,
-      sev: severityOfState(state),
+      sev: entry?.p ?? 0,
       label: pending ? 'Summary in progress' : (entry?.risk_label ?? 'No data'),
       ev: emdatDates.has(key),
       pending,
@@ -104,6 +104,7 @@ interface Props {
   loading: boolean;
   year: number;
   playing: boolean;
+  showEmdat: boolean;
 }
 
 export function ExceedanceCalendar({
@@ -113,6 +114,7 @@ export function ExceedanceCalendar({
   loading,
   year,
   playing,
+  showEmdat,
 }: Props) {
   const { selectedDate, setSelectedDate } = usePipelineStore();
 
@@ -122,18 +124,21 @@ export function ExceedanceCalendar({
   );
 
   return (
-    <section className='widget'>
-      <div className='wtitle'>
-        Daily exceedance calendar <b>· {year}</b>
-        {loading ? <i className='spin inline' /> : null}
+    <>
+      <div className='pane__hd'>
+        <h3 className='pane__ttl'>Daily exceedance calendar</h3>
+        <span className='pane__meta'>
+          {band.year} · {band.riskDays} elevated days
+          {loading ? <i className='spin inline' /> : null}
+        </span>
       </div>
-      <div className='cal-scroll'>
+      <p className='pane__note'>
+        One cell is one forecast day, coloured by that day&rsquo;s worst admin-1 severity. Click a
+        cell to load its regions.
+      </p>
+      <div className={`cal-scroll${showEmdat ? '' : ' no-emdat'}`}>
         <div id='cal'>
           <div className='year-band' id={`band-${band.year}`}>
-            <div className='yr'>
-              <b>{band.year}</b>
-              <span>{band.riskDays} elevated-risk days</span>
-            </div>
             <svg
               className='cal-svg'
               width={band.w}
@@ -181,6 +186,6 @@ export function ExceedanceCalendar({
           </div>
         </div>
       </div>
-    </section>
+    </>
   );
 }

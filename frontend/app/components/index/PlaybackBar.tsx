@@ -5,6 +5,8 @@ import type { Playback, PlayScope } from './usePlayback';
 
 const SCOPES: PlayScope[] = ['month', 'year'];
 
+// The bottom line of the console: playback lives on the same widget as the
+// calendar and map it drives.
 export function PlaybackBar({ playback }: { playback: Playback }) {
   const {
     playing,
@@ -20,21 +22,21 @@ export function PlaybackBar({ playback }: { playback: Playback }) {
     buffered,
   } = playback;
   const total = sequence.length;
-  const current = cursorIndex >= 0 ? sequence[cursorIndex] : '-';
+  const current = cursorIndex >= 0 ? sequence[cursorIndex] : '—';
   const [open, setOpen] = useState(false);
 
   if (!open) {
     return (
-      <div className='playbar playbar-collapsed'>
+      <div className='cfoot'>
         <span className='playbar-title'>Time-lapse playback</span>
-        {cursorIndex >= 0 && <span className='play-date mono'>{current}</span>}
+        {cursorIndex >= 0 ? <span className='play-date'>{current}</span> : null}
         <button
           className='playbar-toggle'
           onClick={() => setOpen(true)}
           aria-expanded={false}
           aria-label='Show playback controls'
         >
-          <span className='playbar-toggle-label'>Controls</span>
+          <span>Controls</span>
           <span className='playbar-chevron' aria-hidden>
             ▾
           </span>
@@ -44,7 +46,7 @@ export function PlaybackBar({ playback }: { playback: Playback }) {
   }
 
   return (
-    <div className='playbar'>
+    <div className='cfoot'>
       <button className='play-btn' onClick={toggle} aria-label={playing ? 'Pause' : 'Play'}>
         {playing ? '❚❚' : '▶'}
       </button>
@@ -57,22 +59,32 @@ export function PlaybackBar({ playback }: { playback: Playback }) {
         onChange={(e) => seek(Number(e.target.value))}
         aria-label='Scrub day'
       />
-      <span className='play-date mono'>{current}</span>
-      <div className='seg sm'>
+      <span className='play-date'>{current}</span>
+      <div className='seg' role='group' aria-label='Playback scope'>
         {SCOPES.map((s) => (
-          <button key={s} className={s === scope ? 'on' : undefined} onClick={() => setScope(s)}>
+          <button
+            key={s}
+            className={s === scope ? 'on' : undefined}
+            aria-pressed={s === scope}
+            onClick={() => setScope(s)}
+          >
             {s}
           </button>
         ))}
       </div>
-      <div className='seg sm'>
+      <div className='seg' role='group' aria-label='Playback speed'>
         {speeds.map((s) => (
-          <button key={s} className={s === speed ? 'on' : undefined} onClick={() => setSpeed(s)}>
+          <button
+            key={s}
+            className={s === speed ? 'on' : undefined}
+            aria-pressed={s === speed}
+            onClick={() => setSpeed(s)}
+          >
             {s}×
           </button>
         ))}
       </div>
-      <span className='play-buf mono'>
+      <span className='play-buf'>
         {buffered}/{total}
       </span>
       <button
