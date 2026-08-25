@@ -18,7 +18,7 @@ export async function loadCalendarIndex(q: ExceedanceQuery): Promise<CalendarFee
   const emdatDates = new Set<string>();
   for (const d of days) {
     const state = severityState(d.p);
-    index[d.date] = { worst_risk: state, risk_label: RISK_LABEL[state], n_units: d.members };
+    index[d.date] = { worst_risk: state, risk_label: RISK_LABEL[state], n_units: d.members, p: d.p };
     if (d.emdat_match) emdatDates.add(d.date);
   }
   return { index, emdatDates };

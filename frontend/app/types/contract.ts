@@ -33,6 +33,9 @@ export interface CalendarIndexEntry {
   worst_risk: RiskState;
   risk_label: string;
   n_units: number;
+  // Worst admin-1 exceedance probability for the day. Kept alongside the
+  // 4-level class so views that rank or shade days can use the value itself.
+  p: number;
 }
 export type CalendarIndex = Record<string, CalendarIndexEntry>;
 
