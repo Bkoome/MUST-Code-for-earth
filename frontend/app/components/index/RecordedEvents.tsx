@@ -7,13 +7,28 @@ import { HAZARD_LABEL, SOURCE_LABEL } from 'app/types/catalogue';
 
 const fmtInt = (n: number) => n.toLocaleString('en-GB');
 
+// The year is dropped from the opening date only when both ends share it.
+// A record running 2023-10-15 to 2024-12-28 read as "15 Oct – 28 Dec 2024"
+// before, which put a fifteen-month span inside a single year.
 const prettySpan = (start: string, end: string) => {
   const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
-  const from = new Date(`${start}T00:00:00`).toLocaleDateString('en-GB', opts);
+  const sameYear = start.slice(0, 4) === end.slice(0, 4);
+  const from = new Date(`${start}T00:00:00`).toLocaleDateString(
+    'en-GB',
+    sameYear ? opts : { ...opts, year: 'numeric' },
+  );
   if (start === end) return from;
   const to = new Date(`${end}T00:00:00`).toLocaleDateString('en-GB', { ...opts, year: 'numeric' });
   return `${from} – ${to}`;
 };
+
+// Mirrors AGGREGATE_SPAN_DAYS in backend/app/catalogue.py, which sorts records
+// longer than this below the ones that bracket the selected day. Labelling them
+// says why a record from another season is in the list at all.
+const AGGREGATE_SPAN_DAYS = 92;
+
+const spanDays = (start: string, end: string) =>
+  Math.round((Date.parse(`${end}T00:00:00Z`) - Date.parse(`${start}T00:00:00Z`)) / 86400000);
 
 const REGION_CAP = 8;
 
@@ -32,7 +47,10 @@ function Regions({ event }: { event: CatalogueEvent }) {
   return (
     <ul className='ev__regions'>
       {shown.map((r) => (
-        <li key={r.gid} className={r.method === 'macro' ? 'ev__region ev__region--weak' : 'ev__region'}>
+        <li
+          key={r.gid}
+          className={r.method === 'macro' ? 'ev__region ev__region--weak' : 'ev__region'}
+        >
           {r.name}
           {r.method === 'macro' ? <i title='Source named a larger unit'>approx.</i> : null}
         </li>
@@ -48,21 +66,60 @@ function Regions({ event }: { event: CatalogueEvent }) {
   );
 }
 
-function EventRow({ event }: { event: CatalogueEvent }) {
-  const impacts: string[] = [];
-  if (event.deaths) impacts.push(`${fmtInt(event.deaths)} dead`);
-  if (event.affected) impacts.push(`${fmtInt(event.affected)} affected`);
+function EventRow({ event, defaultOpen }: { event: CatalogueEvent; defaultOpen: boolean }) {
+  // A bad day carries fifty-six records. Each one opens to its place and its
+  // regions on demand, so the ledger stays a scannable list of what happened
+  // rather than a wall that has to be scrolled past.
+  const [open, setOpen] = useState(defaultOpen);
+  const hasDetail = Boolean(event.place) || event.regions.length > 0;
+  const days = spanDays(event.start, event.end);
+  const aggregate = days >= AGGREGATE_SPAN_DAYS;
 
   return (
-    <li className='ev'>
-      <div className='ev__hd'>
-        <span className='ev__src'>{SOURCE_LABEL[event.source] ?? event.source}</span>
-        <strong className='ev__haz'>{HAZARD_LABEL[event.hazard] ?? event.hazard}</strong>
-        <span className='ev__span'>{prettySpan(event.start, event.end)}</span>
-      </div>
-      {impacts.length ? <p className='ev__impact'>{impacts.join(' · ')}</p> : null}
-      {event.place ? <p className='ev__place'>{event.place}</p> : null}
-      <Regions event={event} />
+    <li className={`ev${open ? ' is-open' : ''}${aggregate ? ' ev--aggregate' : ''}`}>
+      <button
+        type='button'
+        className='ev__toggle'
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <span className='ev__hd'>
+          <span className={`ev__src ev__src--${event.source}`}>
+            {SOURCE_LABEL[event.source] ?? event.source}
+          </span>
+          <strong className='ev__haz'>{HAZARD_LABEL[event.hazard] ?? event.hazard}</strong>
+          <span className='ev__span'>{prettySpan(event.start, event.end)}</span>
+          {aggregate ? (
+            <span
+              className='ev__agg'
+              title={`This record spans ${days} days, so it covers the selected day without being an event of it.`}
+            >
+              {days}-day record
+            </span>
+          ) : null}
+          {hasDetail ? <span className='ev__chev' aria-hidden='true' /> : null}
+        </span>
+        {event.deaths || event.affected ? (
+          <span className='ev__impact'>
+            {event.deaths ? (
+              <span className='ev__toll'>
+                <b>{fmtInt(event.deaths)}</b> dead
+              </span>
+            ) : null}
+            {event.affected ? (
+              <span className='ev__aff'>
+                <b>{fmtInt(event.affected)}</b> affected
+              </span>
+            ) : null}
+          </span>
+        ) : null}
+      </button>
+      {open && hasDetail ? (
+        <div className='ev__detail'>
+          {event.place ? <p className='ev__place'>{event.place}</p> : null}
+          <Regions event={event} />
+        </div>
+      ) : null}
     </li>
   );
 }
@@ -118,27 +175,33 @@ export function RecordedEvents({ date }: Props) {
         </span>
       </div>
 
-      {events && events.count > 0 ? (
-        <>
-          <ul className='ev-list'>
-            {shownEvents.map((e) => (
-              <EventRow key={e.event_id} event={e} />
-            ))}
-          </ul>
-          {moreEvents > 0 ? (
-            <button type='button' className='recorded__more' onClick={() => setShowAll(true)}>
-              Show {moreEvents} more {moreEvents === 1 ? 'event' : 'events'}
-            </button>
-          ) : null}
-        </>
-      ) : (
-        !loading && (
-          <p className='recorded__empty'>
-            No event is recorded for this day. Absence is not evidence of calm: national loss
-            databases cover the region unevenly, and the countries they miss are maintained by hand.
-          </p>
-        )
-      )}
+      {/* The ledger runs long on a bad day. Standing beside the console it is
+          capped to the console's own height and scrolls inside itself, so the
+          deck keeps one baseline instead of one column trailing off. */}
+      <div className='recorded__body'>
+        {events && events.count > 0 ? (
+          <>
+            <ul className='ev-list'>
+              {shownEvents.map((e, i) => (
+                <EventRow key={e.event_id} event={e} defaultOpen={i === 0} />
+              ))}
+            </ul>
+            {moreEvents > 0 ? (
+              <button type='button' className='recorded__more' onClick={() => setShowAll(true)}>
+                Show {moreEvents} more {moreEvents === 1 ? 'event' : 'events'}
+              </button>
+            ) : null}
+          </>
+        ) : (
+          !loading && (
+            <p className='recorded__empty'>
+              No event is recorded for this day. Absence is not evidence of calm: national loss
+              databases cover the region unevenly, and the countries they miss are maintained by
+              hand.
+            </p>
+          )
+        )}
+      </div>
     </section>
   );
 }
