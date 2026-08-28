@@ -3,7 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = ["icechunk", "xarray", "zarr", "rasterio", "numpy", "netCDF4", "dask"]
 # ///
-"""Build data/moi.sqlite: what MUST anticipated, and what it was never able to.
+"""Score what MUST anticipated, and what it was never able to, into catalogue.sqlite.
 
     uv run build_moi.py                  # build from the fields cache
     uv run build_moi.py --summary        # build, then print the contingency tables
@@ -13,13 +13,14 @@ tool. A rainfall-extreme forecast archive scored against a flood-loss database
 will read as a warning scorecard unless the boundary between them is carried in
 the data:
 
-  obs_extreme + signal   Every region-day where IMERG observed an unusual
+  moi_obs_extreme +      Every region-day where IMERG observed an unusual
+  moi_signal
                          rainfall event, and what the ensemble said about it at
                          each lead. Needs no disaster record, so it covers every
                          admin-1 unit and every day in the archive. This is the
                          population MUST can actually be verified on.
 
-  impact_event           Recorded floods, each tiered by whether it is inside
+  moi_impact             Recorded floods, each tiered by whether it is inside
                          MUST's hazard at all. Most are not: a flood routed from
                          upstream highlands, or a drainage failure in a city,
                          leaves no rainfall extreme in the unit it damages. Those
@@ -37,7 +38,10 @@ Inputs, all of them already built by something else:
                  read at all.
   thresholds     data/cmorph_ea_return_periods.nc, the 24 h return levels
   imerg          data/gpm_imerg_ea_daily.nc, observed daily rainfall
-  catalogue      data/catalogue.sqlite, built by tools/catalogue/build_catalogue.py
+  catalogue      data/catalogue.sqlite, built by tools/catalogue/build_catalogue.py.
+                 Read for its events, then written back with the moi_* tables:
+                 one database to mount and maintain, and region/event/country are
+                 shared rather than copied. Rerun after any catalogue rebuild.
   store          the Icechunk store, opened only for its lat/lon/member axes so
                  the masks, thresholds and observations land on the same grid the
                  service uses
@@ -384,26 +388,21 @@ def signal_rows(sig, computed):
                                for k in LEAD_DAYS))
 
 
-def write_db(path: Path, meta_rows, regions, coverage, obs, sig, computed, events, cases):
-    if path.exists():
-        path.unlink()
-    con = sqlite3.connect(path)
+def write_into(db: Path, meta_rows, coverage, obs, sig, computed, events, cases):
+    """Replace the moi_* tables in catalogue.sqlite; the catalogue's own tables are untouched."""
+    con = sqlite3.connect(db)
     con.executescript((HERE / "schema.sql").read_text())
-    con.executemany("INSERT INTO meta VALUES (?,?)", meta_rows)
-    con.executemany("INSERT INTO region VALUES (?,?,?)",
-                    [(m["gid"], m["iso3"], m["name"]) for m in regions])
-    con.executemany("INSERT INTO coverage VALUES (?,?,?,?,?,?,?,?)", coverage)
-    con.executemany("INSERT INTO obs_extreme VALUES (?,?,?,?)",
+    con.executemany("INSERT INTO moi_meta VALUES (?,?)", meta_rows)
+    con.executemany("INSERT INTO moi_coverage VALUES (?,?,?,?,?,?,?)", coverage)
+    con.executemany("INSERT INTO moi_obs_extreme VALUES (?,?,?,?)",
                     [(d, g, v["obs_mm"], v["rp_cleared"]) for (d, g), v in obs.items()])
-    con.executemany("INSERT INTO signal VALUES (?,?,?,?,?,?)", signal_rows(sig, computed))
+    con.executemany("INSERT INTO moi_signal VALUES (?,?,?,?,?,?)", signal_rows(sig, computed))
     con.executemany(
-        "INSERT INTO impact_event VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
-        [(e["event_id"], e["source_id"], e["source_key"], e["iso3"], e["gid"],
-          e["start_date"], e["end_date"], e["span_days"], e["deaths"], e["affected"],
-          e["obs_mm"], e["obs_rp"], e["tier"]) for e in events])
-    # warning_record is written, not defaulted: it is a finding about the data
-    # (no warning registry exists to check against), and a finding should be in
-    # the rows rather than in a column default a reader has to go looking for.
+        "INSERT INTO moi_impact VALUES (?,?,?,?,?,?)",
+        [(e["event_id"], e["gid"], e["span_days"], e["obs_mm"], e["obs_rp"], e["tier"])
+         for e in events])
+    # warning_record is written, not defaulted: the absent warning registry is a
+    # finding, and a finding belongs in the rows rather than in a column default.
     con.executemany(
         "INSERT INTO moi_case VALUES (?,?,?,?,?,?,?,?)",
         [(c["event_id"], c["gid"], c["rp"], c["p_best"], c["p_lead0"],
@@ -457,12 +456,12 @@ def print_summary(obs, sig, events, cases, rps):
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--out", type=Path, default=BACKEND / "data" / "moi.sqlite")
     ap.add_argument("--fields", type=Path, default=BACKEND / "cache" / "fields")
     ap.add_argument("--thresholds", type=Path,
                     default=BACKEND / "data" / "cmorph_ea_return_periods.nc")
     ap.add_argument("--imerg", type=Path, default=BACKEND / "data" / "gpm_imerg_ea_daily.nc")
-    ap.add_argument("--catalogue", type=Path, default=BACKEND / "data" / "catalogue.sqlite")
+    ap.add_argument("--catalogue", type=Path, default=BACKEND / "data" / "catalogue.sqlite",
+                    help="catalogue database; read for events, written back with moi_* tables")
     ap.add_argument("--adm1", type=Path, default=BACKEND / "data" / "ea-adm1-geo.json")
     ap.add_argument("--store", type=Path, required=True,
                     help="Icechunk store path, read only for its lat/lon/member axes")
@@ -525,13 +524,13 @@ def main() -> int:
     for iso3, c in sorted(countries.items()):
         got = by_iso.get(iso3, [])
         coverage.append((
-            iso3, c["name"], IMPACT_SOURCE if got else None,
+            iso3, IMPACT_SOURCE if got else None,
             min((e["start_date"] for e in got), default=None),
             max((e["end_date"] for e in got), default=None),
             len(got), 1 if got else 0,
             None if got else "no admin-1 loss record inside the forecast archive",
         ))
-    scorable_iso = {row[0] for row in coverage if row[6]}
+    scorable_iso = {row[0] for row in coverage if row[5]}
     print(f"impact events {len(events)} in {len(scorable_iso)} scorable countries "
           f"({', '.join(sorted(scorable_iso))})")
 
@@ -561,14 +560,14 @@ def main() -> int:
         ("scorable_countries", ",".join(sorted(scorable_iso))),
         ("warning_registry", "none: the documented-warning clause is unverified"),
     ]
-    write_db(args.out, meta_rows, meta, coverage, obs, sig, computed, tiered, cases)
+    write_into(args.catalogue, meta_rows, coverage, obs, sig, computed, tiered, cases)
 
-    print(f"\nmoi: {args.out}")
-    print(f"  obs_extreme   {len(obs)} region-days at or above the {OBS_RP}-yr level")
-    print(f"  signal        {len(sig)} (day, unit, rp) rows over leads {LEAD_DAYS}")
-    print(f"  impact_event  {len(tiered)} records, "
+    print(f"\nmoi tables written into {args.catalogue}")
+    print(f"  moi_obs_extreme  {len(obs)} region-days at or above the {OBS_RP}-yr level")
+    print(f"  moi_signal       {len(sig)} (day, unit, rp) rows over leads {LEAD_DAYS}")
+    print(f"  moi_impact       {len(tiered)} records, "
           f"{sum(1 for e in tiered if e['tier'] == 'assessable')} assessable")
-    print(f"  moi_case      {len({(c['event_id'], c['gid']) for c in cases})} scored events")
+    print(f"  moi_case         {len({(c['event_id'], c['gid']) for c in cases})} scored events")
     if args.summary:
         print_summary(obs, sig, tiered, cases, rps)
     return 0

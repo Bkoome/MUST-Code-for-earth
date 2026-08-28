@@ -10,6 +10,9 @@ GET /xr/regions/{date}?window=24h&rp=10yr      admin-1 exceedance breakdown (202
 GET /xr/regions-batch?window=24h&rp=10yr       admin-1 breakdowns for all summarized dates
 GET /xr/events/{date}                          recorded disaster events covering a day
 GET /xr/catalogue                              catalogue provenance, sources, coverage gaps
+GET /xr/moi?rp=10yr&year=2024                  anticipation, hazard attribution and the case ledger
+GET /xr/moi/{date}?rp=10yr                     per-admin-1 verdicts for a day
+GET /xr/moi/info                               evaluation parameters and impact-record coverage
 GET /xr/observed/{date}?window=24h             per-admin-1 observed peak rainfall in mm
 GET /xr/ensemble/{date}?window=24h&rp=10yr     per-member cumulative rainfall at the forecast hotspot
 GET /xr/tiles/WebMercatorQuad/{z}/{x}/{y}.png  ?date=&layer=tp|exceedance|obs&window=&member=&rp=
@@ -24,8 +27,8 @@ from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import (catalogue, config, derive, emdat, imerg, regions, store, summary,
-               thresholds, tiles)
+from . import (catalogue, config, db, derive, emdat, imerg, moi, regions, store,
+               summary, thresholds, tiles)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 log = logging.getLogger("titiler-xarray")
@@ -56,7 +59,9 @@ async def lifespan(app: FastAPI):
     imerg.load()
     regions.init()
     emdat.init()
+    db.init()
     catalogue.init()
+    moi.init()
     summary.load_from_disk()
     summary.start_builder()
     yield
@@ -192,6 +197,50 @@ def xr_catalogue():
         "sources": catalogue.sources(),
         "manually_maintained": catalogue.unsupported_countries(),
     }
+
+
+@app.get("/xr/moi")
+def xr_moi(rp: str = Query("10yr"), year: int | None = Query(None)):
+    """Anticipation, hazard attribution and the case ledger for one return period.
+
+    All three reads travel together because none of them is safe to publish alone: the
+    case ledger is five events, the attribution says most recorded floods were never in
+    this hazard, and only the anticipation population is large enough to carry a rate.
+    """
+    if not moi.available():
+        raise HTTPException(503, "moi disabled: evaluation tables not loaded")
+    rp_y = _parse_rp(rp)
+    return JSONResponse(
+        {
+            "rp": rp_y,
+            "year": year,
+            "anticipation": moi.anticipation(rp_y),
+            "anticipation_year": moi.anticipation(rp_y, year) if year else None,
+            "attribution": moi.attribution(),
+            "cases": moi.cases(rp_y),
+            "case_counts": moi.case_counts(),
+            "days": moi.days(rp_y, year),
+        },
+        headers={"Cache-Control": "public, max-age=600"},
+    )
+
+
+@app.get("/xr/moi/info")
+def xr_moi_info():
+    """Evaluation parameters and the impact-record coverage that bounds every count."""
+    if not moi.available():
+        raise HTTPException(503, "moi disabled: evaluation tables not loaded")
+    return {"meta": moi.meta(), "coverage": moi.coverage(), "verdicts": list(moi.VERDICTS)}
+
+
+@app.get("/xr/moi/{date}")
+def xr_moi_day(date: str, rp: str = Query("10yr")):
+    """Per-admin-1 verdicts for one day: the map fill and the day card's outcome line."""
+    if not moi.available():
+        raise HTTPException(503, "moi disabled: evaluation tables not loaded")
+    _parse_date(date)
+    units = moi.day(date, _parse_rp(rp))
+    return {"date": date, "rp": _parse_rp(rp), "count": len(units), "data": units}
 
 
 @app.get("/xr/events/{date}")

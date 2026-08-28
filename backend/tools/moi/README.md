@@ -2,7 +2,7 @@
 
 ```
 uv run build_moi.py --store /path/to/ea_tp_8step --summary
-cp ../../data/moi.sqlite ../../../Data/moi.sqlite    # into whatever /data is mounted from
+cp ../../data/catalogue.sqlite ../../../Data/       # into whatever /data is mounted from
 ```
 
 Or inside the service image, which pins the tool to exactly the xarray, rasterio
@@ -15,14 +15,18 @@ docker compose run --rm --no-deps -v "$PWD/backend/tools:/srv/tools:ro" \
     --store /store --fields /cache/fields \
     --thresholds /data/cmorph_ea_return_periods.nc \
     --imerg /data/gpm_imerg_ea_daily.nc \
-    --catalogue /data/catalogue.sqlite --adm1 /data/ea-adm1-geo.json \
-    --out /cache/moi.sqlite --summary
+    --catalogue /data/catalogue.sqlite --adm1 /data/ea-adm1-geo.json --summary
 ```
 
-Builds `data/moi.sqlite` from the fields cache, the CMORPH return levels, IMERG
-and the disaster catalogue. The service reads it read-only and simply turns the
-feature off when the file is absent, the same way thresholds, IMERG, EM-DAT and
-the catalogue already degrade.
+Reads the fields cache, the CMORPH return levels, IMERG and the disaster
+catalogue, then writes the `moi_*` tables back into `catalogue.sqlite`. One
+database, so `region`, `event` and `country` are shared rather than copied — and
+so there is one artifact to build, mount and keep in step.
+
+**Run this after any catalogue rebuild.** `build_catalogue.py` recreates the file
+from scratch and takes the `moi_*` tables with it. The service reads the tables
+read-only and turns the feature off when they are absent, the same way
+thresholds, IMERG, EM-DAT and the catalogue already degrade.
 
 ## What this measures, and what it refuses to
 
@@ -36,13 +40,13 @@ things this system claims to predict.
 So the build keeps three populations apart and never lets one stand in for
 another.
 
-**Anticipation** — `obs_extreme` joined to `signal`. Every region-day where
+**Anticipation** — `moi_obs_extreme` joined to `moi_signal`. Every region-day where
 IMERG observed an unusual rainfall event, and what the ensemble said about it at
 each lead. This needs no disaster record at all, so it spans every admin-1 unit
 and every day in the archive, and it is the only population large enough to
 verify the forecast on.
 
-**Attribution** — `impact_event`. Every recorded flood, tiered by whether MUST
+**Attribution** — `moi_impact`. Every recorded flood, tiered by whether MUST
 can be scored against it. The tier that matters is `outside_rainfall_model`:
 impact recorded, no observed rainfall extreme in the unit. Those events are not
 forecast failures and must never be counted as missed warnings. The share of the
@@ -56,7 +60,7 @@ A percentage over single digits is theatre.
 
 ## The parameters
 
-Every one of these is written into `meta`, because a reader who cannot see the
+Every one of these is written into `moi_meta`, because a reader who cannot see the
 thresholds cannot judge the counts.
 
 | parameter | value | why |
@@ -90,7 +94,7 @@ A loss database that stops before the forecast archive starts cannot be silent
 about a flood — it can only be absent. Djibouti's DesInventar ends in 2011,
 Rwanda's in 2019, Uganda's in 2021; Burundi, Eritrea, Sudan and South Sudan have
 none. Inside the archive only Ethiopia, Somalia, Tanzania and Kenya carry
-admin-1 records. `coverage.scorable` marks the rest, they leave the denominator,
+admin-1 records. `moi_coverage.scorable` marks the rest, they leave the denominator,
 and the map hatches them. A quiet unit in an uncovered country must never read
 as a warning that worked.
 

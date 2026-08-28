@@ -1,19 +1,15 @@
 """Multi-source disaster catalogue: recorded flood events joined to admin-1.
 
-Reads data/catalogue.sqlite, built offline by tools/catalogue/build_catalogue.py
-from EM-DAT, DesInventar and hand-maintained rows. Missing file -> the feature
-is simply off, matching how thresholds, IMERG and EM-DAT already degrade.
-
-The database is opened read-only and never written: it ships as a build artifact
-mounted from /data, so a writable handle would only invite corruption of a file
-the service does not own.
+Reads the shared artifact opened by app/db.py, built offline by
+tools/catalogue/build_catalogue.py from EM-DAT, DesInventar and hand-maintained
+rows. Absent tables -> the feature is simply off, matching how thresholds, IMERG
+and EM-DAT already degrade.
 """
 
 import logging
 import sqlite3
-from pathlib import Path
 
-from . import config
+from . import config, db
 
 log = logging.getLogger(__name__)
 
@@ -22,24 +18,16 @@ _meta: dict[str, str] = {}
 
 
 def init() -> None:
-    """Open the catalogue read-only; absent or unreadable file disables it."""
+    """Bind to the shared connection; missing catalogue tables disable the event feed."""
     global _con, _meta
-    path = Path(config.CATALOGUE_DB)
-    if not path.exists():
-        log.warning("catalogue missing at %s: event feed disabled", path)
+    if not db.has_table("event"):
+        log.warning("catalogue tables absent in %s: event feed disabled", config.CATALOGUE_DB)
         return
-    try:
-        # immutable=1 promises the file will not change under us, which lets
-        # SQLite skip locking entirely — correct for a read-only bind mount.
-        con = sqlite3.connect(f"file:{path}?immutable=1", uri=True, check_same_thread=False)
-        con.row_factory = sqlite3.Row
-        meta = {r["key"]: r["value"] for r in con.execute("SELECT key, value FROM meta")}
-    except Exception:
-        log.exception("catalogue unreadable at %s: event feed disabled", path)
-        return
-    _con, _meta = con, meta
+    con = db.connection()
+    _con = con
+    _meta = {r["key"]: r["value"] for r in con.execute("SELECT key, value FROM meta")}
     log.info("catalogue loaded: %s events, %s sources, schema v%s",
-             meta.get("events"), len(sources()), meta.get("schema_version"))
+             _meta.get("events"), len(sources()), _meta.get("schema_version"))
 
 
 def available() -> bool:
