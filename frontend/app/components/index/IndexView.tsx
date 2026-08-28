@@ -146,73 +146,79 @@ export function IndexView() {
 
       <section className='ground' id={CONSOLE_ID}>
         <div className='shell'>
-          {/* One console: parameters, calendar, map and playback on a single
+          {/* The deck: the console and the recorded-event ledger side by side on a
+              wide screen, the day slab spanning beneath them. Below the deck
+              breakpoint the three stack in reading order instead. */}
+          <div className='deck'>
+            {/* One console: parameters, calendar, map and playback on a single
               widget, so a change of query is visibly one act. */}
-          <div className='console'>
-            <div className='cbar'>
-              <ParamPill
-                year={calendarYear}
-                years={years}
-                yearsWithData={yearsWithData}
-                onYearChange={chooseYear}
-              />
+            <div className='console'>
+              <div className='cbar'>
+                <ParamPill
+                  year={calendarYear}
+                  years={years}
+                  yearsWithData={yearsWithData}
+                  onYearChange={chooseYear}
+                />
 
-              <div className='cbar__end'>
-                {progress && !complete ? (
-                  <span className='prog-chip'>
-                    <i className='spin' /> Preparing archive {progress.summarized}/{progress.total}
-                  </span>
-                ) : null}
-                {justFinished ? <span className='prog-chip done'>Archive ready</span> : null}
+                <div className='cbar__end'>
+                  {progress && !complete ? (
+                    <span className='prog-chip'>
+                      <i className='spin' /> Preparing archive {progress.summarized}/
+                      {progress.total}
+                    </span>
+                  ) : null}
+                  {justFinished ? <span className='prog-chip done'>Archive ready</span> : null}
 
-                <label className='emtoggle'>
-                  <input
-                    type='checkbox'
-                    checked={showEmdat}
-                    onChange={(e) => setShowEmdat(e.target.checked)}
-                  />
-                  <span>EM-DAT match</span>
-                </label>
+                  <label className='emtoggle'>
+                    <input
+                      type='checkbox'
+                      checked={showEmdat}
+                      onChange={(e) => setShowEmdat(e.target.checked)}
+                    />
+                    <span>EM-DAT match</span>
+                  </label>
 
-                <div className='legend'>
-                  <span>Low</span>
-                  <span className='ramp' aria-hidden='true'>
-                    {RAMP.map((c) => (
-                      <i key={c} style={{ background: c }} />
-                    ))}
-                  </span>
-                  <span>Extreme</span>
+                  <div className='legend'>
+                    <span>Low</span>
+                    <span className='ramp' aria-hidden='true'>
+                      {RAMP.map((c) => (
+                        <i key={c} style={{ background: c }} />
+                      ))}
+                    </span>
+                    <span>Extreme</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className='panes'>
-              <div className='pane'>
-                <ExceedanceCalendar
-                  index={index}
-                  emdatDates={emdatDates}
-                  pendingDates={pendingDates}
-                  loading={loading}
-                  year={calendarYear}
-                  playing={playback.playing}
-                  showEmdat={showEmdat}
-                />
-                <MissedOpportunity year={calendarYear} />
+              <div className='panes'>
+                <div className='pane'>
+                  <ExceedanceCalendar
+                    index={index}
+                    emdatDates={emdatDates}
+                    pendingDates={pendingDates}
+                    loading={loading}
+                    year={calendarYear}
+                    playing={playback.playing}
+                    showEmdat={showEmdat}
+                  />
+                  <MissedOpportunity year={calendarYear} />
+                </div>
+
+                <div className='pane pane--map'>
+                  <Choropleth cachedRegions={playback.cachedRegions} />
+                </div>
               </div>
 
-              <div className='pane pane--map'>
-                <Choropleth cachedRegions={playback.cachedRegions} />
-              </div>
+              <PlaybackBar playback={playback} />
             </div>
 
-            <PlaybackBar playback={playback} />
-          </div>
+            <DayCard date={selectedDate ?? null} entry={selectedEntry} />
 
-          <DayCard date={selectedDate ?? null} entry={selectedEntry} />
-
-          {/* The forecast signal above, the recorded outcome below: the
+            {/* The forecast signal and the recorded outcome in one glance: the
               comparison the whole toolkit exists to make. */}
-          <RecordedEvents date={selectedDate ?? null} />
+            <RecordedEvents date={selectedDate ?? null} />
+          </div>
         </div>
       </section>
 

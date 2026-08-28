@@ -72,6 +72,32 @@
 
   --rail-h: 88px;
   --shell: 1180px;
+  /* Width of the recorded-event ledger where it stands beside the console. */
+  --ledger: clamp(300px, 21vw, 400px);
+}
+
+/* The measure grows with the display rather than stranding the console in the
+   middle of a wide screen. The steps are chosen so the deck's two columns never
+   squeeze the calendar below the width it draws itself at (~600px). */
+@media (min-width: 1440px) {
+  :root {
+    --shell: 1400px;
+  }
+}
+@media (min-width: 1620px) {
+  :root {
+    --shell: 1560px;
+  }
+}
+@media (min-width: 1820px) {
+  :root {
+    --shell: 1720px;
+  }
+}
+@media (min-width: 2100px) {
+  :root {
+    --shell: 1880px;
+  }
 }
 
 * {
@@ -758,6 +784,54 @@ button {
   padding: 44px 0 20px;
 }
 
+/* The deck: console, recorded-event ledger, selected-day slab. One column by
+   default — console, day, ledger in reading order — and on a wide screen two,
+   with the ledger standing beside the console and the slab spanning beneath.
+   Placement is explicit so the source order can stay the mobile order. */
+.deck {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+/* Two columns only once there is room for both the calendar at its drawn width
+   and a legible ledger. The ledger track is `auto`, so on a day with nothing
+   recorded — when the widget renders nothing at all — it collapses and the
+   console takes the whole width back. */
+@media (min-width: 1440px) {
+  .deck {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 20px;
+  }
+  .deck > .console {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .deck > .recorded {
+    grid-column: 2;
+    grid-row: 1;
+    width: var(--ledger);
+    /* `contain: size` drops the ledger's own content out of the row's height
+       calculation, so the row is exactly as tall as the console and `stretch`
+       hands that height back. A thirteen-event day then scrolls inside the
+       panel instead of dragging the day slab off the bottom of the deck. */
+    contain: size;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .deck > .recorded .recorded__body {
+    /* Room for the scrollbar without pushing the cards off the left margin. */
+    padding-right: 10px;
+  }
+  .deck > .day {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
 /* One self-contained widget: parameters, legend, panes, playback. */
 .console {
   background: var(--card);
@@ -1318,16 +1392,25 @@ button {
 }
 
 /* ═══════════════════ selected day slab ═══════════════════ */
+/* Subject, readings, way out — three bands across the slab, so it reads as one
+   line of instrument rather than a block of text with dead space beside it. */
 .day {
-  margin-top: 18px;
   background: var(--ink);
   color: var(--rain);
   border-radius: 14px;
-  padding: 26px 24px;
+  padding: 26px 28px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 26px;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
+  gap: 20px 36px;
   align-items: center;
+  min-width: 0;
+}
+.day__id {
+  min-width: 0;
+}
+.day__cta {
+  justify-self: end;
+  white-space: nowrap;
 }
 .day--empty {
   display: block;
@@ -1363,12 +1446,15 @@ button {
   font-size: 11px;
   color: var(--mist);
   letter-spacing: 0.07em;
-  margin: 8px 0 20px;
+  margin: 8px 0 0;
 }
+/* The readings spread into whatever width the slab has rather than bunching at
+   a fixed 34px pitch. */
 .stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 34px;
+  gap: 18px clamp(26px, 3.6vw, 62px);
+  min-width: 0;
 }
 .stat b {
   display: block;
@@ -2015,6 +2101,27 @@ button {
 
 /* ═══════════════════ adaptive / device ═══════════════════ */
 
+/* Below the deck breakpoint the slab has the page to itself but not the room
+   for three bands: the readings drop under the date and the storymap link
+   holds the right edge. */
+@media (max-width: 1439px) {
+  .day {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .day__id {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .stats {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .day__cta {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
 @media (max-width: 1020px) {
   .rail__in {
     gap: 24px;
@@ -2097,6 +2204,16 @@ button {
   .day {
     grid-template-columns: minmax(0, 1fr);
   }
+  .day__id,
+  .stats,
+  .day__cta {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .day__cta {
+    justify-self: start;
+    white-space: normal;
+  }
   .cbar__end {
     margin-left: 0;
     width: 100%;
@@ -2136,6 +2253,28 @@ button {
   }
   .play-date {
     min-width: 0;
+  }
+  /* The scrub needs a full line to be draggable with a thumb; the transport
+     controls wrap beneath it. */
+  .cfoot {
+    gap: 10px;
+  }
+  .play-scrub {
+    flex: 1 0 100%;
+    order: -1;
+  }
+  .playbar-toggle {
+    margin-left: auto;
+  }
+  .recorded__hd {
+    padding: 14px 14px;
+  }
+  .recorded__body {
+    padding: 12px 12px 14px;
+  }
+  .ev__place,
+  .recorded__empty {
+    max-width: none;
   }
   .strand {
     padding-top: 48px;
@@ -2190,8 +2329,20 @@ button {
   }
   .btn,
   .play-btn,
-  .parampill {
+  .parampill,
+  .recorded__more {
     min-height: 40px;
+  }
+  .ev__more,
+  .emtoggle {
+    min-height: 34px;
+  }
+  /* A 3px rail is not a thumb target; thicken the track and pad the row. */
+  .play-scrub {
+    height: 22px;
+  }
+  .day__cta {
+    white-space: normal;
   }
 }
 

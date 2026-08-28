@@ -32,7 +32,9 @@ export function DayCard({ date, entry }: Props) {
 
   return (
     <div className='day'>
-      <div>
+      {/* Three bands on one line — subject, readings, way out — so the slab
+          spans the full deck width instead of bunching against its left edge. */}
+      <div className='day__id'>
         <p className='day__date'>
           {date}
           <span
@@ -45,26 +47,26 @@ export function DayCard({ date, entry }: Props) {
         <p className='day__sub'>
           {fmtWin(win)} window · return period ≥ {fmtRp(returnPeriod)} · East Africa
         </p>
-        <div className='stats'>
-          <div className='stat'>
-            <b>{entry.risk_label}</b>
-            <span>Worst admin-1 severity</span>
-          </div>
-          <div className='stat'>
-            <b>{entry.n_units}</b>
-            <span>Ensemble members</span>
-          </div>
-          <div className='stat'>
-            <b>{fmtWin(win)}</b>
-            <span>Window</span>
-          </div>
-          <div className='stat'>
-            <b>{fmtRp(returnPeriod)}</b>
-            <span>Return period</span>
-          </div>
+      </div>
+      <div className='stats'>
+        <div className='stat'>
+          <b>{entry.risk_label}</b>
+          <span>Worst admin-1 severity</span>
+        </div>
+        <div className='stat'>
+          <b>{entry.n_units}</b>
+          <span>Ensemble members</span>
+        </div>
+        <div className='stat'>
+          <b>{fmtWin(win)}</b>
+          <span>Window</span>
+        </div>
+        <div className='stat'>
+          <b>{fmtRp(returnPeriod)}</b>
+          <span>Return period</span>
         </div>
       </div>
-      <button className='btn btn--solid' onClick={() => openStory(date)}>
+      <button className='btn btn--solid day__cta' onClick={() => openStory(date)}>
         Open the {prettyDate(date)} storymap →
       </button>
     </div>
