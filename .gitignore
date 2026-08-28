@@ -39,6 +39,10 @@ backend/store-local/
 backend/cache/
 # CMORPH thresholds (~330 MB) and GPM IMERG daily (~10 MB)
 backend/data/*.nc
+# missed-opportunity evaluation (~3 MB, over the large-file hook's limit).
+# Unlike catalogue.sqlite this one is rebuilt from inputs already in the repo
+# plus the field cache, so tools/moi/build_moi.py is the artifact worth keeping.
+backend/data/moi.sqlite
 # raw EM-DAT export (redistribution restricted; the parsed subset is committed)
 backend/tools/emdat/*.xlsx
 # host bind-mount for the containerized backend (/data); large + licensed
