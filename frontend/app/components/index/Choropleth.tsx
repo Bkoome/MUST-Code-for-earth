@@ -6,7 +6,10 @@ import { feature } from 'topojson-client';
 import { usePipelineStore } from 'app/store/providers/pipeline';
 import { loadRegionRisks } from 'app/lib/api/contract';
 import type { UnitRisk } from 'app/types/contract';
+import type { MoiUnit } from 'app/types/moi';
+import { HATCH_ID, VERDICT_COLOR, VERDICT_LABEL } from 'app/types/moi';
 import { color } from 'app/lib/exceedance-ramp';
+import { MoiHatch } from './MoiHatch';
 
 const VB_W = 340;
 const VB_H = 300;
@@ -23,11 +26,17 @@ interface Props {
   // Supplied by playback when the day is already buffered, so the map repaints
   // instantly during a time-lapse instead of refetching per tick.
   cachedRegions?: Record<string, UnitRisk> | null;
+  // The selected day's verdicts. Units carrying only a forecast signal are absent by
+  // design: an outcome layer must not paint a colour where no outcome is known.
+  verdictUnits?: MoiUnit[];
+  verdictMode?: boolean;
 }
+
+const NO_VERDICT = '#eef2f3';
 
 const PENDING_RETRY_MS = 5000;
 
-export function Choropleth({ cachedRegions }: Props) {
+export function Choropleth({ cachedRegions, verdictUnits = [], verdictMode = false }: Props) {
   const { hazard, window: win, returnPeriod, selectedDate } = usePipelineStore();
   const [topology, setTopology] = useState<any>(null);
   const [fetched, setFetched] = useState<Record<string, UnitRisk>>({});
@@ -95,6 +104,8 @@ export function Choropleth({ cachedRegions }: Props) {
     return m;
   }, [regions]);
 
+  const byVerdict = useMemo(() => new Map(verdictUnits.map((u) => [u.gid, u])), [verdictUnits]);
+
   // "Over threshold" uses the same cut as the calendar's elevated-risk days:
   // risk_state 2 (Severe) and up.
   const overThreshold = useMemo(
@@ -117,11 +128,15 @@ export function Choropleth({ cachedRegions }: Props) {
   return (
     <>
       <div className='pane__hd'>
-        <h3 className='pane__ttl'>Regions over threshold</h3>
+        <h3 className='pane__ttl'>
+          {verdictMode ? 'Regions by outcome' : 'Regions over threshold'}
+        </h3>
         <span className='pane__meta'>{selectedDate ?? 'select a day'}</span>
       </div>
       <p className='pane__note'>
-        Admin-1 units, shaded by the exceedance probability for the selected day.
+        {verdictMode
+          ? 'Admin-1 units, shaded by what was observed and recorded. Unshaded units have no observed extreme and no record; hatched units have no loss record at all.'
+          : 'Admin-1 units, shaded by the exceedance probability for the selected day.'}
       </p>
       <div className='chorobox'>
         <div className='choro'>
@@ -132,19 +147,32 @@ export function Choropleth({ cachedRegions }: Props) {
             </div>
           ) : null}
           <svg viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='xMidYMid meet'>
+            <MoiHatch />
             {paths.map((p: any) => {
               const hit = byKey.get(p.gid);
               const sev = hit?.sev ?? 0;
+              const unit = byVerdict.get(p.gid);
+              const fill = verdictMode
+                ? unit
+                  ? unit.verdict === 'no_impact_data'
+                    ? `url(#${HATCH_ID})`
+                    : VERDICT_COLOR[unit.verdict]
+                  : NO_VERDICT
+                : color(sev);
               return (
                 <path
                   key={p.gid}
                   className='adm'
                   d={p.d}
-                  fill={color(sev)}
+                  fill={fill}
                   onMouseMove={(e) =>
                     setTip({
                       name: p.name,
-                      label: hit?.label ?? 'No data',
+                      label: verdictMode
+                        ? unit
+                          ? VERDICT_LABEL[unit.verdict]
+                          : 'Nothing to score'
+                        : (hit?.label ?? 'No data'),
                       sev,
                       x: e.clientX,
                       y: e.clientY,
@@ -158,7 +186,15 @@ export function Choropleth({ cachedRegions }: Props) {
         </div>
         <div className='choro-key'>
           <span>
-            <b>{overThreshold}</b> of {paths.length || '—'} regions over threshold
+            {verdictMode ? (
+              <>
+                <b>{verdictUnits.length}</b> of {paths.length || '—'} regions with an outcome
+              </>
+            ) : (
+              <>
+                <b>{overThreshold}</b> of {paths.length || '—'} regions over threshold
+              </>
+            )}
           </span>
           <span>Admin-1</span>
         </div>
@@ -167,9 +203,7 @@ export function Choropleth({ cachedRegions }: Props) {
         <div className='choro-tip' style={{ left: tip.x + 14, top: tip.y + 14 }}>
           <b>{tip.name}</b>
           <br />
-          <span>
-            {tip.label} · severity {tip.sev.toFixed(2)}
-          </span>
+          <span>{verdictMode ? tip.label : `${tip.label} · severity ${tip.sev.toFixed(2)}`}</span>
         </div>
       ) : null}
     </>

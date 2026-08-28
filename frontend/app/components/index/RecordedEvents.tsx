@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { fetchDayEvents } from 'app/lib/api/catalogue';
 import type { CatalogueEvent, DayEvents } from 'app/types/catalogue';
 import { HAZARD_LABEL, SOURCE_LABEL } from 'app/types/catalogue';
+import type { MoiVerdict } from 'app/types/moi';
+import { VERDICT_COLOR, VERDICT_LABEL, VERDICT_NOTE } from 'app/types/moi';
 
 const fmtInt = (n: number) => n.toLocaleString('en-GB');
 
@@ -66,7 +68,15 @@ function Regions({ event }: { event: CatalogueEvent }) {
   );
 }
 
-function EventRow({ event, defaultOpen }: { event: CatalogueEvent; defaultOpen: boolean }) {
+function EventRow({
+  event,
+  defaultOpen,
+  verdict,
+}: {
+  event: CatalogueEvent;
+  defaultOpen: boolean;
+  verdict?: MoiVerdict;
+}) {
   // A bad day carries fifty-six records. Each one opens to its place and its
   // regions on demand, so the ledger stays a scannable list of what happened
   // rather than a wall that has to be scrolled past.
@@ -89,6 +99,21 @@ function EventRow({ event, defaultOpen }: { event: CatalogueEvent; defaultOpen: 
           </span>
           <strong className='ev__haz'>{HAZARD_LABEL[event.hazard] ?? event.hazard}</strong>
           <span className='ev__span'>{prettySpan(event.start, event.end)}</span>
+          {verdict ? (
+            <span
+              className='moi-chip moi-chip--row'
+              style={{
+                background: VERDICT_COLOR[verdict],
+                color:
+                  verdict === 'no_recorded_impact' || verdict === 'outside_rainfall_model'
+                    ? '#08202b'
+                    : '#fff',
+              }}
+              title={VERDICT_NOTE[verdict]}
+            >
+              {VERDICT_LABEL[verdict]}
+            </span>
+          ) : null}
           {aggregate ? (
             <span
               className='ev__agg'
@@ -126,9 +151,11 @@ function EventRow({ event, defaultOpen }: { event: CatalogueEvent; defaultOpen: 
 
 interface Props {
   date: string | null;
+  // Worst verdict per event, empty when the evaluation is not mounted.
+  verdicts?: Map<number, MoiVerdict>;
 }
 
-export function RecordedEvents({ date }: Props) {
+export function RecordedEvents({ date, verdicts }: Props) {
   const [events, setEvents] = useState<DayEvents | null>(null);
   const [loading, setLoading] = useState(false);
   // Distinguishes "catalogue not mounted" from "mounted, nothing on this day".
@@ -183,7 +210,12 @@ export function RecordedEvents({ date }: Props) {
           <>
             <ul className='ev-list'>
               {shownEvents.map((e, i) => (
-                <EventRow key={e.event_id} event={e} defaultOpen={i === 0} />
+                <EventRow
+                  key={e.event_id}
+                  event={e}
+                  defaultOpen={i === 0}
+                  verdict={verdicts?.get(e.event_id)}
+                />
               ))}
             </ul>
             {moreEvents > 0 ? (
