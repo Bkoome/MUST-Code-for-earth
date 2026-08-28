@@ -71,8 +71,20 @@ def unsupported_countries() -> list[dict]:
         "SELECT iso3, name, desinventar, maintainer_note FROM country WHERE supported = 0")]
 
 
+# A record spanning longer than this is a country-season aggregate, not the day's
+# event: EM-DAT will file one "flood" running fifteen months for a whole rainy
+# season. Such a record covers almost any date you ask for, so on impact alone it
+# would head the ledger on every day of the year and bury the events that
+# actually happened then. They stay in the list — they are real records — but
+# they sort below the ones whose span brackets the day.
+AGGREGATE_SPAN_DAYS = 92
+
+
 def events_on(date: str) -> list[dict]:
-    """Recorded events whose span covers this day, worst impact first.
+    """Recorded events whose span covers this day, most relevant to it first.
+
+    Relevance before impact: records that bracket the day closely come first,
+    worst impact leading within each group, and season-scale aggregates trail.
 
     One query, one pass: the regions come back as a joined list rather than a
     query per event, because the calendar asks this for every day it renders.
@@ -87,8 +99,9 @@ def events_on(date: str) -> list[dict]:
         "LEFT JOIN event_region er ON er.event_id = e.event_id "
         "LEFT JOIN region r ON r.gid = er.gid "
         "WHERE e.start_date <= ? AND e.end_date >= ? "
-        "ORDER BY COALESCE(e.deaths, 0) DESC, COALESCE(e.affected, 0) DESC",
-        (date, date)).fetchall()
+        "ORDER BY (julianday(e.end_date) - julianday(e.start_date) >= ?) ASC, "
+        "         COALESCE(e.deaths, 0) DESC, COALESCE(e.affected, 0) DESC",
+        (date, date, AGGREGATE_SPAN_DAYS)).fetchall()
 
     events: dict[int, dict] = {}
     for r in rows:
