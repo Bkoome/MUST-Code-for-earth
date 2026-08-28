@@ -1,19 +1,21 @@
 import React from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Manrope, IBM_Plex_Mono, Source_Serif_4 } from 'next/font/google';
+import { Inter, IBM_Plex_Mono } from 'next/font/google';
 import './styles/redesign.css';
 
-// Three faces, three jobs. Sans carries the interface — headings, nav, buttons,
-// labels. Manrope is a variable weight-only face (200–800), so headings set
-// their emphasis with font-weight rather than the width axis Archivo offered.
-const manrope = Manrope({
+// One text face, two roles. Inter carries the interface — headings, nav,
+// buttons, labels — and the content it frames: body copy, captions, chapter
+// narrative. It is a variable weight axis (100–900), so headings set their
+// emphasis with font-weight. Both custom properties point at the one loader so
+// the existing --font-sans / --font-serif split stays in place if a second face
+// is ever reintroduced.
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-ui',
   display: 'swap',
 });
 
-// Serif carries the content: body copy, captions, chapter narrative.
-const sourceSerif = Source_Serif_4({
+const interContent = Inter({
   subsets: ['latin'],
   variable: '--font-content',
   display: 'swap',
@@ -69,7 +71,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='en' className={`${manrope.variable} ${sourceSerif.variable} ${plexMono.variable}`}>
+    <html lang='en' className={`${inter.variable} ${interContent.variable} ${plexMono.variable}`}>
       <body>
         <main id='pagebody' tabIndex={-1}>
           {children}
