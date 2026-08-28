@@ -30,103 +30,75 @@ thresholds, IMERG, EM-DAT and the catalogue already degrade.
 
 ## What this measures, and what it refuses to
 
-MUST forecasts rainfall extremes. A flood-loss database records floods. Those
-are not the same thing, and almost all of the difference is real: a flood routed
-down from highland rain two days earlier, a river that crested after a dam
-release, a city where 40 mm overwhelmed the drains. None of those leave an
-unusual daily rainfall total in the unit they damage, and none of them are
-things this system claims to predict.
+MUST forecasts rainfall extremes; a flood-loss database records floods. Most of the
+difference is real — highland rain routed downstream, a river crest, a city where
+40 mm overwhelmed the drains — and none of it leaves an unusual daily rainfall total
+in the unit it damages. So three populations are kept apart and never substituted:
 
-So the build keeps three populations apart and never lets one stand in for
-another.
-
-**Anticipation** — `moi_obs_extreme` joined to `moi_signal`. Every region-day where
-IMERG observed an unusual rainfall event, and what the ensemble said about it at
-each lead. This needs no disaster record at all, so it spans every admin-1 unit
-and every day in the archive, and it is the only population large enough to
-verify the forecast on.
-
-**Attribution** — `moi_impact`. Every recorded flood, tiered by whether MUST
-can be scored against it. The tier that matters is `outside_rainfall_model`:
-impact recorded, no observed rainfall extreme in the unit. Those events are not
-forecast failures and must never be counted as missed warnings. The share of the
-recorded burden that lands in that tier is the honest statement of how much of
-East Africa's flood problem is inside this system's reach.
-
-**Cases** — `moi_case`. The intersection: impact recorded *and* an unusual
-rainfall event observed. Only here does "missed opportunity" mean anything, and
-the population is small enough that it is a ledger of named events, not a rate.
-A percentage over single digits is theatre.
+- **Anticipation** — `moi_obs_extreme` joined to `moi_signal`. Every region-day IMERG
+  saw an unusual rainfall event, and what the ensemble said at each lead. Needs no
+  disaster record, so it spans the whole archive and is the only population large
+  enough to verify on.
+- **Attribution** — `moi_impact`. Every recorded flood, tiered by whether MUST can be
+  scored against it. `outside_rainfall_model` is the tier that matters: impact
+  recorded, no observed extreme. Those are not forecast failures, and their share is
+  the honest statement of how much of the problem is inside this system's reach.
+- **Cases** — `moi_case`. The intersection, and the only place "missed opportunity"
+  means anything. Small enough to be a ledger of named events; a percentage over five
+  of them would be theatre.
 
 ## The parameters
 
-Every one of these is written into `moi_meta`, because a reader who cannot see the
-thresholds cannot judge the counts.
+All written into `moi_meta`: thresholds a reader cannot see are counts they cannot judge.
 
 | parameter | value | why |
 | --- | --- | --- |
-| `strong_p` | 0.15 | The share of the ensemble over the return level that counts as a qualifying signal. Not a new number: it is the Moderate boundary `severityState()` already draws at in the frontend, so a calendar cell and a verdict cannot disagree. |
+| `strong_p` | 0.15 | Share of the ensemble over the return level that qualifies. Not a new number — it is the Moderate boundary `severityState()` already draws at, so a calendar cell and a verdict cannot disagree. |
 | `obs_rp` | 2 yr | The confirmation bar, deliberately **not** tied to the forecast return period. |
-| `lead_days` | 0, 1, 2 | All the store can resolve. |
-| `join_tolerance_days` | 1 | DesInventar dates the day flooding was noticed, often the morning after the rain. |
-| `max_scored_span_days` | 7 | A longer record is a season, not a day's event. |
+| `lead_days` | 0, 1, 2 | All the store's lead axis can resolve. |
+| `join_tolerance_days` | 1 | DesInventar dates the day flooding was noticed, often the morning after. |
+| `max_scored_span_days` | 7 | Longer is a season, not a day's event. |
 | `impact_source` | `desinventar` | EM-DAT is excluded from scoring. |
 
-### Why the observation bar is fixed
+**Why the observation bar is fixed.** The forecast rp asks how rare the warned-about
+thing was; the observation asks whether something unusual fell. Tying them answers
+neither: at a matched 10-yr bar IMERG confirms 194 region-days in three and a half
+years and the assessable population collapses — the index would report zero because
+the question was unanswerable, not because the forecasts were good.
 
-The forecast return period asks *how rare was the thing we warned about*. The
-observation asks *did something unusual actually fall*. Tying them together
-answers neither: at a matched 10-yr bar IMERG confirms 194 region-days in three
-and a half years, the assessable population collapses to nothing, and the index
-reports zero at the default setting — not because the forecasts were good but
-because the question was unanswerable.
+**Why EM-DAT is not scored.** Its admin-1 links are prose matches expanded from macro
+regions: 36 events carry 326 unit links, one record naming 45 counties. Fine for a
+reader's ledger, useless as per-unit ground truth. DesInventar names one unit per record.
 
-### Why EM-DAT is not scored
-
-Its admin-1 links are prose matches expanded from named macro-regions: 36 events
-carry 326 unit links between them, one record naming 45 counties. That is fine
-for a reader's ledger, where it says "somewhere in here", and useless as ground
-truth for a per-unit verdict. DesInventar names one unit per record.
-
-### Why a country can be unscorable
-
-A loss database that stops before the forecast archive starts cannot be silent
-about a flood — it can only be absent. Djibouti's DesInventar ends in 2011,
-Rwanda's in 2019, Uganda's in 2021; Burundi, Eritrea, Sudan and South Sudan have
-none. Inside the archive only Ethiopia, Somalia, Tanzania and Kenya carry
-admin-1 records. `moi_coverage.scorable` marks the rest, they leave the denominator,
-and the map hatches them. A quiet unit in an uncovered country must never read
-as a warning that worked.
+**Why a country can be unscorable.** A loss database ending before the archive starts
+cannot be silent about a flood, only absent — Djibouti's ends 2011, Rwanda's 2019,
+Uganda's 2021; Burundi, Eritrea, Sudan and South Sudan have none. Only ETH, SOM, TZA
+and KEN carry admin-1 records inside the archive. `moi_coverage.scorable` marks the
+rest: they leave the denominator and the map hatches them.
 
 ## What the file cannot tell you
 
-**Whether a warning was issued.** The definition of a missed opportunity ends
-"...but the available record contains no corresponding documented warning or
-action". MUST holds no warning registry, so that clause is *unverified*, not
-satisfied. `moi_case.warning_record` says `none_available` on every row so the
-gap is visible in the data rather than buried in prose, and so a future advisory
-feed lands in a column already shaped for it.
+**Whether a warning was issued.** The definition ends "...no corresponding documented
+warning or action". MUST holds no warning registry, so that clause is *unverified*,
+not satisfied. `moi_case.warning_record` says `none_available` on every row, keeping
+the gap in the data rather than in prose, and leaving a column a future advisory feed
+can land in.
 
-**Forecast quality, from the false-alarm ratio alone.** The `--summary`
-contingency table reports one, and it is inflated by a scale mismatch that has
-nothing to do with skill: the forecast side takes a maximum over 51 members
-*and* over every cell in a unit, while the observation side is a single
-deterministic field regridded from 0.1° to 0.4°. Do not publish that number as a
-headline result. A thresholded 2×2 is in any case the wrong instrument for a
-51-member ensemble — reliability and ROC over the observed-extreme population
-use the distribution instead of collapsing it at 0.15, and that is where this
-should go next.
+**Forecast quality from the false-alarm ratio alone.** `--summary` prints one, inflated
+by a scale mismatch that has nothing to do with skill: the forecast side maxes over 51
+members and every cell in a unit, the observation side is one deterministic field
+regridded 0.1° to 0.4°. A thresholded 2x2 is the wrong instrument for a 51-member
+ensemble anyway — reliability and ROC over the observed-extreme population are the
+next move.
 
 ## Rebuilding
 
-The signal side reads `cache/fields/*.npz`, the per-member `[0,w]` accumulations
-`app/derive.py` already writes, and recovers each lead day by subtraction:
-`W(24(k+1)) − W(24k)`. No store field is ever read, so a rebuild costs nothing
-beyond disk. The store is opened only for its `lat`/`lon`/`member` axes, so that
-the masks, thresholds and observations land on exactly the grid the service
-derives on.
+The signal side reads `cache/fields/*.npz` — the per-member `[0,w]` accumulations
+`app/derive.py` already writes — and recovers each lead day by subtraction,
+`W(24(k+1)) - W(24k)`. No store field is ever read; the store is opened only for its
+`lat`/`lon`/`member` axes, so masks, thresholds and observations land on exactly the
+grid the service derives on.
 
-A zero-length or truncated `.npz` is reported and left as a `NULL` signal, never
-as a quiet forecast. If the count in `meta.unreadable_field_files` is not empty,
-delete those files and request any tile for those dates — `derive.member_windows`
-recomputes and rewrites the cache — then rebuild.
+A zero-length or truncated `.npz` is reported and left as a `NULL` signal, never as a
+quiet forecast. If `moi_meta.unreadable_field_files` is not empty, delete those files,
+request any tile for those dates (`derive.member_windows` rewrites the cache), rebuild.

@@ -1,9 +1,5 @@
-"""Env-driven settings for the titiler-xarray service.
-
-Every tuning knob lives here: store location, Dask scheduler threads and memory
-fraction, derived-field cache size, and the optional data files that gate the
-exceedance, observation, region, and EM-DAT features.
-"""
+"""Env-driven settings: store location, Dask tuning, cache size, and the optional
+data files that gate the exceedance, observation, region and catalogue features."""
 
 import os
 

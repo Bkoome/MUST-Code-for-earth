@@ -33,9 +33,8 @@ from . import (catalogue, config, db, derive, emdat, imerg, moi, regions, store,
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 log = logging.getLogger("titiler-xarray")
 
-# Rendering contract shared with the frontend tile URL builders. Exceedance uses
-# discrete probability classes; the first bin starts below 1/51 so a single-member
-# signal still renders.
+# Rendering contract shared with the frontend tile URL builders. The first exceedance
+# bin starts below 1/51 so a single-member signal still renders.
 EXCEEDANCE_BINS = [
     [0.015, 0.05, [254, 217, 118, 255]],
     [0.05, 0.15, [254, 178, 76, 255]],
@@ -184,12 +183,8 @@ def xr_calendar(window: str = Query("24h"), rp: str = Query("10yr")):
 
 @app.get("/xr/catalogue")
 def xr_catalogue():
-    """Provenance and coverage of the disaster catalogue.
-
-    Includes the crosswalk's own failure counts: an event placed on no region is
-    invisible to every map view, so hiding that number would make a data gap
-    look like an absence of disasters.
-    """
+    """Provenance and coverage, including the crosswalk's own failure counts: an event
+    placed on no region is invisible, so hiding that would read as an absence of floods."""
     if not catalogue.available():
         raise HTTPException(503, "catalogue disabled: catalogue.sqlite not loaded")
     return {
@@ -203,9 +198,7 @@ def xr_catalogue():
 def xr_moi(rp: str = Query("10yr"), year: int | None = Query(None)):
     """Anticipation, hazard attribution and the case ledger for one return period.
 
-    All three reads travel together because none of them is safe to publish alone: the
-    case ledger is five events, the attribution says most recorded floods were never in
-    this hazard, and only the anticipation population is large enough to carry a rate.
+    All three travel together: only the anticipation population can carry a rate.
     """
     if not moi.available():
         raise HTTPException(503, "moi disabled: evaluation tables not loaded")
@@ -261,12 +254,10 @@ def xr_regions(request: Request, date: str, window: str = Query("24h"), rp: str 
         raise HTTPException(503, "regions disabled: adm1 geojson not loaded")
     window_h, rp_y = _parse_window(window), _parse_rp(rp)
 
-    # Summaries outlive the store window: summaries.json holds every date the
-    # builder ever finished, so answer from it before asking what the store has.
+    # Summaries outlive the store window, so answer from them before asking the store.
     rows = summary.region_rows(date, window_h, rp_y)
     if rows is None:
-        # Not summarized. Only a date the store still carries can be derived at
-        # all, so that is where the store-membership gate belongs.
+        # Not summarized, and only a date the store still carries can be derived at all.
         _check_date(date)
         if date in derive.cached_dates():
             rows = regions.day_regions(date, window_h, rp_y)

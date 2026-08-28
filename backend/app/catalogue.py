@@ -1,9 +1,6 @@
-"""Multi-source disaster catalogue: recorded flood events joined to admin-1.
+"""Recorded flood events joined to admin-1, from the artifact app/db.py opens.
 
-Reads the shared artifact opened by app/db.py, built offline by
-tools/catalogue/build_catalogue.py from EM-DAT, DesInventar and hand-maintained
-rows. Absent tables -> the feature is simply off, matching how thresholds, IMERG
-and EM-DAT already degrade.
+Built offline by tools/catalogue/build_catalogue.py; absent tables turn the feed off.
 """
 
 import logging
@@ -35,13 +32,9 @@ def available() -> bool:
 
 
 def meta() -> dict:
-    """Build provenance, plus the two counts that describe crosswalk health."""
-    if _con is None:
-        return {}
-    # Returned whole, deliberately: the build writes unplaced_events and
-    # unmatched_places into meta, and an event attributed to no region is
-    # invisible on the map, so those counts belong in the service metadata.
-    return dict(_meta)
+    """Build provenance, returned whole: unplaced_events and unmatched_places are the
+    crosswalk's own failure counts, and an event placed on no region is invisible."""
+    return dict(_meta) if _con is not None else {}
 
 
 def sources() -> list[dict]:
@@ -59,23 +52,16 @@ def unsupported_countries() -> list[dict]:
         "SELECT iso3, name, desinventar, maintainer_note FROM country WHERE supported = 0")]
 
 
-# A record spanning longer than this is a country-season aggregate, not the day's
-# event: EM-DAT will file one "flood" running fifteen months for a whole rainy
-# season. Such a record covers almost any date you ask for, so on impact alone it
-# would head the ledger on every day of the year and bury the events that
-# actually happened then. They stay in the list — they are real records — but
-# they sort below the ones whose span brackets the day.
+# Longer than this is a country-season aggregate, not the day's event. EM-DAT files
+# floods running fifteen months, which would head the ledger on every day of the year,
+# so they stay in the list but sort below records whose span brackets the day.
 AGGREGATE_SPAN_DAYS = 92
 
 
 def events_on(date: str) -> list[dict]:
-    """Recorded events whose span covers this day, most relevant to it first.
+    """Recorded events covering this day: relevance before impact, aggregates trailing.
 
-    Relevance before impact: records that bracket the day closely come first,
-    worst impact leading within each group, and season-scale aggregates trail.
-
-    One query, one pass: the regions come back as a joined list rather than a
-    query per event, because the calendar asks this for every day it renders.
+    One query, one pass — the calendar asks this for every day it renders.
     """
     if _con is None:
         return []
