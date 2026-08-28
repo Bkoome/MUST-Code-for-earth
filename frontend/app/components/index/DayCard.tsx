@@ -4,8 +4,6 @@ import React from 'react';
 import { usePipelineStore } from 'app/store/providers/pipeline';
 import type { CalendarIndexEntry } from 'app/types/contract';
 import { RISK_COLOR } from 'app/types/contract';
-import type { MoiUnit } from 'app/types/moi';
-import { VERDICT_COLOR, VERDICT_LABEL, VERDICT_NOTE } from 'app/types/moi';
 
 const fmtWin = (w: string) => w.replace('h', ' h').replace('d', ' d');
 const fmtRp = (rp: string) => rp.replace('yr', ' yr');
@@ -16,11 +14,9 @@ const prettyDate = (iso: string) =>
 interface Props {
   date: string | null;
   entry: CalendarIndexEntry | null;
-  // Sorted worst-verdict first by the backend, so the first unit is the day's outcome.
-  units?: MoiUnit[];
 }
 
-export function DayCard({ date, entry, units = [] }: Props) {
+export function DayCard({ date, entry }: Props) {
   const { window: win, returnPeriod, openStory } = usePipelineStore();
 
   if (!date || !entry) {
@@ -33,7 +29,6 @@ export function DayCard({ date, entry, units = [] }: Props) {
   }
 
   const accent = RISK_COLOR[entry.worst_risk];
-  const outcome = units[0] ?? null;
 
   return (
     <div className='day'>
@@ -70,17 +65,6 @@ export function DayCard({ date, entry, units = [] }: Props) {
           <b>{fmtRp(returnPeriod)}</b>
           <span>Return period</span>
         </div>
-        {outcome ? (
-          <div className='stat stat--verdict' title={VERDICT_NOTE[outcome.verdict]}>
-            <b style={{ color: VERDICT_COLOR[outcome.verdict] }}>
-              {VERDICT_LABEL[outcome.verdict]}
-            </b>
-            <span>
-              {outcome.name ?? 'Worst outcome'}
-              {outcome.lead_h != null ? ` · ${outcome.lead_h} h of lead` : ''}
-            </span>
-          </div>
-        ) : null}
       </div>
       <button className='btn btn--solid day__cta' onClick={() => openStory(date)}>
         Open the {prettyDate(date)} storymap →

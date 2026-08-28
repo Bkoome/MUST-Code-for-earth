@@ -3,10 +3,7 @@
 import React, { useMemo } from 'react';
 import { usePipelineStore } from 'app/store/providers/pipeline';
 import type { CalendarIndex, CalendarIndexEntry } from 'app/types/contract';
-import type { DayVerdict, MoiVerdict } from 'app/types/moi';
-import { HATCH_ID, VERDICT_COLOR, VERDICT_LABEL } from 'app/types/moi';
 import { color } from 'app/lib/exceedance-ramp';
-import { MoiHatch } from './MoiHatch';
 
 // Calendar geometry.
 const CELL = 9;
@@ -44,17 +41,7 @@ interface Cell {
   label: string; // risk_label for the tooltip
   ev: boolean; // EM-DAT match
   pending: boolean; // in the archive but not summarized yet
-  verdict: MoiVerdict | null; // the day's worst outcome, null where nothing is scorable
 }
-
-// A day with no verdict is not a good day, it is a day with nothing to say about, so it
-// takes the same quiet grey the ramp gives an absent signal.
-const NO_VERDICT = '#e3e9ec';
-
-const verdictFill = (verdict: MoiVerdict | null) => {
-  if (!verdict) return NO_VERDICT;
-  return verdict === 'no_impact_data' ? `url(#${HATCH_ID})` : VERDICT_COLOR[verdict];
-};
 
 interface Band {
   year: number;
@@ -71,7 +58,6 @@ function buildBand(
   index: CalendarIndex,
   emdatDates: Set<string>,
   pendingDates: Set<string>,
-  verdicts: Record<string, DayVerdict> | null,
 ): Band {
   const jan1 = new Date(year, 0, 1);
   const offset = wdMon(jan1);
@@ -106,7 +92,6 @@ function buildBand(
       label: pending ? 'Summary in progress' : (entry?.risk_label ?? 'No data'),
       ev: emdatDates.has(key),
       pending,
-      verdict: verdicts?.[key]?.verdict ?? null,
     });
   }
   return { year, w, h, monthLabels, weekdayLabels, cells, riskDays };
@@ -120,8 +105,6 @@ interface Props {
   year: number;
   playing: boolean;
   showEmdat: boolean;
-  verdicts: Record<string, DayVerdict> | null;
-  verdictMode: boolean;
 }
 
 export function ExceedanceCalendar({
@@ -132,39 +115,26 @@ export function ExceedanceCalendar({
   year,
   playing,
   showEmdat,
-  verdicts,
-  verdictMode,
 }: Props) {
   const { selectedDate, setSelectedDate } = usePipelineStore();
 
   const band = useMemo(
-    () => buildBand(year, index, emdatDates, pendingDates, verdicts),
-    [year, index, emdatDates, pendingDates, verdicts],
+    () => buildBand(year, index, emdatDates, pendingDates),
+    [year, index, emdatDates, pendingDates],
   );
 
   return (
     <>
       <div className='pane__hd'>
-        <h3 className='pane__ttl'>
-          {verdictMode ? 'Daily outcome calendar' : 'Daily exceedance calendar'}
-        </h3>
+        <h3 className='pane__ttl'>Daily exceedance calendar</h3>
         <span className='pane__meta'>
           {band.year} · {band.riskDays} elevated days
           {loading ? <i className='spin inline' /> : null}
         </span>
       </div>
       <p className='pane__note'>
-        {verdictMode ? (
-          <>
-            One cell is one day, coloured by the worst outcome recorded in any admin-1 unit. Hatched
-            days have no loss record to score against.
-          </>
-        ) : (
-          <>
-            One cell is one forecast day, coloured by that day&rsquo;s worst admin-1 severity. Click
-            a cell to load its regions.
-          </>
-        )}
+        One cell is one forecast day, coloured by that day&rsquo;s worst admin-1 severity. Click a
+        cell to load its regions.
       </p>
       <div className={`cal-scroll${showEmdat ? '' : ' no-emdat'}`}>
         <div id='cal'>
@@ -175,7 +145,6 @@ export function ExceedanceCalendar({
               height={band.h}
               viewBox={`0 0 ${band.w} ${band.h}`}
             >
-              <MoiHatch />
               {band.weekdayLabels.map((l) => (
                 <text key={`wd-${l.label}`} x={2} y={l.y}>
                   {l.label}
@@ -206,14 +175,10 @@ export function ExceedanceCalendar({
                     width={CELL}
                     height={CELL}
                     rx={3}
-                    fill={verdictMode ? verdictFill(c.verdict) : color(c.sev)}
+                    fill={color(c.sev)}
                     onClick={() => setSelectedDate(c.iso)}
                   >
-                    <title>
-                      {verdictMode
-                        ? `${c.iso} · ${c.verdict ? VERDICT_LABEL[c.verdict] : 'Nothing to score'}`
-                        : `${c.iso} · ${c.label}`}
-                    </title>
+                    <title>{`${c.iso} · ${c.label}`}</title>
                   </rect>
                 );
               })}

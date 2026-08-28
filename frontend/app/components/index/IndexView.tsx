@@ -3,10 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { usePipelineStore } from 'app/store/providers/pipeline';
 import { loadCalendarIndex } from 'app/lib/api/contract';
-import { fetchMoi, fetchMoiDay } from 'app/lib/api/moi';
 import type { CalendarIndex } from 'app/types/contract';
-import type { MoiFeed, MoiUnit, MoiVerdict } from 'app/types/moi';
-import { VERDICT_ORDER } from 'app/types/moi';
 import { CAL_YEARS } from 'app/types/pipeline';
 import { fetchXrDates } from 'app/lib/tiles/xr-url';
 import { RAMP } from 'app/lib/exceedance-ramp';
@@ -36,11 +33,6 @@ export function IndexView() {
   );
   // EM-DAT rings on the calendar; on by default, off when they crowd the ramp.
   const [showEmdat, setShowEmdat] = useState(true);
-  // The evaluation, and whether the calendar and map paint verdicts instead of probability.
-  const [moi, setMoi] = useState<MoiFeed | null>(null);
-  const [moiLoading, setMoiLoading] = useState(false);
-  const [moiUnits, setMoiUnits] = useState<MoiUnit[]>([]);
-  const [verdictMode, setVerdictMode] = useState(false);
   // Once the reader picks a year, stop auto-snapping it out from under them.
   const yearPicked = useRef(false);
 
@@ -120,53 +112,6 @@ export function IndexView() {
     };
   }, [hazard, win, returnPeriod, summarized]);
 
-  // The year's verdicts and the panel's three reads arrive together, keyed on the pill.
-  useEffect(() => {
-    let cancelled = false;
-    setMoiLoading(true);
-    fetchMoi(returnPeriod, calendarYear)
-      .then((feed) => !cancelled && setMoi(feed))
-      .catch((e) => {
-        console.error('Failed to load the missed-opportunity feed', e);
-        if (!cancelled) setMoi(null);
-      })
-      .finally(() => !cancelled && setMoiLoading(false));
-    return () => {
-      cancelled = true;
-    };
-  }, [returnPeriod, calendarYear]);
-
-  // One day fetch feeds three consumers: the map fill, the day slab and the event ledger.
-  useEffect(() => {
-    if (!selectedDate) {
-      setMoiUnits([]);
-      return;
-    }
-    let cancelled = false;
-    fetchMoiDay(selectedDate, returnPeriod)
-      .then((day) => !cancelled && setMoiUnits(day?.data ?? []))
-      .catch((e) => {
-        console.error('Failed to load day verdicts', e);
-        if (!cancelled) setMoiUnits([]);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedDate, returnPeriod]);
-
-  // Worst verdict per recorded event, since one event can touch units that disagree.
-  const eventVerdicts = useMemo(() => {
-    const worst = new Map<number, MoiVerdict>();
-    for (const unit of moiUnits) {
-      if (!unit.event) continue;
-      const held = worst.get(unit.event.event_id);
-      if (!held || VERDICT_ORDER.indexOf(unit.verdict) < VERDICT_ORDER.indexOf(held)) {
-        worst.set(unit.event.event_id, unit.verdict);
-      }
-    }
-    return worst;
-  }, [moiUnits]);
-
   // Archive dates the builder has not summarized yet render as pending cells.
   const pendingDates = useMemo(() => {
     if (!progress) return new Set<string>();
@@ -234,17 +179,6 @@ export function IndexView() {
                     <span>EM-DAT match</span>
                   </label>
 
-                  {moi ? (
-                    <label className='emtoggle'>
-                      <input
-                        type='checkbox'
-                        checked={verdictMode}
-                        onChange={(e) => setVerdictMode(e.target.checked)}
-                      />
-                      <span>Verdicts</span>
-                    </label>
-                  ) : null}
-
                   <div className='legend'>
                     <span>Low</span>
                     <span className='ramp' aria-hidden='true'>
@@ -267,29 +201,23 @@ export function IndexView() {
                     year={calendarYear}
                     playing={playback.playing}
                     showEmdat={showEmdat}
-                    verdicts={moi?.days ?? null}
-                    verdictMode={verdictMode}
                   />
-                  <MissedOpportunity year={calendarYear} feed={moi} loading={moiLoading} />
+                  <MissedOpportunity year={calendarYear} />
                 </div>
 
                 <div className='pane pane--map'>
-                  <Choropleth
-                    cachedRegions={playback.cachedRegions}
-                    verdictUnits={moiUnits}
-                    verdictMode={verdictMode}
-                  />
+                  <Choropleth cachedRegions={playback.cachedRegions} />
                 </div>
               </div>
 
               <PlaybackBar playback={playback} />
             </div>
 
-            <DayCard date={selectedDate ?? null} entry={selectedEntry} units={moiUnits} />
+            <DayCard date={selectedDate ?? null} entry={selectedEntry} />
 
             {/* The forecast signal and the recorded outcome in one glance: the
               comparison the whole toolkit exists to make. */}
-            <RecordedEvents date={selectedDate ?? null} verdicts={eventVerdicts} />
+            <RecordedEvents date={selectedDate ?? null} />
           </div>
         </div>
       </section>
