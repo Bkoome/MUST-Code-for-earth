@@ -30,3 +30,12 @@ export const HERO_BANNER_INTERVAL_MS = 7000;
 
 // Source repository, linked from the footer.
 export const REPO_URL = 'https://github.com/Bkoome/MUST-Code-for-earth';
+
+// Basemap style for the storymap. The default is ICPAC's own tileserver-gl — the
+// same style East Africa Forest Watch draws, on ICPAC infrastructure and needing
+// no key. It replaces CARTO's key-less raster endpoint, which now stamps
+// "API KEY REQUIRED" across every tile. Override to point at another MapLibre
+// style; blank falls back to the ICPAC one.
+export const BASEMAP_STYLE_URL =
+  process.env.NEXT_PUBLIC_BASEMAP_STYLE_URL ||
+  'https://eahazardswatch.icpac.net/tileserver-gl/styles/droughtwatch/style.json';

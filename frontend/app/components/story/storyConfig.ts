@@ -1,6 +1,6 @@
 // Storymap configuration: chapters are assembled from the forecast data, the map
 // mechanics (layers, camera fits, ramps) are shared constants.
-import type { StyleSpecification } from 'maplibre-gl';
+import { BASEMAP_STYLE_URL } from 'app/config';
 import { boundsForRegions, type Adm1Collection, type LngLatBounds } from 'app/lib/story/camera';
 import type { StoryData } from 'app/lib/story/data';
 import { SOURCE_LABEL } from 'app/types/catalogue';
@@ -119,21 +119,14 @@ export function buildStory(data: StoryData, adm1: Adm1Collection): ChapterConfig
 
 // Map constants.
 
-// Carto Positron (key-less raster basemap).
-export const STORY_STYLE: StyleSpecification = {
-  version: 8,
-  sources: {
-    'carto-light': {
-      type: 'raster',
-      tileSize: 256,
-      tiles: ['a', 'b', 'c', 'd'].map(
-        (s) => `https://${s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png`,
-      ),
-      attribution: '© OpenStreetMap contributors © CARTO',
-    },
-  },
-  layers: [{ id: 'carto-light', type: 'raster', source: 'carto-light' }],
-};
+// Basemap: ICPAC's tileserver-gl vector style, the one East Africa Forest Watch
+// uses. MapLibre takes the URL and fetches the style, its glyphs and its sprite
+// from the same host. Borrowed rather than reinvented because it is ICPAC infra,
+// needs no key, and CARTO's key-less raster tiles are now watermarked.
+//
+// The AOI is unaffected: the ICPAC boundary, the outside-region knockout and the
+// admin-1 geometry are local GeoJSON added on top of whatever style loads.
+export const STORY_STYLE: string = BASEMAP_STYLE_URL;
 
 // Traffic-light ramp for the admin-1 exceedance fill (feature property `risk` in [0,1]).
 export const RISK_STOPS: any = [
