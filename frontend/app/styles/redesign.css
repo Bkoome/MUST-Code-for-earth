@@ -574,7 +574,10 @@ button {
 }
 
 /* Ink scrim: the masthead has to stay legible over a bright frame and a dark
-   one alike, so the wash is heaviest top-left where the type sits. */
+   one alike, so the wash is heaviest top-left where the type sits. Eased a stop
+   at a time so the photograph reads as a photograph — the band behind the h1 and
+   the band under the ticker stay the darkest, because those are the two places
+   type actually sits. */
 .sky__scrim {
   position: absolute;
   inset: 0;
@@ -583,12 +586,12 @@ button {
   background:
     linear-gradient(
       to bottom,
-      rgba(4, 17, 24, 0.82) 0%,
-      rgba(5, 22, 30, 0.62) 34%,
-      rgba(6, 26, 35, 0.72) 72%,
-      rgba(8, 32, 43, 0.92) 100%
+      rgba(4, 17, 24, 0.72) 0%,
+      rgba(5, 22, 30, 0.46) 34%,
+      rgba(6, 26, 35, 0.56) 72%,
+      rgba(8, 32, 43, 0.84) 100%
     ),
-    linear-gradient(to right, rgba(6, 26, 35, 0.72), rgba(6, 26, 35, 0.12) 62%);
+    linear-gradient(to right, rgba(6, 26, 35, 0.6), rgba(6, 26, 35, 0.08) 62%);
 }
 
 .rain {
@@ -598,33 +601,12 @@ button {
   height: 100%;
   z-index: 2;
   pointer-events: none;
-  opacity: 0.5;
+  /* The rain is weather, not haze: enough to read as falling, not enough to add
+     a second veil over the frame the scrim has already dimmed. */
+  opacity: 0.4;
 }
 
 /* Frame selector */
-.sky__dots {
-  display: flex;
-  gap: 7px;
-  padding: 4px 0 0;
-}
-.sky__dot {
-  width: 22px;
-  height: 4px;
-  border-radius: 999px;
-  padding: 0;
-  background: rgba(255, 255, 255, 0.28);
-  transition:
-    background 0.22s ease,
-    width 0.22s ease;
-}
-.sky__dot:hover {
-  background: rgba(255, 255, 255, 0.55);
-}
-.sky__dot.is-on {
-  width: 34px;
-  background: var(--gauge);
-}
-
 .sky__in {
   position: relative;
   z-index: 4;

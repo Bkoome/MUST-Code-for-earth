@@ -43,8 +43,9 @@ export function HeroBanner() {
     return () => mq.removeEventListener('change', sync);
   }, []);
 
-  // Cross-fade the banner. Held still when the reader asks for reduced motion;
-  // the dots below stay available either way.
+  // Cross-fade the banner on its own; held still when the reader asks for
+  // reduced motion. There is no manual control — the images are backdrop, and a
+  // pager under the title read as a thing to operate.
   useEffect(() => {
     if (calm || HERO_BANNERS.length < 2) return;
     const id = window.setInterval(
@@ -206,18 +207,6 @@ export function HeroBanner() {
             Daily flood-relevant exceedance across the Greater Horn of Africa, paired with recorded
             impacts — day by day.
           </p>
-        </div>
-
-        <div className='sky__dots' role='group' aria-label='Banner image'>
-          {HERO_BANNERS.map((b, i) => (
-            <button
-              key={b.src}
-              className={`sky__dot${i === active ? ' is-on' : ''}`}
-              aria-label={`Show banner ${i + 1} of ${HERO_BANNERS.length}`}
-              aria-pressed={i === active}
-              onClick={() => setActive(i)}
-            />
-          ))}
         </div>
 
         <div className='ticker' aria-label='Key facts'>
