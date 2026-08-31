@@ -44,7 +44,12 @@ function Regions({ event }: { event: CatalogueEvent }) {
   // rest of the widget, so the tail is folded away until asked for.
   const shown = all ? event.regions : event.regions.slice(0, REGION_CAP);
   const hidden = event.regions.length - shown.length;
+  // Explain the flag in the open, once per record. "approx." on its own reads as
+  // a hedge about the region; it is really a statement about the source, which
+  // named something bigger than an admin-1 unit and left the split to us.
+  const approx = event.regions.some((r) => r.method === 'macro');
   return (
+    <>
     <ul className='ev__regions'>
       {shown.map((r) => (
         <li
@@ -63,6 +68,14 @@ function Regions({ event }: { event: CatalogueEvent }) {
         </li>
       ) : null}
     </ul>
+    {approx ? (
+      <p className='ev__approx'>
+        <i>approx.</i> — this record names an area larger than one admin-1 unit
+        {event.place ? ` (“${event.place}”)` : ''}, so the units flagged are inside the
+        affected area rather than confirmed as flooded. They are counted at half confidence.
+      </p>
+    ) : null}
+    </>
   );
 }
 

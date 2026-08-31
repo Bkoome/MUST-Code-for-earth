@@ -1543,6 +1543,21 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
+/* What the "approx." flag on a region chip actually claims. */
+.ev__approx {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--slate);
+}
+.ev__approx i {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--graphite);
+}
+
 /* ═══════════════════ footer ═══════════════════ */
 .foot {
   background: var(--ink);
