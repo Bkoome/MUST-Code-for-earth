@@ -3,6 +3,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { usePipelineStore } from 'app/store/providers/pipeline';
 import { loadCalendarIndex } from 'app/lib/api/contract';
+import { fetchYearVerdicts } from 'app/lib/api/moi';
+import { RECORDED } from 'app/types/moi';
 import type { CalendarIndex } from 'app/types/contract';
 import { CAL_YEARS } from 'app/types/pipeline';
 import { fetchXrDates } from 'app/lib/tiles/xr-url';
@@ -31,6 +33,10 @@ export function IndexView() {
   const [calendarYear, setCalendarYear] = useState<number>(() =>
     selectedDate ? Number(selectedDate.slice(0, 4)) : CAL_YEARS[CAL_YEARS.length - 1],
   );
+  // Days a flood was actually recorded, marked with a single dot so a reader is
+  // not left clicking blindly — 655 of the 1,204 archive days have nothing to
+  // evaluate at all.
+  const [recordedDates, setRecordedDates] = useState<Set<string>>(new Set());
   // EM-DAT rings on the calendar; on by default, off when they crowd the ramp.
   const [showEmdat, setShowEmdat] = useState(true);
   // Once the reader picks a year, stop auto-snapping it out from under them.
@@ -135,6 +141,21 @@ export function IndexView() {
     }
   }, [complete]);
 
+  useEffect(() => {
+    let live = true;
+    fetchYearVerdicts(calendarYear, returnPeriod)
+      .then((y) => {
+        if (!live || !y) return;
+        setRecordedDates(
+          new Set(Object.entries(y.days ?? {}).filter(([, c]) => RECORDED.has(c.verdict)).map(([d]) => d)),
+        );
+      })
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [calendarYear, returnPeriod]);
+
   const selectedEntry = useMemo(
     () => (selectedDate ? (index[selectedDate] ?? null) : null),
     [index, selectedDate],
@@ -201,8 +222,11 @@ export function IndexView() {
                     year={calendarYear}
                     playing={playback.playing}
                     showEmdat={showEmdat}
+                    recordedDates={recordedDates}
                   />
-                  <MissedOpportunity year={calendarYear} />
+                  {/* The slot under the calendar: click a cell, read the verdict
+                    without leaving the pane. */}
+                  <MissedOpportunity date={selectedDate ?? null} />
                 </div>
 
                 <div className='pane pane--map'>

@@ -105,6 +105,9 @@ interface Props {
   year: number;
   playing: boolean;
   showEmdat: boolean;
+  // Days a flood was recorded, marked with a dot: the only cells whose verdict
+  // says anything. Deliberately not a fill — the cell colour stays the forecast.
+  recordedDates: Set<string>;
 }
 
 export function ExceedanceCalendar({
@@ -115,6 +118,7 @@ export function ExceedanceCalendar({
   year,
   playing,
   showEmdat,
+  recordedDates,
 }: Props) {
   const { selectedDate, setSelectedDate } = usePipelineStore();
 
@@ -133,8 +137,8 @@ export function ExceedanceCalendar({
         </span>
       </div>
       <p className='pane__note'>
-        One cell is one forecast day, coloured by that day&rsquo;s worst admin-1 severity. Click a
-        cell to load its regions.
+        One cell is one forecast day, coloured by that day&rsquo;s worst admin-1 severity. A dot
+        marks a day a flood was recorded. Click a cell to load its regions.
       </p>
       <div className={`cal-scroll${showEmdat ? '' : ' no-emdat'}`}>
         <div id='cal'>
@@ -182,6 +186,19 @@ export function ExceedanceCalendar({
                   </rect>
                 );
               })}
+              {/* Drawn after the cells so the dot sits above its own square, and
+                  pointer-transparent so the whole cell stays one click target. */}
+              {band.cells
+                .filter((c) => recordedDates.has(c.iso))
+                .map((c) => (
+                  <circle
+                    key={`dot-${c.iso}`}
+                    className='evt-dot'
+                    cx={c.x + CELL - 2.4}
+                    cy={c.y + 2.4}
+                    r={1.5}
+                  />
+                ))}
             </svg>
           </div>
         </div>
