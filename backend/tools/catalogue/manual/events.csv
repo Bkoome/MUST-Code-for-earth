@@ -1,0 +1,5 @@
+# Hand-maintained events for countries no automated source covers. `gids` is a
+# pipe-separated list of admin-1 ids taken straight from the region table, so a
+# manual row needs no crosswalk and cannot be misplaced by name matching.
+# Example: MANUAL-2024-001,ERI,flood,2024-04-18,2024-04-21,,,,Anseba,ERI.1_1|ERI.2_1
+source_key,iso3,hazard,start_date,end_date,deaths,affected,damage_usd,place,gids

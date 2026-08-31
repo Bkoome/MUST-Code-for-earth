@@ -4,10 +4,10 @@ message: "If you use this software, please cite it as below."
 type: software
 abstract: >-
   An interactive flood-risk dashboard for East Africa. MUST replays daily
-  exceedance-probability fields against recorded impacts so analysts can see
-  flood risk evolve day by day, through a calendar-map index and per-day
-  storymaps. It consumes published products from the grib-icechunks pipeline
-  via a stable data-contract API.
+  exceedance-probability fields derived from the ECMWF IFS ensemble against
+  recorded impacts, so analysts can see flood risk evolve day by day through a
+  calendar-map index and per-day storymaps. Fields are derived on demand from an
+  Icechunk store by a companion titiler-xarray service.
 keywords:
   - flood-risk
   - East Africa

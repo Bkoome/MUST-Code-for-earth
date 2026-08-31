@@ -2,14 +2,17 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
 jobs:
   frontend:
-    name: typecheck · lint · build
+    name: frontend · typecheck · lint · build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -17,6 +20,7 @@ jobs:
         with:
           node-version: 20
           cache: yarn
+          cache-dependency-path: frontend/yarn.lock
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -29,3 +33,18 @@ jobs:
 
       - name: Build
         run: yarn build
+
+  backend:
+    name: backend · compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # The service deps are heavy (icechunk, dask, rio-tiler), so CI checks
+      # syntax rather than paying for a full install on every push.
+      - name: Byte-compile
+        run: python -m compileall -q backend/app backend/tools backend/verify_store.py
