@@ -1498,7 +1498,11 @@ button {
   border-radius: 14px;
   padding: 20px;
   text-align: left;
-  display: block;
+  /* A column rather than a block: a button with slack centres its content, so a
+     card with less to say floated its whole stack down past its neighbours. */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -1542,6 +1546,8 @@ button {
   color: var(--slate);
 }
 .scard__ft {
+  /* Pinned to the floor so the meta lines agree across a row of cards. */
+  margin-top: auto;
   font-family: var(--font-mono);
   font-size: 10.5px;
   letter-spacing: 0.08em;
@@ -1550,6 +1556,16 @@ button {
   flex-wrap: wrap;
   gap: 14px;
   font-variant-numeric: tabular-nums;
+}
+
+.scard .verdict__chip {
+  /* Shrink to its text: as a flex item it would otherwise stretch the width of
+     the card and stop reading as a chip. */
+  align-self: flex-start;
+  margin: 0 0 10px;
+}
+.scard__when {
+  display: block;
 }
 
 /* What the "approx." flag on a region chip actually claims. */

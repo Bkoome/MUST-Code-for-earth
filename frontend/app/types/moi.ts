@@ -57,6 +57,31 @@ export interface MoiDay {
   data: MoiUnit[];
 }
 
+// One assessable event, scored at a return period. Five exist in the whole
+// archive, which is why they are a named ledger and never a rate.
+export interface MoiCase {
+  event_id: number;
+  gid: string;
+  region: string;
+  iso3: string;
+  rp: number;
+  verdict: Verdict;
+  p_best: number | null;
+  p_lead0: number | null;
+  best_lead_h: number | null;
+  warning_record: string | null;
+  span_days: number;
+  obs_mm: number | null;
+  obs_rp: number | null;
+  source: string;
+  event_key: string;
+  place: string | null;
+  start: string;
+  end: string;
+  deaths: number | null;
+  affected: number | null;
+}
+
 export interface MoiDayCell {
   verdict: Verdict;
   units: number;
@@ -68,6 +93,8 @@ export interface MoiYear {
   rp: number;
   year: number | null;
   days: Record<string, MoiDayCell>;
+  // Not year-scoped by the backend: the same five cases whatever year is asked for.
+  cases: MoiCase[];
 }
 
 export interface MoiCoverage {
@@ -167,6 +194,59 @@ export function verdictSentence(u: MoiUnit, rp: number): string {
       return `Extreme rainfall fell in ${where(u)}. Nothing was entered in that country's loss register for the day.`;
     case 'no_impact_data':
       return `Extreme rainfall fell in ${where(u)}, where no loss register reaches. Whether it caused harm is unknown.`;
+  }
+}
+
+// Worst-first, then by what the event cost. Ranking on impact alone would open
+// with a three-death case the forecast never saw and bury the one day the
+// ensemble actually called early — which is the story the ledger exists to tell.
+export function rankCases(cases: MoiCase[]): MoiCase[] {
+  const rank: Record<string, number> = {
+    missed_opportunity: 0,
+    late_warning: 1,
+    forecast_miss: 2,
+  };
+  return [...cases].sort(
+    (a, b) =>
+      (rank[a.verdict] ?? 9) - (rank[b.verdict] ?? 9) ||
+      (b.deaths ?? 0) - (a.deaths ?? 0) ||
+      (b.affected ?? 0) - (a.affected ?? 0),
+  );
+}
+
+const nn = (n: number) => n.toLocaleString('en-US');
+
+// What the event cost, in the words a register can support: a null is an unfiled
+// field, never a zero, so it is left unsaid rather than reported as no harm.
+export function caseToll(c: MoiCase): string {
+  const parts: string[] = [];
+  if (c.deaths) parts.push(`${nn(c.deaths)} ${c.deaths === 1 ? 'person died' : 'people died'}`);
+  // "people" attaches to whichever clause stands alone, so a card never reads
+  // "3,000 were affected" with nothing for the number to count.
+  if (c.affected) {
+    parts.push(`${nn(c.affected)}${c.deaths ? '' : ' people'} were affected`);
+  }
+  return parts.join(' and ');
+}
+
+// The card's sentence, built from the case rather than written by hand, so a
+// curated story can never drift from the row it claims to describe. The toll is
+// its own sentence: appended to the rainfall clause it produced a second "and".
+export function caseStory(c: MoiCase, rp: number): string {
+  const p = (v: number | null) => `${Math.round((v ?? 0) * 100)}%`;
+  const fell = c.obs_mm != null ? `${c.obs_mm.toFixed(0)} mm fell` : 'Extreme rain fell';
+  const toll = caseToll(c);
+  const tail = toll ? ` ${toll}.` : '';
+  const peak = Math.max(c.p_best ?? 0, c.p_lead0 ?? 0);
+  switch (c.verdict) {
+    case 'missed_opportunity':
+      return `${p(c.p_best)} of the ensemble already had ${rp}-year rainfall here ${c.best_lead_h} hours out, rising to ${p(c.p_lead0)} on the day. ${fell}.${tail}`;
+    case 'late_warning':
+      return `Nothing crossed the bar until the day itself, when ${p(c.p_lead0)} of members did — no lead time to act on. ${fell}.${tail}`;
+    default:
+      return `${fell} — a ${c.obs_rp ?? 2}-year day — with ${
+        peak > 0 ? `the ensemble never past ${p(peak)}` : 'no member reaching the bar'
+      } at any lead.${tail}`;
   }
 }
 

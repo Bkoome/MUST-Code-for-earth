@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { usePipelineStore } from 'app/store/providers/pipeline';
 import type { CalendarIndex } from 'app/types/contract';
 import { color } from 'app/lib/exceedance-ramp';
+import { MoiCards } from './MoiStories';
+import type { MoiCase } from 'app/types/moi';
 
 // Curated seasons worth walking through. Everything a card reports — the
 // sparkline, the elevated-day count, the EM-DAT count, the day it opens — is
@@ -80,9 +82,7 @@ function read(season: Season, index: CalendarIndex, emdatDates: Set<string>): Re
 
   // Thin evenly rather than truncating, so the bars still span the season.
   const stride = Math.max(1, Math.ceil(days.length / MAX_BARS));
-  const bars = days
-    .filter((_, i) => i % stride === 0)
-    .map((d) => ({ date: d, sev: index[d].p }));
+  const bars = days.filter((_, i) => i % stride === 0).map((d) => ({ date: d, sev: index[d].p }));
 
   return { days, elevated, events, peak, peakP: Math.max(peakP, 0), bars };
 }
@@ -90,15 +90,34 @@ function read(season: Season, index: CalendarIndex, emdatDates: Set<string>): Re
 interface Props {
   index: CalendarIndex;
   emdatDates: Set<string>;
+  cases: MoiCase[];
+  rp: string;
 }
 
-export function Storylines({ index, emdatDates }: Props) {
+// Two ways into the archive, never at once: the seasons say where to walk, the
+// cases say what the walk found. Seasons lead because they hold every day in the
+// window, while the ledger holds five — stacking the two would have read as a
+// section that grows more certain the further down it goes.
+type View = 'seasons' | 'cases';
+
+const HEADS: Record<View, string> = {
+  seasons: 'Seasons worth walking through',
+  cases: 'Three days worth explaining',
+};
+
+export function Storylines({ index, emdatDates, cases, rp }: Props) {
   const { openStory } = usePipelineStore();
+  const [view, setView] = useState<View>('seasons');
 
   const readings = useMemo(
     () => SEASONS.map((s) => ({ season: s, reading: read(s, index, emdatDates) })),
     [index, emdatDates],
   );
+
+  // The toggle is only offered where it leads somewhere: with no ledger the
+  // section is the seasons, and a dead second pill would just be a broken promise.
+  const canSwitch = cases.length > 0;
+  const showing: View = canSwitch ? view : 'seasons';
 
   return (
     <section className='strand' id='storylines'>
@@ -106,60 +125,82 @@ export function Storylines({ index, emdatDates }: Props) {
         <div className='strand__hd'>
           <div>
             <span className='eyebrow'>Storylines</span>
-            <h2>Seasons worth walking through</h2>
+            <h2>{HEADS[showing]}</h2>
           </div>
+          {canSwitch ? (
+            <div className='seg' role='group' aria-label='Storyline view'>
+              <button
+                className={showing === 'seasons' ? 'on' : ''}
+                aria-pressed={showing === 'seasons'}
+                onClick={() => setView('seasons')}
+              >
+                Seasons
+              </button>
+              <button
+                className={showing === 'cases' ? 'on' : ''}
+                aria-pressed={showing === 'cases'}
+                onClick={() => setView('cases')}
+              >
+                Missed opportunities
+              </button>
+            </div>
+          ) : null}
         </div>
 
-        <div className='cards'>
-          {readings.map(({ season, reading }) => {
-            const ready = reading.peak !== null;
-            return (
-              <button
-                key={season.id}
-                className='scard'
-                disabled={!ready}
-                onClick={() => reading.peak && openStory(reading.peak)}
-                title={
-                  ready
-                    ? `Open the ${reading.peak} storymap`
-                    : 'This season is not in the archive yet'
-                }
-              >
-                <div className='scard__bar' aria-hidden='true'>
-                  {reading.bars.length ? (
-                    reading.bars.map((b) => (
-                      <span
-                        key={b.date}
-                        style={{
-                          height: `${6 + b.sev * 20}px`,
-                          background: color(b.sev),
-                        }}
-                      />
-                    ))
-                  ) : (
-                    <span style={{ height: '2px', background: 'var(--rule)' }} />
-                  )}
-                </div>
-                <span className='eyebrow'>{season.from.slice(0, 4)}</span>
-                <h3>{season.title}</h3>
-                <p>{season.blurb}</p>
-                <div className='scard__ft'>
-                  {ready ? (
-                    <>
-                      <span>{reading.elevated} elevated days</span>
-                      <span>{reading.events} EM-DAT events</span>
-                      <span>
-                        peak {reading.peak} · {Math.round(reading.peakP * 100)}%
-                      </span>
-                    </>
-                  ) : (
-                    <span>Awaiting archive</span>
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
+        {showing === 'cases' ? <MoiCards cases={cases} rp={rp} /> : null}
+
+        {showing === 'seasons' ? (
+          <div className='cards'>
+            {readings.map(({ season, reading }) => {
+              const ready = reading.peak !== null;
+              return (
+                <button
+                  key={season.id}
+                  className='scard'
+                  disabled={!ready}
+                  onClick={() => reading.peak && openStory(reading.peak)}
+                  title={
+                    ready
+                      ? `Open the ${reading.peak} storymap`
+                      : 'This season is not in the archive yet'
+                  }
+                >
+                  <div className='scard__bar' aria-hidden='true'>
+                    {reading.bars.length ? (
+                      reading.bars.map((b) => (
+                        <span
+                          key={b.date}
+                          style={{
+                            height: `${6 + b.sev * 20}px`,
+                            background: color(b.sev),
+                          }}
+                        />
+                      ))
+                    ) : (
+                      <span style={{ height: '2px', background: 'var(--rule)' }} />
+                    )}
+                  </div>
+                  <span className='eyebrow'>{season.from.slice(0, 4)}</span>
+                  <h3>{season.title}</h3>
+                  <p>{season.blurb}</p>
+                  <div className='scard__ft'>
+                    {ready ? (
+                      <>
+                        <span>{reading.elevated} elevated days</span>
+                        <span>{reading.events} EM-DAT events</span>
+                        <span>
+                          peak {reading.peak} · {Math.round(reading.peakP * 100)}%
+                        </span>
+                      </>
+                    ) : (
+                      <span>Awaiting archive</span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
       </div>
     </section>
   );

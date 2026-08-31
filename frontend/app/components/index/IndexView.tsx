@@ -5,6 +5,7 @@ import { usePipelineStore } from 'app/store/providers/pipeline';
 import { loadCalendarIndex } from 'app/lib/api/contract';
 import { fetchYearVerdicts } from 'app/lib/api/moi';
 import { RECORDED } from 'app/types/moi';
+import type { MoiCase } from 'app/types/moi';
 import type { CalendarIndex } from 'app/types/contract';
 import { CAL_YEARS } from 'app/types/pipeline';
 import { fetchXrDates } from 'app/lib/tiles/xr-url';
@@ -37,6 +38,9 @@ export function IndexView() {
   // not left clicking blindly — 655 of the 1,204 archive days have nothing to
   // evaluate at all.
   const [recordedDates, setRecordedDates] = useState<Set<string>>(new Set());
+  // The assessable-event ledger, which the same request already carries: five
+  // rows, the same five whatever year is asked for.
+  const [moiCases, setMoiCases] = useState<MoiCase[]>([]);
   // EM-DAT rings on the calendar; on by default, off when they crowd the ramp.
   const [showEmdat, setShowEmdat] = useState(true);
   // Once the reader picks a year, stop auto-snapping it out from under them.
@@ -149,6 +153,7 @@ export function IndexView() {
         setRecordedDates(
           new Set(Object.entries(y.days ?? {}).filter(([, c]) => RECORDED.has(c.verdict)).map(([d]) => d)),
         );
+        setMoiCases(y.cases ?? []);
       })
       .catch(() => undefined);
     return () => {
@@ -246,7 +251,12 @@ export function IndexView() {
         </div>
       </section>
 
-      <Storylines index={index} emdatDates={emdatDates} />
+      <Storylines
+        index={index}
+        emdatDates={emdatDates}
+        cases={moiCases}
+        rp={returnPeriod}
+      />
     </>
   );
 }
