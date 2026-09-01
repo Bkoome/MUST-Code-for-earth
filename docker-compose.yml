@@ -1,0 +1,49 @@
+# MUST stack: Next.js frontend plus titiler-xarray backend. No database.
+# Run: cp .env.example .env && docker compose up -d --build
+
+networks:
+  default:
+    name: ${MUST_NETWORK:-must_net}
+
+services:
+  # Tiler: derives tp accumulation and ensemble exceedance per request.
+  titiler-xarray:
+    build: { context: ./backend }
+    container_name: ${TITILER_XR_CONTAINER:-must-titiler-xarray}
+    restart: unless-stopped
+    mem_limit: ${TITILER_XR_MEM_LIMIT:-1500m}
+    environment:
+      XR_DASK_THREADS: ${XR_DASK_THREADS:-12}
+      XR_DASK_MEM_FRACTION: ${XR_DASK_MEM_FRACTION:-0.5}
+      XR_DASK_SCHEDULER: ${XR_DASK_SCHEDULER:-distributed}
+      XR_CACHE_DATES: ${XR_CACHE_DATES:-4}
+      CMORPH_THRESHOLDS_URL: ${CMORPH_THRESHOLDS_URL:-/data/cmorph_ea_return_periods.nc}
+      IMERG_DAILY_URL: ${IMERG_DAILY_URL:-/data/gpm_imerg_ea_daily.nc}
+      # Empty streams from source.coop; /store reads a materialized local store.
+      XR_LOCAL_STORE_PATH: ${XR_LOCAL_STORE_PATH-}
+    volumes:
+      - ${XR_DATA_HOST_DIR:-./backend/data}:/data:ro,z
+      - ${XR_CACHE_HOST_DIR:-./backend/cache}:/cache:z
+      - ${XR_LOCAL_STORE_HOST_DIR:-./backend/store-local}:/store:ro,z
+    ports:
+      - "127.0.0.1:${XR_HOST_PORT:-8090}:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/health')\""]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+
+  frontend:
+    # NEXT_PUBLIC_* are inlined at build time, so pass them as build args.
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_TILER_XR_BASE: ${NEXT_PUBLIC_TILER_XR_BASE:-http://localhost:8090}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+    container_name: ${FRONTEND_CONTAINER:-must-frontend}
+    restart: unless-stopped
+    depends_on:
+      titiler-xarray: { condition: service_healthy }
+    ports:
+      - "127.0.0.1:${FRONTEND_HOST_PORT:-3000}:3000"

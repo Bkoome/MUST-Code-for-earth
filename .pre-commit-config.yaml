@@ -1,5 +1,5 @@
 # Pre-commit hooks for MUST. Install once with `pre-commit install`.
-# Runs lightweight hygiene checks plus the project's own format/lint on commit.
+# Runs lightweight hygiene checks plus the frontend's own format/lint on commit.
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -7,23 +7,30 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-merge-conflict
+      # Keeps the store, cache, and NetCDF bundles out of git by accident.
       - id: check-added-large-files
         args: ["--maxkb=1024"]
       - id: detect-private-key
       - id: check-yaml
       - id: check-json
+        exclude: ^(frontend/public/(geo/|icpac_adm1v3\.json)|backend/data/)
 
   - repo: local
     hooks:
       - id: prettier
         name: prettier (format check)
-        entry: yarn format:check
+        entry: bash -c 'cd frontend && yarn format:check'
         language: system
         pass_filenames: false
-        files: \.(js|jsx|ts|tsx|json|css|md)$
+        files: ^frontend/.*\.(js|jsx|ts|tsx|json|css|md)$
       - id: eslint
         name: eslint
-        entry: yarn lint
+        entry: bash -c 'cd frontend && yarn lint'
         language: system
         pass_filenames: false
-        files: \.(js|jsx|ts|tsx)$
+        files: ^frontend/.*\.(js|jsx|ts|tsx)$
+      - id: py-compile
+        name: python byte-compile
+        entry: python -m compileall -q
+        language: system
+        files: ^backend/.*\.py$

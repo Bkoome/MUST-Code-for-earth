@@ -1,34 +1,25 @@
-# MUST developer shortcuts.
-
+# MUST stack shortcuts.
 .DEFAULT_GOAL := help
-.PHONY: help install dev build start lint typecheck check format clean
+.PHONY: help up down logs build restart ps
 
-help: ## Show this help
+help: ## Show targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
-		| awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
+		| awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
 
-install: ## Install dependencies
-	yarn install
+up: ## Build and start the stack
+	docker compose up -d --build
 
-dev: ## Run the dev server (:3000)
-	yarn dev
+down: ## Stop the stack
+	docker compose down
 
-build: ## Production build
-	yarn build
+restart: ## Restart the backend
+	docker compose restart titiler-xarray
 
-start: ## Serve the production build
-	yarn start
+build: ## Build images without starting
+	docker compose build
 
-typecheck: ## Type-check without emitting
-	yarn ts-check
+logs: ## Follow logs
+	docker compose logs -f
 
-lint: ## Lint
-	yarn lint
-
-format: ## Auto-format
-	yarn format
-
-check: typecheck lint ## Typecheck + lint
-
-clean: ## Remove build artifacts and caches
-	rm -rf .next out tsconfig.tsbuildinfo
+ps: ## Show service status
+	docker compose ps
